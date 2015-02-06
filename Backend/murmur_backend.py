@@ -55,7 +55,7 @@ def get_google_trends_responses(trends):
     for trend, relates_terms in trends.items():
         connector = pyGTrends("collinschupman@gmail.com", "b33fC0mm@nd0")
         connector.request_report(trend)
-        time.sleep(randint(30, 60))
+        time.sleep(randint(1, 2))
         connector.save_csv(PATH, trend)
         current_csv_file = open(PATH + trend + '.csv')
         result = defaultdict(dict)
