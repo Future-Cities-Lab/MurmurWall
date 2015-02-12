@@ -3,6 +3,8 @@ import processing.data.*;
 import processing.event.*; 
 import processing.opengl.*; 
 
+import processing.serial.*; 
+
 import java.util.HashMap; 
 import java.util.ArrayList; 
 import java.io.File; 
@@ -17,18 +19,14 @@ public class sketch_four extends PApplet {
 JSONObject json;
 PImage img;
 
-private int TIME_DELAY = 30000;
+
 private int NUM_BUCKETS = 7;
 private int time;
 
-ArrayList<String> trends = new ArrayList<String>();
-
-int[] buckets = new int[7];
-
+int[] buckets = new int[NUM_BUCKETS];
 String[] data;
 
-boolean[] bucket_displaying = new boolean[NUM_BUCKETS];
-
+float[] x_velocities = new float[NUM_BUCKETS];
 
 int rect_width = 150;
 int rect_height = 37;
@@ -47,6 +45,12 @@ float[] angles = {-PI/3.4f,-PI/3.4f,-PI/3.4f,-PI/3.6f,-PI/3.5f,-PI/3.4f,-PI/3.5f
 float[] current_words_x_pos = new float[NUM_BUCKETS];
 
 
+// SERIAL COMMUNICATION
+private String[] teensies = new String[NUM_BUCKETS];
+private Serial[] teensy_serial = new Serial[NUM_BUCKETS];
+private String[] usb_ports = {"688851","616481","618061","688531","688321","688291","604971"};
+
+
 public void setup() {
 
 	size(900,700);
@@ -55,6 +59,7 @@ public void setup() {
 
 	textAlign(LEFT,CENTER);
 	textSize(14);
+	//textSize(10);
 
 	img = loadImage("Murmur_Wall_Elevation-900x700.png");
 
@@ -79,8 +84,29 @@ public void setup() {
 	for (int j = 0; j < buckets.length; j++) {
 		buckets[j] = j;
 	}
+
+	for (int j = 0; j < NUM_BUCKETS; j++) {
+		x_velocities[j] = 0.5f;
+	}
+
 	updateStartPosition();
 	smooth();
+
+	// SERIAL STUFF
+	for (int j = 0; j < NUM_BUCKETS; j++) {
+		teensies[j] = Serial.list()[Serial.list().length-1-j];
+	}
+
+	for (int j = 0; j < NUM_BUCKETS; j++) {
+		String to_find = usb_ports[j];
+		String port = "";
+		for (int k = 0; k < NUM_BUCKETS; k++) {
+			if (teensies[k].contains(to_find)) {
+				teensy_serial[j] = new Serial(this, teensies[k], 9600);
+				teensy_serial[j].bufferUntil('\n');
+			}
+		}
+	}
 }
 
 public void draw() {
@@ -103,16 +129,31 @@ private void drawText() {
 		  	fill(255,255,255,255);
 			text(data[buckets[i]].toUpperCase(), current_words_x_pos[i], rect_height/2.5f);
 		popMatrix();
-		current_words_x_pos[i]+= 0.5f;
+		current_words_x_pos[i] += x_velocities[i];
+		if (current_words_x_pos[i] > rect_width/4) {
+			x_velocities[i] = map(current_words_x_pos[i], rect_width/4, rect_width, 0.02f, 1.8f);
+		} else {
+			x_velocities[i] = map(current_words_x_pos[i], -textWidth(data[buckets[i]]), rect_width/4, 1.8f, 0.02f);
+		}
 		if (current_words_x_pos[i] > rect_width) {
 			buckets[i]--;
 			if (buckets[i] == -1) {
 				buckets[i] = data.length-1;
 			}
 			current_words_x_pos[i] = -textWidth(data[buckets[i]]);
+			x_velocities[i] = 0.5f;
+			println("Writting to " + teensy_serial[i].toString());
+			teensy_serial[i].write(65);
+			delay(10);			
  	 	}
 	 }
 }
+
+public void serialEvent(Serial p) { 
+	String val = p.readStringUntil('\n');
+	println(val); 
+	p.clear();
+} 
   static public void main(String[] passedArgs) {
     String[] appletArgs = new String[] { "sketch_four" };
     if (passedArgs != null) {
