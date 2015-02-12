@@ -4,6 +4,7 @@ import serial
 import pprint
 import requests
 import json
+import threading
 
 BAUD_RATE = 9600
 
