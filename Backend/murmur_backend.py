@@ -55,7 +55,7 @@ def get_google_trends_responses(trends):
     for trend, relates_terms in trends.items():
         connector = pyGTrends("collinschupman@gmail.com", "b33fC0mm@nd0")
         connector.request_report(trend)
-        time.sleep(randint(1, 2))
+        time.sleep(randint(10, 20))
         connector.save_csv(PATH, trend)
         current_csv_file = open(PATH + trend + '.csv')
         result = defaultdict(dict)
@@ -97,22 +97,37 @@ def main():
     #threading.Timer(900.0, main).start()
     
     # UPDATE TRENDS
-    trends = get_current_trends()
+    # trends = get_current_trends()
 
-    # TWITTER
-    get_twitter_responses(trends)
+    # # TWITTER
+    # #get_twitter_responses(trends)
 
-    # GOOGLE TRENDS
-    get_google_trends_responses(trends)
+    # # GOOGLE TRENDS
+    # get_google_trends_responses(trends)
 
-    # WRITE TO FILE
-    print("Writing to 'data.json'\n")
-    # output_josn = json.dumps(trends, indent=4, sort_keys=True)
-    # print(output_josn)
-    with open('../Frontend/Processing/sketch_four/data/data.json', 'w') as outfile:
-        json.dump(trends, outfile)
+    # # WRITE TO FILE
+    # print("Writing to 'data.json'\n")
 
-    # print("\nFinished!!!!!!!\n")
+    # print(trends)
+
+    # with open('../Frontend/Processing/sketch_four/data/data.json', 'w') as outfile:
+    #     json.dump(trends, outfile)
+
+    r = requests.get("https://api.myjson.com/bins/2csub")
+    to_go = r.json()
+    print(type(str(to_go)))
+
+    headers = {'Content-type': 'application/json'}
+    s = requests.put("https://api.myjson.com/bins/2csub", data = json.dumps(to_go), headers = headers)
+    print(s)
+
+    # json_data = open('../Frontend/Processing/sketch_four/data/data.json')
+    # data = json.load(json_data)
+    # r = requests.post("https://api.myjson.com/bins/2csub", data=json.dumps(data))
+    # json_data.close()
+    # print(r)
+
+    print("\nFinished!!!!!!!\n")
 
 if __name__ == "__main__":
     main()
