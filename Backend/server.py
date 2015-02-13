@@ -28,12 +28,12 @@ JSON_URL = "https://api.myjson.com/bins/2csub"
 def get_current_trends():
     """Returns the current trends from Google Search"""
     google_request = requests.get('http://hawttrends.appspot.com/api/terms/')
-    return {x: [] for x in google_request.json()["1"]}
+    return [x for x in google_request.json()["1"]]
 
 def get_twitter_responses(trends):
     """Updates each trend with responses from Twitter"""
     twitter_session = OAuth1Session(CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN, ACCESS_SECRET)
-    for trend, related_terms in trends.items():
+    for trend in trends:
         print('Getting responses for trend - ' + trend)
         url = "https://api.twitter.com/1.1/search/tweets.json?q="
         url += trend
@@ -52,7 +52,7 @@ def get_twitter_responses(trends):
                 edited_twitter_response = edited_twitter_response.replace(web, "").strip()
             related_terms.append(edited_twitter_response)
 
-def get_google_trends_responses(trends):
+def get_google_trends_responses(trends,new_trends):
     """Updates each trend with related searches from Google"""
 
     to_remove = []
@@ -61,9 +61,14 @@ def get_google_trends_responses(trends):
     for fil in files:
         os.remove(fil)
 
-    for trend in trends.keys():
+    for trend in trends:
         connector = pyGTrends("collinschupman@gmail.com", "b33fC0mm@nd0")
-        connector.request_report(trend)
+
+        try:
+            connector.request_report(trend)
+        except URLError:
+            print 'Bummer'
+
         time.sleep(randint(10, 20))
         connector.save_csv(PATH, trend)
 
@@ -98,19 +103,19 @@ def get_google_trends_responses(trends):
         if not bool(result):
             to_remove.append(trend)
         else:
-            trends[trend] = result
+            new_trends[trend] = result
 
     for trend in to_remove:
-        trends.pop(trend, None)
+        new_trends.pop(trend, None)
 
     with open('Backup/backup.json', 'w') as backup_json_file:    
-        json.dump(trends, backup_json_file) 
+        json.dump(new_trends, backup_json_file) 
 
 def main():
     """Ouputs: JSON file of trending words and related terms and conversation"""
 
     #Un-comment to run this script every 10 minutes......
-    threading.Timer(900.0, main).start()
+    #threading.Timer(900.0, main).start()
 
     print('\nLoading backup data.....\n')
     with open('Backup/backup.json') as backup_json_file:    
@@ -121,15 +126,25 @@ def main():
     print("Updating current trends.......\n")
     trends = get_current_trends()
 
+    twitter_session = OAuth1Session(CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN, ACCESS_SECRET)
+    twitter_url = "https://api.twitter.com/1.1/trends/place.json?id=2487956"
+    twitter_responses = twitter_session.get(twitter_url).json()
+    for trend in twitter_responses[0]['trends']:
+        word = trend['name']
+        if word[0] is '#':
+            word = word[1:]
+        trends.append(word)
+
     # TWITTER * HOW TO ERROR CHECK?
-    #print('Getting Twitter Information:\n')
-    #get_twitter_responses(trends)
+    # print('Getting Twitter Information:\n')
+    # get_twitter_responses(trends)
 
     # GOOGLE TRENDS * HOW TO ERROR CHECK?
     print('Getting trending information......\n')
-    get_google_trends_responses(trends)
+    new_trends = {}
+    get_google_trends_responses(trends, new_trends)
 
-    to_go_json = trends
+    to_go_json = new_trends
 
     print('\nNew JSON is ready : \n')
     pretty_printer = pprint.PrettyPrinter(indent=4)

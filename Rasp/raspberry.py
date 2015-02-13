@@ -14,7 +14,7 @@ def main():
     """
 
     #Uncomment to run every 10 min.
-    threading.Timer(900.0, main).start()
+    #threading.Timer(900.0, main).start()
 
     # print '\nStarting up MurmurWall!\n'
 
@@ -43,8 +43,7 @@ def main():
         current_json = json.load(backup_json_file)
 
     print 'Backup data: \n'
-    pretty_printer = pprint.PrettyPrinter(indent=4)
-    pretty_printer.pprint(current_json)
+    pprint.PrettyPrinter(indent=4).pprint(current_json)
 
     print '\nRequesting new data.....\n'
     response = requests.get("https://api.myjson.com/bins/2csub")
@@ -60,8 +59,7 @@ def main():
         print 'Using backup.json'
 
     print 'Current data: \n'
-    pretty_printer = pprint.PrettyPrinter(indent=4)
-    pretty_printer.pprint(current_json)
+    pprint.PrettyPrinter(indent=4).pprint(current_json)
     print '\n'
 
     # print 'Starting main loop....\n'

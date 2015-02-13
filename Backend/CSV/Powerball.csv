@@ -3,7 +3,7 @@ Worldwide; 2004 - present
 
 Interest over time
 Week,powerball
-2004-01-04 - 2004-01-10,6
+2004-01-04 - 2004-01-10,5
 2004-01-11 - 2004-01-17,4
 2004-01-18 - 2004-01-24,3
 2004-01-25 - 2004-01-31,3
@@ -111,7 +111,7 @@ Week,powerball
 2006-01-08 - 2006-01-14,3
 2006-01-15 - 2006-01-21,4
 2006-01-22 - 2006-01-28,5
-2006-01-29 - 2006-02-04,6
+2006-01-29 - 2006-02-04,7
 2006-02-05 - 2006-02-11,9
 2006-02-12 - 2006-02-18,24
 2006-02-19 - 2006-02-25,25
@@ -138,7 +138,7 @@ Week,powerball
 2006-07-16 - 2006-07-22,5
 2006-07-23 - 2006-07-29,6
 2006-07-30 - 2006-08-05,8
-2006-08-06 - 2006-08-12,7
+2006-08-06 - 2006-08-12,8
 2006-08-13 - 2006-08-19,3
 2006-08-20 - 2006-08-26,4
 2006-08-27 - 2006-09-02,4
@@ -192,7 +192,7 @@ Week,powerball
 2007-07-29 - 2007-08-04,5
 2007-08-05 - 2007-08-11,6
 2007-08-12 - 2007-08-18,8
-2007-08-19 - 2007-08-25,13
+2007-08-19 - 2007-08-25,14
 2007-08-26 - 2007-09-01,13
 2007-09-02 - 2007-09-08,4
 2007-09-09 - 2007-09-15,3
@@ -315,8 +315,8 @@ Week,powerball
 2009-12-06 - 2009-12-12,3
 2009-12-13 - 2009-12-19,4
 2009-12-20 - 2009-12-26,5
-2009-12-27 - 2010-01-02,5
-2010-01-03 - 2010-01-09,3
+2009-12-27 - 2010-01-02,6
+2010-01-03 - 2010-01-09,4
 2010-01-10 - 2010-01-16,3
 2010-01-17 - 2010-01-23,4
 2010-01-24 - 2010-01-30,4
@@ -443,14 +443,14 @@ Week,powerball
 2012-05-20 - 2012-05-26,4
 2012-05-27 - 2012-06-02,5
 2012-06-03 - 2012-06-09,6
-2012-06-10 - 2012-06-16,8
+2012-06-10 - 2012-06-16,9
 2012-06-17 - 2012-06-23,4
 2012-06-24 - 2012-06-30,4
 2012-07-01 - 2012-07-07,4
 2012-07-08 - 2012-07-14,4
 2012-07-15 - 2012-07-21,5
 2012-07-22 - 2012-07-28,6
-2012-07-29 - 2012-08-04,8
+2012-07-29 - 2012-08-04,7
 2012-08-05 - 2012-08-11,10
 2012-08-12 - 2012-08-18,25
 2012-08-19 - 2012-08-25,5
@@ -479,7 +479,7 @@ Week,powerball
 2013-01-27 - 2013-02-02,7
 2013-02-03 - 2013-02-09,10
 2013-02-10 - 2013-02-16,5
-2013-02-17 - 2013-02-23,5
+2013-02-17 - 2013-02-23,4
 2013-02-24 - 2013-03-02,5
 2013-03-03 - 2013-03-09,6
 2013-03-10 - 2013-03-16,8
@@ -509,14 +509,14 @@ Week,powerball
 2013-08-25 - 2013-08-31,7
 2013-09-01 - 2013-09-07,8
 2013-09-08 - 2013-09-14,11
-2013-09-15 - 2013-09-21,25
+2013-09-15 - 2013-09-21,26
 2013-09-22 - 2013-09-28,6
 2013-09-29 - 2013-10-05,5
 2013-10-06 - 2013-10-12,6
 2013-10-13 - 2013-10-19,7
 2013-10-20 - 2013-10-26,8
 2013-10-27 - 2013-11-02,5
-2013-11-03 - 2013-11-09,4
+2013-11-03 - 2013-11-09,5
 2013-11-10 - 2013-11-16,5
 2013-11-17 - 2013-11-23,5
 2013-11-24 - 2013-11-30,4
@@ -542,7 +542,7 @@ Week,powerball
 2014-04-13 - 2014-04-19,4
 2014-04-20 - 2014-04-26,5
 2014-04-27 - 2014-05-03,4
-2014-05-04 - 2014-05-10,3
+2014-05-04 - 2014-05-10,4
 2014-05-11 - 2014-05-17,4
 2014-05-18 - 2014-05-24,4
 2014-05-25 - 2014-05-31,5
@@ -649,16 +649,16 @@ Sandton (South Africa),92
 Charlotte (United States),73
 St. Louis (United States),70
 Minneapolis (United States),69
-Omaha (United States),68
-Kansas City (United States),67
+Kansas City (United States),66
 Philadelphia (United States),64
 Phoenix (United States),62
-New Orleans (United States),62
-Cape Town (South Africa),56
+New Orleans (United States),61
 Alexandria (United States),56
 Denver (United States),55
-Nashville (United States),53
+Cape Town (South Africa),55
+Nashville (United States),52
 Raleigh (United States),50
+Chicago (United States),50
 
 
 
@@ -669,7 +669,7 @@ lottery,35
 powerball results,30
 mega millions,25
 powerball winning numbers,25
-powerball lotto,10
+lotto powerball,10
 powerball florida,10
 powerball lottery numbers,10
 mega millions numbers,10
@@ -685,41 +685,42 @@ powerball nj,5
 lotto numbers,5
 powerball jackpot,5
 megamillions,5
+powerball ca,5
 lotto results,5
-ca powerball,5
 powerball lotto results,5
 powerball sa,5
 powerball drawing time,5
 powerball winners,5
 missouri powerball,5
-colorado powerball,0
+colorado powerball,5
 powerball fl,0
 florida lottery powerball,0
 florida lottery,0
 florida powerball numbers,0
-illinois powerball,0
+powerball illinois,0
 louisiana powerball,0
 california powerball,0
 new york powerball,0
 ct powerball,0
 arizona powerball,0
-powerball mn,0
+mn powerball,0
 ky powerball,0
 sc powerball,0
+powerball ohio,0
 
 
 
 Rising searches for powerball
 mega millions numbers,Breakout
+powerball ca,Breakout
 powerball florida,+550%
 powerball nj,+500%
-powerball ny,+350%
-mega millions,+300%
 powerball drawing,+300%
+powerball ny,+300%
+mega millions,+250%
 powerball numbers,+150%
-powerball winning numbers,+140%
+powerball winning numbers,+130%
 texas powerball,+130%
-lotto numbers,+120%
 
 
 
