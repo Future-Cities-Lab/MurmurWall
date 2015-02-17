@@ -50,7 +50,10 @@ def main():
 
         particle_position += 1
 
-        led_port.write(led_state)
+        if platform.system() == "Darwin":
+            led_port.write(led_state)
+        else:
+            led_port.write(str(bytearray(led_state))
 
         # print led_state
 
