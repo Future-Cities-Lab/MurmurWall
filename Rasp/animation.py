@@ -23,7 +23,11 @@ def main():
 
     print get_available_ports()
 
-    led_port = serial.Serial(get_available_ports()[2], 115200, timeout=1)
+    if platform.system() == "Darwin":
+        led_port = serial.Serial(get_available_ports()[2], 115200, timeout=1)
+    else:
+        led_port = serial.Serial(get_available_ports()[0], 115200, timeout=1)
+       
 
     particle_position = 0
 
