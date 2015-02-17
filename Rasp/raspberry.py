@@ -8,6 +8,11 @@ import threading
 
 BAUD_RATE = 9600
 
+def get_available_ports():
+    print '\nHere are the available ports : \n'
+    pprint.PrettyPrinter(indent=4).pprint(glob.glob('/dev/tty[A-Za-z]*'))
+    return glob.glob('/dev/tty[A-Za-z]*')
+
 def main():
     """ Input: JSON file of trending words and related terms and conversation
         Does: Manages network of teensies, LEDs, runs animation 
@@ -16,27 +21,18 @@ def main():
     #Uncomment to run every 10 min.
     #threading.Timer(900.0, main).start()
 
-    # print '\nStarting up MurmurWall!\n'
+    print '\nGetting Teensy Ports......\n'
 
-    # avail_ports = glob.glob('/dev/tty[A-Za-z]*')
+    teensy_ports = [get_available_ports()[x] for x in range(0, 6)]
 
-    # print '\nHere are the available ports : \n'
+    print '\nHere are the teensy ports : \n'
+    pretty_printer.pprint(teensy_ports)
 
-    # pretty_printer = pprint.PrettyPrinter(indent=4)
-    # pretty_printer.pprint(avail_ports)
+    print '\nOpening ports.......\n'
 
-    # print '\nGetting Teensy Ports......\n'
+    serial_ports = [serial.Serial(port_name, BAUD_RATE, timeout=1) for port_name in teensy_ports]
 
-    # teensy_ports = [avail_ports[x] for x in range(0, 6)]
-
-    # print '\nHere are the teensy ports : \n'
-    # pretty_printer.pprint(teensy_ports)
-
-    # print '\nOpening ports.......\n'
-
-    # serial_ports = [serial.Serial(port_name, BAUD_RATE, timeout=1) for port_name in teensy_ports]
-
-    # print 'Serial ports succesfully opened!\n'
+    print 'Serial ports succesfully opened!\n'
 
     print '\nLoading backup data file.....\n'
     with open('Backup/backup.json') as backup_json_file:    
