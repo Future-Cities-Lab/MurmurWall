@@ -53,17 +53,8 @@ def main():
         if platform.system() == "Darwin":
             led_port.write(led_state)
         else:
-            led_port.write(str(bytearray(led_state))
+            led_port.write(str(bytearray(led_state)))
 
-        # print led_state
-
-        # out = ''
-        # while led_port.inWaiting() > 0:
-        #     out += led_port.read(1)
-        # if out is not '':
-        #     print '>> ' + out
-        #     print ''
-        
         time.sleep(0.116)
 
 
