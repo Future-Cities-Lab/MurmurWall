@@ -21,6 +21,8 @@ def main():
 
     led_state = [chr(x*0) for x in range(0, 3*57)]
 
+    print get_available_ports()
+
     led_port = serial.Serial(get_available_ports()[2], 115200, timeout=1)
 
     particle_position = 0
