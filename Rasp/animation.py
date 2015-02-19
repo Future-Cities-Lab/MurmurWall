@@ -61,75 +61,75 @@ def main():
     # else:
     #     led_port = serial.Serial(current_ports[0], BAUD_RATE, timeout=TIMEOUT)
     
-    if platform.system() == "Darwin":
-        for i in range(0, 2):
-            port = serial.Serial(current_ports[2+i], BAUD_RATE, timeout=TIMEOUT)
-            port.write('#')
-            time.sleep(0.116)
-            out = ''
-            while port.inWaiting() > 0:
-                out += port.read(1)
-            if out == '04:E9:E5:01:0C:F5':
-                led_port = port
-            elif out == '04:E9:E5:01:0C:E0':
-                matrix_port = port
+    # if platform.system() == "Darwin":
+    #     for i in range(0, 2):
+    #         port = serial.Serial(current_ports[2+i], BAUD_RATE, timeout=TIMEOUT)
+    #         port.write('#')
+    #         time.sleep(0.116)
+    #         out = ''
+    #         while port.inWaiting() > 0:
+    #             out += port.read(1)
+    #         if out == '04:E9:E5:01:0C:F5':
+    #             led_port = port
+    #         elif out == '04:E9:E5:01:0C:E0':
+    #             matrix_port = port
     
-    print '\nLED Port is : \n'
-    print led_port
-    print ''
+    # print '\nLED Port is : \n'
+    # print led_port
+    # print ''
 
-    print '\nMatrix Port is : \n'
-    print matrix_port
-    print ''
+    # print '\nMatrix Port is : \n'
+    # print matrix_port
+    # print ''
 
-    led_matrices = {28: LedMatrix(False, matrix_port, packets[0], 28)}
+    # led_matrices = {28: LedMatrix(False, matrix_port, packets[0], 28)}
 
-    led_strand = LedStrand(led_port)
+    # led_strand = LedStrand(led_port)
 
     #Manager Algorithm-1
 
-    while True:
+    # while True:
 
-        to_remove = []
+    #     to_remove = []
 
-        for packet in packets:
-            if not packet.text_being_displayed:
+    #     for packet in packets:
+    #         if not packet.text_being_displayed:
 
-                led_strand.clear_state()
+    #             led_strand.clear_state()
 
-                led_strand.color_state[3*packet.current_position] = packet.red
-                led_strand.color_state[3*packet.current_position + 1] = packet.green
-                led_strand.color_state[3*packet.current_position + 2] = packet.blue
+    #             led_strand.color_state[3*packet.current_position] = packet.red
+    #             led_strand.color_state[3*packet.current_position + 1] = packet.green
+    #             led_strand.color_state[3*packet.current_position + 2] = packet.blue
                 
-                packet.current_position += packet.speed
+    #             packet.current_position += packet.speed
 
-                if packet.current_position is packet.target_position:
-                    if packet.target_position is (NUM_PIXELS - 1):
-                        to_remove.append(packet)
-                        new_packet = get_new_packet(word_list)
-                        packets.append(new_packet)
-                        led_matrices[new_packet.target_position].packet = new_packet
-                    else:
-                        packet.text_being_displayed = True
-                        led_matrices[packet.target_position].is_showing_packet = True
-                        led_matrices[packet.target_position].update_hardware()
+    #             if packet.current_position is packet.target_position:
+    #                 if packet.target_position is (NUM_PIXELS - 1):
+    #                     to_remove.append(packet)
+    #                     new_packet = get_new_packet(word_list)
+    #                     packets.append(new_packet)
+    #                     led_matrices[new_packet.target_position].packet = new_packet
+    #                 else:
+    #                     packet.text_being_displayed = True
+    #                     led_matrices[packet.target_position].is_showing_packet = True
+    #                     led_matrices[packet.target_position].update_hardware()
 
 
-        # need to test method......
-        led_strand.update_hardware()
+    #     # need to test method......
+    #     led_strand.update_hardware()
         
-        for led_matrix in led_matrices.values():
-            if led_matrix.is_showing_packet:
-                if led_matrix.is_finished():
-                    led_matrix.is_showing_packet = False
-                    led_matrix.packet.text_being_displayed = False
-                    led_matrix.packet.target_position = get_next_available_matrix() 
-                    led_matrix.packet = None
+    #     for led_matrix in led_matrices.values():
+    #         if led_matrix.is_showing_packet:
+    #             if led_matrix.is_finished():
+    #                 led_matrix.is_showing_packet = False
+    #                 led_matrix.packet.text_being_displayed = False
+    #                 led_matrix.packet.target_position = get_next_available_matrix() 
+    #                 led_matrix.packet = None
 
-        for packet in to_remove:
-            packets.remove(packet)
+    #     for packet in to_remove:
+    #         packets.remove(packet)
 
-        time.sleep(0.116)
+    #     time.sleep(0.116)
 
 if __name__ == "__main__":
     print 'running main animation...'
