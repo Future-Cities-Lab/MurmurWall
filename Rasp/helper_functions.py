@@ -5,7 +5,7 @@ def get_available_ports():
     if platform.system() == "Darwin":
         return glob.glob('/dev/tty.*')
     else:
-        return glob.glob('/dev/tty[A-Za-z]*')
+        return glob.glob('/dev/tty*')
 
 def my_range(start, stop, step):
     while start < stop:
