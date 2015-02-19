@@ -80,6 +80,7 @@ def main():
             time.sleep(0.116)
             out = ''
             while port.inWaiting() > 0:
+                print "Happening"
                 out += port.read(1)
             if out == '04:E9:E5:01:0C:F5':
                 led_port = port
