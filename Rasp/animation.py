@@ -2,41 +2,72 @@ import serial
 import time
 import platform
 
-from random import randrange
+from random import randrange, choice
 
 from Packet import Packet
 from LedMatrix import LedMatrix
 from LedStrand import LedStrand
 
 from helper_functions import get_available_ports, my_range
+from data_manager import get_latest_data
 
 NUM_PIXELS = 57
 
 BAUD_RATE = 115200
 TIMEOUT = 1
 
-# these should stay in this script
-def get_new_packet():
-    return Packet(5, 1, chr(randrange(0,255)), chr(randrange(0,255)), chr(randrange(0,255)), 255, 'TestTextTESTETS\n', 0, 28, False)
+def get_new_packet(word_list):
+    """
+    Creates a new data packet to be used in MurmurWall
+    """
+    length = 5
+    speed = 1
+    red = chr(randrange(0, 255))
+    green = chr(randrange(0, 255))
+    blue = chr(randrange(0, 255))
+    bright = 255
+    text = choice(word_list).upper().encode('ascii','ignore') + '\n'
+    cur_pos = 0
+    tar_pos = 28
+    displaying = False
+    return Packet(length, speed, red, green, blue, bright, text, cur_pos, tar_pos, displaying)
 
 def get_next_available_matrix():
+    """
+    Returns the next available matrix in MurmurWall
+    """
     return 56
 
 def main():
+    """
+    Runs the main thread for MurmurWall
+    """
+    data = get_latest_data()
 
-    # Manager Variables
+    for topic in data:
+        word_list = [word for word in data[topic]["Top searches for"]]
+
     packets = []
-    packets.append(Packet(5, 1, chr(randrange(0,255)), chr(randrange(0,255)), chr(randrange(0,255)), 255, 'Suckers whut\n', 0, 28, False))
+    packets.append(get_new_packet(word_list))
 
-    print get_available_ports()
-    led_port = ''
-    matrix_port = ''
+    current_ports = get_available_ports()
+    print '\nCurrent Ports are : \n'
+    print current_ports
+    print ''
+
     if platform.system() == "Darwin":
-        led_port = serial.Serial(get_available_ports()[2], BAUD_RATE, timeout=TIMEOUT)
-        matrix_port = serial.Serial(get_available_ports()[3], BAUD_RATE, timeout=TIMEOUT)
+        led_port = serial.Serial(current_ports[2], BAUD_RATE, timeout=TIMEOUT)
+        matrix_port = serial.Serial(current_ports[3], BAUD_RATE, timeout=TIMEOUT)
     else:
-        led_port = serial.Serial(get_available_ports()[0], BAUD_RATE, timeout=TIMEOUT)
+        led_port = serial.Serial(current_ports[0], BAUD_RATE, timeout=TIMEOUT)
+    
+    print '\nLED Port is : \n'
     print led_port
+    print ''
+
+    print '\nMatrix Port is : \n'
+    print matrix_port
+    print ''
 
     led_matrices = {28: LedMatrix(False, matrix_port, packets[0], 28)}
 
@@ -62,7 +93,7 @@ def main():
                 if packet.current_position is packet.target_position:
                     if packet.target_position is (NUM_PIXELS - 1):
                         to_remove.append(packet)
-                        new_packet = get_new_packet()
+                        new_packet = get_new_packet(word_list)
                         packets.append(new_packet)
                         led_matrices[new_packet.target_position].packet = new_packet
                     else:

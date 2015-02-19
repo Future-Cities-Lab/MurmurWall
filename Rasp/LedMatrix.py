@@ -19,6 +19,7 @@ class LedMatrix(object):
     def update_hardware(self):
         if platform.system() == "Darwin":
             print 'Sending : ' + self.packet.text
+            print type(self.packet.text)
             self.port_address.write(self.packet.text)
         else:
             self.port_address.write(str(bytearray(self.packet.text)))
