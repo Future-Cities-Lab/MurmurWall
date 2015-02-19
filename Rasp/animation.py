@@ -61,26 +61,38 @@ def main():
     # else:
     #     led_port = serial.Serial(current_ports[0], BAUD_RATE, timeout=TIMEOUT)
     
-    # if platform.system() == "Darwin":
-    #     for i in range(0, 2):
-    #         port = serial.Serial(current_ports[2+i], BAUD_RATE, timeout=TIMEOUT)
-    #         port.write('#')
-    #         time.sleep(0.116)
-    #         out = ''
-    #         while port.inWaiting() > 0:
-    #             out += port.read(1)
-    #         if out == '04:E9:E5:01:0C:F5':
-    #             led_port = port
-    #         elif out == '04:E9:E5:01:0C:E0':
-    #             matrix_port = port
+    if platform.system() == "Darwin":
+        for i in range(0, 2):
+            port = serial.Serial(current_ports[2+i], BAUD_RATE, timeout=TIMEOUT)
+            port.write('#')
+            time.sleep(0.116)
+            out = ''
+            while port.inWaiting() > 0:
+                out += port.read(1)
+            if out == '04:E9:E5:01:0C:F5':
+                led_port = port
+            elif out == '04:E9:E5:01:0C:E0':
+                matrix_port = port
+    else:
+        for i in range(0, 2):
+            port = serial.Serial(current_ports[i], BAUD_RATE, timeout=TIMEOUT)
+            port.write('#')
+            time.sleep(0.116)
+            out = ''
+            while port.inWaiting() > 0:
+                out += port.read(1)
+            if out == '04:E9:E5:01:0C:F5':
+                led_port = port
+            elif out == '04:E9:E5:01:0C:E0':
+                matrix_port = port        
     
-    # print '\nLED Port is : \n'
-    # print led_port
-    # print ''
+    print '\nLED Port is : \n'
+    print led_port
+    print ''
 
-    # print '\nMatrix Port is : \n'
-    # print matrix_port
-    # print ''
+    print '\nMatrix Port is : \n'
+    print matrix_port
+    print ''
 
     # led_matrices = {28: LedMatrix(False, matrix_port, packets[0], 28)}
 
