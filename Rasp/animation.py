@@ -80,6 +80,7 @@ def main():
             time.sleep(0.116)
             out = ''
             while port.inWaiting() > 0:
+                print "Happening"
                 out += port.read(1)
                 print out
             print out
