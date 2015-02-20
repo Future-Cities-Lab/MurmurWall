@@ -2,15 +2,18 @@ class Packet(object):
     """
     A class used to create instances representing one data packet used in the MurmurWall system
     Variables:
-        length - Number of LEDs to cover
-        speed - Number of LEDs to move each turn
-        color - RGB tuple representing the color
-        brightness - initial brightness of the center pixel
+        length - number of LEDs this packet will cover
+        speed - number of LEDs this packet will move each turn
+        color - RGB tuple representing the color of this packet
+        brightness - brightness of the center pixel of this packet
         current_position - current LED the middle pixel is at in the strand
         target_position - which LED the packet is heading towards
         text_being_displayed - a state representing if this packet is being shown on an LED screen
     """
-    def __init__(self, length, speed, red, green, blue, brightness, text, current_position, target_position, text_being_displayed):
+    def __init__(self, length, speed, red,
+                 green, blue, brightness, text,
+                 current_position, target_position,
+                 text_being_displayed):
         self.length = length
         self.speed = speed
         self.red = red
