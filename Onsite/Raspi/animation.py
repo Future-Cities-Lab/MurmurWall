@@ -27,8 +27,8 @@ def get_new_packet(word_list):
     blue = chr(randrange(0, 255))
     bright = 255
     text = choice(word_list).upper().encode('ascii', 'ignore') + '\n'
-    cur_pos = 0
-    tar_pos = 28
+    cur_pos = 56
+    tar_pos = 1
     displaying = False
     return Packet(length, speed, red, green, blue, bright, text, cur_pos, tar_pos, displaying)
 
@@ -36,7 +36,7 @@ def get_next_available_matrix():
     """
     Returns the next available matrix in MurmurWall
     """
-    return 56
+    return 0
 
 def get_latest_words():
     """
@@ -103,16 +103,19 @@ def animate(packets, led_strand, word_list, led_matrices):
             # begin by 
             led_strand.clear_state()
             if not packet.text_being_displayed:
+                print packet.current_position
+                print packet.target_position
                 # need to make this array to include the pod.......
                 led_strand.color_state[3*packet.current_position] = packet.red
                 led_strand.color_state[3*packet.current_position + 1] = packet.green
                 led_strand.color_state[3*packet.current_position + 2] = packet.blue
 
-                packet.current_position += packet.speed
+                packet.current_position -= packet.speed
                 
                 if packet.current_position is packet.target_position:
                     
-                    if packet.target_position is (NUM_PIXELS - 1):
+                    if packet.target_position is 0:
+                        print 'toRemove'
                         to_remove.append(packet)
                         new_packet = get_new_packet(word_list)
                         packets.append(new_packet)
@@ -141,6 +144,7 @@ def animate(packets, led_strand, word_list, led_matrices):
         
         for packet in to_remove:
             packets.remove(packet)
+            print 'removed'
 
         time.sleep(0.116)
 
@@ -155,7 +159,7 @@ def main():
 
     led_port, matrix_port = get_ports()
 
-    led_matrices = {28: LedMatrix(False, matrix_port, packets[0], 28)}
+    led_matrices = {1: LedMatrix(False, matrix_port, packets[0], 1)}
 
     led_strand = LedStrand(led_port)
 
