@@ -112,18 +112,18 @@ def animate(packets, led_strand, word_list, led_matrices):
                 for i in range(1, strands):
                     
                     if 3 * (packet.current_position - i) >= 0:
-                        led_strand.color_state[3 * (packet.current_position - i)] = chr(int(packet.red/i))
-                        led_strand.color_state[3 * (packet.current_position - i) + 1] = chr(int(packet.green/i))
-                        led_strand.color_state[3 * (packet.current_position - i) + 2] = chr(int(packet.blue/i))
+                        led_strand.color_state[3 * (packet.current_position - i)] = chr(int(float(ord(packet.red))/i))
+                        led_strand.color_state[3 * (packet.current_position - i) + 1] = chr(int(float(ord(packet.green))/i))
+                        led_strand.color_state[3 * (packet.current_position - i) + 2] = chr(int(float(ord(packet.blue))/i))
 
                     if 3 * (packet.current_position + i) < (3*(NUM_PIXELS - 1)) - 2:
-                        led_strand.color_state[3 * (packet.current_position + i)] = chr(int(packet.red/i))
-                        led_strand.color_state[3 * (packet.current_position + i) + 1] = chr(int(packet.green/i))
-                        led_strand.color_state[3 * (packet.current_position + i) + 2] = chr(int(packet.blue/i))               
+                        led_strand.color_state[3 * (packet.current_position + i)] = chr(int(float(ord(packet.red))/i))
+                        led_strand.color_state[3 * (packet.current_position + i) + 1] = chr(int(float(ord(packet.green))/i))
+                        led_strand.color_state[3 * (packet.current_position + i) + 2] = chr(int(float(ord(packet.blue))/i))          
 
-                    led_strand.color_state[3*packet.current_position] = chr(int(packet.red/i))
-                    led_strand.color_state[3*packet.current_position + 1] = chr(int(packet.green/i))
-                    led_strand.color_state[3*packet.current_position + 2] = chr(int(packet.blue/i))
+                    led_strand.color_state[3*packet.current_position] = chr(int(float(ord(packet.red))/i))
+                    led_strand.color_state[3*packet.current_position + 1] = chr(int(float(ord(packet.green))/i))
+                    led_strand.color_state[3*packet.current_position + 2] = chr(int(float(ord(packet.blue))/i))
 
 
 
