@@ -16,17 +16,20 @@ NUM_PIXELS = 57
 BAUD_RATE = 115200
 TIMEOUT = 1
 
+def map_values(value, i_start, i_stop, o_start, o_stop): 
+    return o_start + (o_stop - o_start) * ((value - i_start) / (i_stop - i_start))
+
 def get_new_packet(word_list):
     """
     Creates a new data packet to be used in MurmurWall
     """
-    speed = 1
     red = chr(randrange(0, 255))
     green = chr(randrange(0, 255))
     blue = chr(randrange(0, 255))
     bright = 255
     text = choice(word_list).upper().encode('ascii', 'ignore') + '\n'
     length = len(text)
+    speed = int(map_values(float(ord(red)), 0.0, 255.0, 1.0, 6.0))
     cur_pos = 56
     tar_pos = 1
     displaying = False
@@ -126,7 +129,7 @@ def animate(packets, led_strand, word_list, led_matrices):
 
                 packet.current_position -= packet.speed
                 
-                if packet.current_position is packet.target_position:
+                if packet.current_position <= packet.target_position:
                     
                     if packet.target_position is 0:
                         #print 'toRemove'
@@ -171,13 +174,13 @@ def main():
 
     packets = [get_new_packet(word_list) for i in range(1)]
 
-    led_port, matrix_port = get_ports()
+    # led_port, matrix_port = get_ports()
 
-    led_matrices = {1: LedMatrix(False, matrix_port, packets[0], 1)}
+    # led_matrices = {1: LedMatrix(False, matrix_port, packets[0], 1)}
 
-    led_strand = LedStrand(led_port)
+    # led_strand = LedStrand(led_port)
 
-    animate(packets, led_strand, word_list, led_matrices)
+    # animate(packets, led_strand, word_list, led_matrices)
 
 
 if __name__ == "__main__":
