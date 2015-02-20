@@ -118,7 +118,7 @@ def animate(packets, led_strand, word_list, led_matrices):
                         led_strand.color_state[3 * (packet.current_position + i) + 1] = packet.green
                         led_strand.color_state[3 * (packet.current_position + i) + 2] = packet.blue                  
 
-                if strands % 2 is 0:
+                if strands % 2 is not 0:
                     led_strand.color_state[3*packet.current_position] = packet.red
                     led_strand.color_state[3*packet.current_position + 1] = packet.green
                     led_strand.color_state[3*packet.current_position + 2] = packet.blue
