@@ -30,8 +30,8 @@ def get_new_packet(word_list):
     text = choice(word_list).upper().encode('ascii', 'ignore') + '\n'
     length = len(text)
     speed = int(map_values(float(ord(red)), 0.0, 255.0, 1.0, 6.0))
-    cur_pos = 56
-    tar_pos = 1
+    cur_pos = 0
+    tar_pos = 55
     displaying = False
     return Packet(length, speed, red, green, blue, bright, text, cur_pos, tar_pos, displaying)
 
@@ -39,7 +39,7 @@ def get_next_available_matrix():
     """
     Returns the next available matrix in MurmurWall
     """
-    return 0
+    return 57
 
 def get_latest_words():
     """
@@ -127,11 +127,11 @@ def animate(packets, led_strand, word_list, led_matrices):
 
 
 
-                packet.current_position -= packet.speed
+                packet.current_position += packet.speed
                 
-                if packet.current_position <= packet.target_position:
+                if packet.current_position >= packet.target_position:
                     
-                    if packet.target_position is 0:
+                    if packet.target_position is NUM_PIXELS - 1:
                         #print 'toRemove'
                         to_remove.append(packet)
                         new_packet = get_new_packet(word_list)
