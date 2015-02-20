@@ -20,13 +20,13 @@ def get_new_packet(word_list):
     """
     Creates a new data packet to be used in MurmurWall
     """
-    length = 5
     speed = 1
     red = chr(randrange(0, 255))
     green = chr(randrange(0, 255))
     blue = chr(randrange(0, 255))
     bright = 255
     text = choice(word_list).upper().encode('ascii', 'ignore') + '\n'
+    length = len(text)
     cur_pos = 56
     tar_pos = 1
     displaying = False
@@ -100,22 +100,35 @@ def animate(packets, led_strand, word_list, led_matrices):
         
         for packet in packets:
 
-            # begin by 
             led_strand.clear_state()
+            
             if not packet.text_being_displayed:
-                print packet.current_position
-                print packet.target_position
-                # need to make this array to include the pod.......
-                led_strand.color_state[3*packet.current_position] = packet.red
-                led_strand.color_state[3*packet.current_position + 1] = packet.green
-                led_strand.color_state[3*packet.current_position + 2] = packet.blue
+                
+                strands = packet.length/2
+                
+                for i in range(1, strands):
+                    
+                    if 3 * (packet.current_position - i) >= 0:
+                        led_strand.color_state[3 * (packet.current_position - i)] = packet.red
+                        led_strand.color_state[3 * (packet.current_position - i) + 1] = packet.green
+                        led_strand.color_state[3 * (packet.current_position - i) + 2] = packet.blue
+
+                    if 3 * (packet.current_position + i) < (3*(NUM_PIXELS - 1)) - 2:
+                        led_strand.color_state[3 * (packet.current_position + i)] = packet.red
+                        led_strand.color_state[3 * (packet.current_position + i) + 1] = packet.green
+                        led_strand.color_state[3 * (packet.current_position + i) + 2] = packet.blue                  
+
+                if strands % 2 is 0:
+                    led_strand.color_state[3*packet.current_position] = packet.red
+                    led_strand.color_state[3*packet.current_position + 1] = packet.green
+                    led_strand.color_state[3*packet.current_position + 2] = packet.blue
 
                 packet.current_position -= packet.speed
                 
                 if packet.current_position is packet.target_position:
                     
                     if packet.target_position is 0:
-                        print 'toRemove'
+                        #print 'toRemove'
                         to_remove.append(packet)
                         new_packet = get_new_packet(word_list)
                         packets.append(new_packet)
