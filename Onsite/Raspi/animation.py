@@ -103,8 +103,8 @@ def animate(packets, led_strand, word_list, led_matrices):
             # begin by 
             led_strand.clear_state()
             if not packet.text_being_displayed:
-                print packet.current_position
-                print packet.target_position
+                #print packet.current_position
+                #print packet.target_position
                 # need to make this array to include the pod.......
                 led_strand.color_state[3*packet.current_position] = packet.red
                 led_strand.color_state[3*packet.current_position + 1] = packet.green
@@ -115,7 +115,7 @@ def animate(packets, led_strand, word_list, led_matrices):
                 if packet.current_position is packet.target_position:
                     
                     if packet.target_position is 0:
-                        print 'toRemove'
+                        #print 'toRemove'
                         to_remove.append(packet)
                         new_packet = get_new_packet(word_list)
                         packets.append(new_packet)
