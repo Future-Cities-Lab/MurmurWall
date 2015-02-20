@@ -174,13 +174,13 @@ def main():
 
     packets = [get_new_packet(word_list) for i in range(1)]
 
-    # led_port, matrix_port = get_ports()
+    led_port, matrix_port = get_ports()
 
-    # led_matrices = {1: LedMatrix(False, matrix_port, packets[0], 1)}
+    led_matrices = {1: LedMatrix(False, matrix_port, packets[0], 1)}
 
-    # led_strand = LedStrand(led_port)
+    led_strand = LedStrand(led_port)
 
-    # animate(packets, led_strand, word_list, led_matrices)
+    animate(packets, led_strand, word_list, led_matrices)
 
 
 if __name__ == "__main__":
