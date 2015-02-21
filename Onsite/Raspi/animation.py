@@ -11,7 +11,7 @@ from LedStrand import LedStrand
 from helper_functions import get_available_ports
 from data_manager import get_latest_data
 
-NUM_PIXELS = 57 + 40
+NUM_PIXELS = 76
 
 BAUD_RATE = 115200
 TIMEOUT = 1
@@ -31,7 +31,7 @@ def get_new_packet(word_list):
     length = len(text)
     speed = int(map_values(float(ord(red)), 0.0, 255.0, 1.0, 6.0))
     cur_pos = 0
-    tar_pos = 56
+    tar_pos = 75
     displaying = False
     return Packet(length, speed, red, green, blue, bright, text, cur_pos, tar_pos, displaying)
 
@@ -39,7 +39,7 @@ def get_next_available_matrix():
     """
     Returns the next available matrix in MurmurWall
     """
-    return 96
+    return 76
 
 def get_latest_words():
     """
@@ -177,7 +177,7 @@ def main():
 
     led_port, matrix_port = get_ports()
 
-    led_matrices = {1: LedMatrix(False, matrix_port, packets[0], 1)}
+    led_matrices = {75: LedMatrix(False, matrix_port, packets[0], 75)}
 
     led_strand = LedStrand(led_port)
 
