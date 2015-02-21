@@ -132,20 +132,21 @@ def animate(packets, led_strand, word_list, led_matrices):
                 if packet.current_position >= packet.target_position:
                     
                     if packet.target_position is NUM_PIXELS - 1:
-                        #print 'toRemove'
+                        print 'toRemove'
                         to_remove.append(packet)
                         new_packet = get_new_packet(word_list)
                         packets.append(new_packet)
                         led_matrices[new_packet.target_position].packet = new_packet
                     else:
+                        print 'toMatrix'
                         packet.text_being_displayed = True
                         led_matrices[packet.target_position].is_showing_packet = True
                         led_matrices[packet.target_position].update_hardware()
             else:
-                led_strand.clear_state()
-                # led_strand.color_state[3*packet.current_position] = chr(0)
-                # led_strand.color_state[3*packet.current_position + 1] = chr(0)
-                # led_strand.color_state[3*packet.current_position + 2] = chr(0)
+                #led_strand.clear_state()
+                led_strand.color_state[3*packet.current_position] = chr(0)
+                led_strand.color_state[3*packet.current_position + 1] = chr(0)
+                led_strand.color_state[3*packet.current_position + 2] = chr(0)
                 # need to make this array to include the pod.......
 
         # send the new state to the the LED teensy
