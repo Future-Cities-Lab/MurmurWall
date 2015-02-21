@@ -12,7 +12,7 @@ class LedStrand(object):
         port_number - the port number the LED hardware communicates over
     """
     def __init__(self, port_address):
-        self.color_state = [chr(x*0) for x in range(0, 3*56)]
+        self.color_state = [chr(x*0) for x in range(0, 3*97)]
         self.port_address = port_address
 
     def update_hardware(self):
@@ -41,7 +41,7 @@ class LedStrand(object):
         clears the color state (sets all RGB values to black)
         """
         # TODO: make this more clever
-        self.color_state = [chr(x*0) for x in range(0, 3*56)]
+        self.color_state = [chr(x*0) for x in range(0, 3*97)]
 
 
 
