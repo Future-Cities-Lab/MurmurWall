@@ -11,7 +11,7 @@ from LedStrand import LedStrand
 from helper_functions import get_available_ports
 from data_manager import get_latest_data
 
-NUM_PIXELS = 57
+NUM_PIXELS = 57 + 40
 
 BAUD_RATE = 115200
 TIMEOUT = 1
@@ -31,7 +31,7 @@ def get_new_packet(word_list):
     length = len(text)
     speed = int(map_values(float(ord(red)), 0.0, 255.0, 1.0, 6.0))
     cur_pos = 0
-    tar_pos = 55
+    tar_pos = 56
     displaying = False
     return Packet(length, speed, red, green, blue, bright, text, cur_pos, tar_pos, displaying)
 
@@ -39,7 +39,7 @@ def get_next_available_matrix():
     """
     Returns the next available matrix in MurmurWall
     """
-    return 57
+    return 96
 
 def get_latest_words():
     """
@@ -76,7 +76,7 @@ def get_ports():
         while port.inWaiting() > 0:
             out += port.read(1)
             print out
-        if out == '04:E9:E5:01:0C:F5':
+        if out == '04:E9:E5:00:EC:51':
             led_port = port
         elif out == '04:E9:E5:01:0C:E0':
             matrix_port = port     
@@ -142,9 +142,10 @@ def animate(packets, led_strand, word_list, led_matrices):
                         led_matrices[packet.target_position].is_showing_packet = True
                         led_matrices[packet.target_position].update_hardware()
             else:
-                led_strand.color_state[3*packet.current_position] = chr(0)
-                led_strand.color_state[3*packet.current_position + 1] = chr(0)
-                led_strand.color_state[3*packet.current_position + 2] = chr(0)
+                led_strand.clear_state()
+                # led_strand.color_state[3*packet.current_position] = chr(0)
+                # led_strand.color_state[3*packet.current_position + 1] = chr(0)
+                # led_strand.color_state[3*packet.current_position + 2] = chr(0)
                 # need to make this array to include the pod.......
 
         # send the new state to the the LED teensy
