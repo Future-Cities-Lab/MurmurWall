@@ -13,7 +13,7 @@ def get_latest_data():
     #threading.Timer(900.0, main).start()
     print '\nLoading backup data file.....\n'
 
-    with open('Backup/backup.json') as backup_json_file:    
+    with open('/home/pi/FutureCities/MurmurWall/Onsite/Raspi/Backup/backup.json') as backup_json_file:    
         current_json = json.load(backup_json_file)
 
     print 'Backup data: \n'
@@ -26,7 +26,7 @@ def get_latest_data():
         print 'Success (200) in downloading data\n'
         current_json = response.json()
         print 'Backing up data\n'
-        with open('Backup/backup.json', 'w') as backup_json:
+        with open('/home/pi/FutureCities/MurmurWall/Onsite/Raspi/Backup/backup.json', 'w') as backup_json:
             json.dump(current_json, backup_json)
     else: 
         print 'Error (' + response.status_code + ') was a problem getting the data\n'

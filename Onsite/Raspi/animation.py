@@ -110,6 +110,7 @@ def animate(packets, led_strand, word_list, led_matrices):
                 strands = packet.length/2
                 
                 for i in range(1, strands):
+                    print packet.current_position
                     
                     if 3 * (packet.current_position - i) >= 0:
                         led_strand.color_state[3 * (packet.current_position - i)] = chr(int(float(ord(packet.red))/(i*2)))
@@ -140,10 +141,12 @@ def animate(packets, led_strand, word_list, led_matrices):
                     else:
                         print 'toMatrix'
                         packet.text_being_displayed = True
+                        led_matrices[packet.target_position].packet.current_position = led_matrices[packet.target_position].position
                         led_matrices[packet.target_position].is_showing_packet = True
                         led_matrices[packet.target_position].update_hardware()
             else:
-                #led_strand.clear_state()
+                led_strand.clear_state()
+                print packet.current_position
                 led_strand.color_state[3*packet.current_position] = chr(0)
                 led_strand.color_state[3*packet.current_position + 1] = chr(0)
                 led_strand.color_state[3*packet.current_position + 2] = chr(0)
