@@ -1,7 +1,6 @@
 # TODO: Make this a singleton
 
 import serial
-
 import platform
 
 class LedStrand(object):
@@ -11,8 +10,9 @@ class LedStrand(object):
         color_state - state representing the next color state to send to the LED hardware
         port_number - the port number the LED hardware communicates over
     """
-    def __init__(self, port_address):
-        self.color_state = [chr(x*0) for x in range(0, 3*76)]
+    def __init__(self, port_address, num_pixels):
+        self.num_pixels = num_pixels
+        self.color_state = [chr(0)] * (3*self.num_pixels)
         self.port_address = port_address
 
     def update_hardware(self):
@@ -40,8 +40,4 @@ class LedStrand(object):
         """
         clears the color state (sets all RGB values to black)
         """
-        # TODO: make this more clever
-        self.color_state = [chr(x*0) for x in range(0, 3*76)]
-
-
-
+        self.color_state = [chr(0)] * 3*self.num_pixels

@@ -1,95 +1,73 @@
-import serial
 import time
-import platform
 
-from random import randrange, choice
+from random import randrange, choice, randint
 
 from Packet import Packet
 from LedMatrix import LedMatrix
 from LedStrand import LedStrand
 
-from helper_functions import get_available_ports
-from data_manager import get_latest_data
+from helper_functions import map_values, get_ports
+from data_manager import get_latest_words
 
-NUM_PIXELS = 76
+NUM_PIXELS = 360
+TOTAL_PIXELS = NUM_PIXELS
 
-BAUD_RATE = 115200
-TIMEOUT = 1
+START_PIX = 0
+END_PIX = 299 
 
-def map_values(value, i_start, i_stop, o_start, o_stop): 
-    return o_start + (o_stop - o_start) * ((value - i_start) / (i_stop - i_start))
+MATRIX_POS = 149
 
-def get_new_packet(word_list):
+MAX_SPEED = 4.0
+MIN_SPEED = 1.0
+
+MAX_SPEED_LED = 40
+MIN_SPEED_LED = 50
+
+NUM_PACKETS = 4
+
+WAIT_TIME = 0.216
+
+def get_new_packet(word_list, speed):
     """
     Creates a new data packet to be used in MurmurWall
     """
     red = chr(randrange(0, 255))
-    green = chr(randrange(0, 255))
-    blue = chr(randrange(0, 255))
+    green = 0
+    blue = 255
     bright = 255
     text = choice(word_list).upper().encode('ascii', 'ignore') + '\n'
     length = len(text)
-    speed = int(map_values(float(ord(red)), 0.0, 255.0, 1.0, 6.0))
-    cur_pos = 0
-    tar_pos = 74
+    if length % 2 == 0:
+        length += 1
+    cur_pos = START_PIX
+    tar_pos = MATRIX_POS
+    prev_tar_pos = START_PIX
     displaying = False
-    return Packet(length, speed, red, green, blue, bright, text, cur_pos, tar_pos, displaying)
+    return Packet(length, speed, red, green, blue, bright, text, cur_pos, tar_pos, prev_tar_pos, displaying)
 
-def get_next_available_matrix():
+def get_next_available_matrix(led_matrices):
     """
     Returns the next available matrix in MurmurWall
     """
-    return 75
+    # if led_matrices[MATRIX_POS].is_showing_packet:
+    #     return END_PIX
+    # else:
+    return END_PIX
 
-def get_latest_words():
+
+def test_leds(led_strand):
     """
-    Returns a list of latetest cool guy words
+    Input: LED Strand to test
+    Runs: Sends a single data ant through system. 
     """
-    data = get_latest_data()
+    for i in range(0, TOTAL_PIXELS):
+        led_strand.clear_state()
+        led_strand.color_state[3*i] = chr(255)
+        led_strand.update_hardware()
+        time.sleep(WAIT_TIME)
 
-    for topic in data:
-        word_list = [word for word in data[topic]["Top searches for"]]
-
-    return word_list
-
-def get_ports():
-    """
-    Returns the correct ports to be used by the hardware
-    """
-    current_ports = get_available_ports()
-    print '\nCurrent Ports are : \n'
-    print current_ports
-    print ''
-    
-    for i in range(0, 2):
-        if platform.system() == "Darwin":
-            pos = 2+i
-        else:
-            pos = i
-        port = serial.Serial(current_ports[pos], BAUD_RATE, timeout=TIMEOUT)
-        time.sleep(0.116)
-        port.flushInput()
-        port.flushOutput()
-        port.write('#')
-        time.sleep(0.216)
-        out = ''
-        while port.inWaiting() > 0:
-            out += port.read(1)
-            print out
-        if out == '04:E9:E5:00:EC:51':
-            led_port = port
-        elif out == '04:E9:E5:01:0C:E0':
-            matrix_port = port     
-    
-    print '\nLED Port is : \n'
-    print led_port
-    print ''
-
-    print '\nMatrix Port is : \n'
-    print matrix_port
-    print ''
-
-    return led_port, matrix_port
+def lerp(c2, c1, amt):
+    return round(c1 + (c2-c1)*amt)
 
 def animate(packets, led_strand, word_list, led_matrices):
     """
@@ -100,75 +78,88 @@ def animate(packets, led_strand, word_list, led_matrices):
     while True:
         
         to_remove = []
+        to_append = 0
         
+        led_strand.clear_state()
         for packet in packets:
-
-            led_strand.clear_state()
             
+            print "This packet is : " + str(packet.length)
+
             if not packet.text_being_displayed:
+                print "Moving, at pixel : " + str(packet.current_position) + ' and heading to : ' + str(packet.target_position) + '\n'
                 
                 strands = packet.length/2
                 
                 for i in range(1, strands):
-                    print packet.current_position
                     
-                    if 3 * (packet.current_position - i) >= 0:
-                        led_strand.color_state[3 * (packet.current_position - i)] = chr(int(float(ord(packet.red))/(i*2)))
-                        led_strand.color_state[3 * (packet.current_position - i) + 1] = chr(int(float(ord(packet.green))/(i*2)))
-                        led_strand.color_state[3 * (packet.current_position - i) + 2] = chr(int(float(ord(packet.blue))/(i*2)))
+                    if packet.current_position - i > packet.prev_target_position:
+                        led_strand.color_state[3 * (packet.current_position - i)] = chr(int(lerp(float(ord(packet.red)), 0.0, 1.0-float(i)/float(strands))))
+                        led_strand.color_state[3 * (packet.current_position - i) + 1] = chr(int(lerp(float(ord(packet.green)), 0.0, 1.0-float(i)/float(strands))))
+                        led_strand.color_state[3 * (packet.current_position - i) + 2] = chr(int(lerp(float(ord(packet.blue)), 0.0, 1.0-float(i)/float(strands))))
 
-                    if 3 * (packet.current_position + i) < (3*(NUM_PIXELS - 1)) - 2:
-                        led_strand.color_state[3 * (packet.current_position + i)] = chr(int(float(ord(packet.red))/(i*2)))
-                        led_strand.color_state[3 * (packet.current_position + i) + 1] = chr(int(float(ord(packet.green))/(i*2)))
-                        led_strand.color_state[3 * (packet.current_position + i) + 2] = chr(int(float(ord(packet.blue))/(i*2)))          
+                    if packet.current_position + i < packet.target_position:
+                        led_strand.color_state[3 * (packet.current_position + i)] = chr(int(lerp(float(ord(packet.red)), 0.0, 1.0-float(i)/float(strands))))
+                        led_strand.color_state[3 * (packet.current_position + i) + 1] = chr(int(lerp(float(ord(packet.green)), 0.0, 1.0-float(i)/float(strands))))
+                        led_strand.color_state[3 * (packet.current_position + i) + 2] = chr(int(lerp(float(ord(packet.blue)), 0.0, 1.0-float(i)/float(strands))))    
 
                 led_strand.color_state[3*packet.current_position] = packet.red
                 led_strand.color_state[3*packet.current_position + 1] = packet.green
                 led_strand.color_state[3*packet.current_position + 2] = packet.blue
 
-
-
                 packet.current_position += packet.speed
                 
                 if packet.current_position >= packet.target_position:
                     
-                    if packet.target_position is NUM_PIXELS - 1:
-                        print 'toRemove'
-                        to_remove.append(packet)
-                        new_packet = get_new_packet(word_list)
-                        packets.append(new_packet)
-                        led_matrices[new_packet.target_position].packet = new_packet
-                    else:
-                        print 'toMatrix'
-                        packet.text_being_displayed = True
-                        led_matrices[packet.target_position].packet.current_position = led_matrices[packet.target_position].position
-                        led_matrices[packet.target_position].is_showing_packet = True
-                        led_matrices[packet.target_position].update_hardware()
-            else:
-                led_strand.clear_state()
-                print packet.current_position
-                led_strand.color_state[3*packet.current_position] = chr(0)
-                led_strand.color_state[3*packet.current_position + 1] = chr(0)
-                led_strand.color_state[3*packet.current_position + 2] = chr(0)
-                # need to make this array to include the pod.......
+                    print 'Data ant reached matrix : ' + str(packet.target_position)
 
-        # send the new state to the the LED teensy
+                    if packet.target_position == END_PIX:
+                        print 'Data ant is to be removed'
+                        to_remove.append(packet)
+                        to_append += 1
+                    else:
+                        if not led_matrices[packet.target_position].is_showing_packet:
+                            print 'Sending ant to matrix'
+                            packet.text_being_displayed = True
+                            packet.current_position = led_matrices[packet.target_position].position
+                            led_matrices[packet.target_position].is_showing_packet = True
+                            led_matrices[packet.target_position].packet = packet
+                            text_speed = int(map_values(float(packet.speed), MAX_SPEED, MIN_SPEED, MIN_SPEED_LED, MAX_SPEED_LED))
+                            led_matrices[packet.target_position].update_hardware(packet.red, packet.green, packet.blue, text_speed)
+                        else:
+                            packet.prev_target_position = MATRIX_POS
+                            packet.target_position = END_PIX
+                            packet.current_position = MATRIX_POS + 1
+            else:
+                print 'Inside matrix, at position : ' + str(packet.current_position)
+                for i in range(0, 5):
+                    pos = 300 + (i*12)
+                    led_strand.color_state[3*pos] = packet.red
+                    led_strand.color_state[3*pos + 1] = packet.green
+                    led_strand.color_state[3*pos + 2] = packet.blue
+
         led_strand.update_hardware()        
         
-        # listen for responses from the matrices
         for led_matrix in led_matrices.values():
-            if led_matrix.is_showing_packet:
-                if led_matrix.is_finished():
-                    led_matrix.is_showing_packet = False
-                    led_matrix.packet.text_being_displayed = False
-                    led_matrix.packet.target_position = get_next_available_matrix() 
-                    led_matrix.packet = None
+            if led_matrix.is_showing_packet and led_matrix.is_finished():
+                print '\nsending data ant to next matrix'
+                led_matrix.is_showing_packet = False
+                led_matrix.packet.text_being_displayed = False
+                print "Adjusting packet " + str(led_matrix.packet.length)
+                led_matrix.packet.current_position = led_matrix.position + 1
+                print 'getting next matrix\n'
+                led_matrix.packet.prev_target_position = MATRIX_POS 
+                led_matrix.packet.target_position = get_next_available_matrix(led_matrices) 
+                led_matrix.packet = None
         
         for packet in to_remove:
+            print 'Removing data ant'
             packets.remove(packet)
-            print 'removed'
 
-        time.sleep(0.116)
+        for i in range(0, to_append):
+            packets.append(get_new_packet(word_list, randint(int(MIN_SPEED), int(MAX_SPEED))))
+
+
+        time.sleep(WAIT_TIME)
 
 
 def main():
@@ -177,16 +168,19 @@ def main():
     """
     word_list = get_latest_words()
 
-    packets = [get_new_packet(word_list) for i in range(1)]
+    packets = []
+    for i in range(1, NUM_PACKETS+1):
+        packets.append(get_new_packet(word_list, i))
 
     led_port, matrix_port = get_ports()
 
-    led_matrices = {74: LedMatrix(False, matrix_port, packets[0], 74)}
+    led_matrices = {MATRIX_POS: LedMatrix(False, matrix_port, None, MATRIX_POS)}
 
-    led_strand = LedStrand(led_port)
+    led_strand = LedStrand(led_port, TOTAL_PIXELS)
 
     animate(packets, led_strand, word_list, led_matrices)
 
+    #test_leds(led_strand)
 
 if __name__ == "__main__":
     print 'running main animation...'

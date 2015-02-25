@@ -3,6 +3,18 @@ import pprint
 import requests
 import json
 import threading
+import platform
+
+def get_latest_words():
+    """
+    Returns a list of latetest cool-guy words
+    """
+    data = get_latest_data()
+
+    for topic in data:
+        word_list = [word for word in data[topic]["Top searches for"]]
+
+    return word_list
 
 def get_latest_data():
     """ Input: JSON file of trending words and related terms and conversation
@@ -11,9 +23,13 @@ def get_latest_data():
 
     #Uncomment to run every 10 min.
     #threading.Timer(900.0, main).start()
-    print '\nLoading backup data file.....\n'
 
-    with open('/home/pi/FutureCities/MurmurWall/Onsite/Raspi/Backup/backup.json') as backup_json_file:    
+    print '\nLoading backup data file.....\n'
+    if platform.system() == "Darwin":
+        backup_file = 'Backup/backup.json'
+    else:
+        backup_file = '/home/pi/FutureCities/MurmurWall/Onsite/Raspi/Backup/backup.json'  
+    with open(backup_file) as backup_json_file:    
         current_json = json.load(backup_json_file)
 
     print 'Backup data: \n'
@@ -26,10 +42,15 @@ def get_latest_data():
         print 'Success (200) in downloading data\n'
         current_json = response.json()
         print 'Backing up data\n'
-        with open('/home/pi/FutureCities/MurmurWall/Onsite/Raspi/Backup/backup.json', 'w') as backup_json:
+
+        if platform.system() == "Darwin":
+            backup_location = 'Backup/backup.json'
+        else:
+            backup_location = '/home/pi/FutureCities/MurmurWall/Onsite/Raspi/Backup/backup.json'
+        with open(backup_location, 'w') as backup_json:
             json.dump(current_json, backup_json)
     else: 
-        print 'Error (' + response.status_code + ') was a problem getting the data\n'
+        print 'Error (' + response.status_code + ')\n'
         print 'Using backup.json'
 
     print 'Current data: \n'

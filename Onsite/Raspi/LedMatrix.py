@@ -16,14 +16,22 @@ class LedMatrix(object):
         self.packet = packet
         self.position = position
 
-    def update_hardware(self):
+    def update_hardware(self, red, green, blue, text_speed):
         """
         Updates the Matrix with the new word to display
         """
         if platform.system() == "Darwin":
             print 'Sending : ' + self.packet.text
+            self.port_address.write(red)
+            self.port_address.write(green)
+            self.port_address.write(blue)
+            self.port_address.write(chr(text_speed))
             self.port_address.write(self.packet.text)
         else:
+            self.port_address.write(str(bytearray(red)))
+            self.port_address.write(str(bytearray(green)))
+            self.port_address.write(str(bytearray(blue)))  
+            self.port_address.write(str(bytearray(text_speed)))                        
             self.port_address.write(str(bytearray(self.packet.text)))
 
     def is_finished(self):
