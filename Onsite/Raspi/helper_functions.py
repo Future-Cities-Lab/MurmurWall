@@ -31,11 +31,11 @@ def get_ports():
         else:
             pos = i
         port = serial.Serial(current_ports[pos], BAUD_RATE, timeout=TIMEOUT)
-        time.sleep(0.116)
+        time.sleep(1.516)
         port.flushInput()
         port.flushOutput()
         port.write('#')
-        time.sleep(0.216)
+        time.sleep(1.516)
         out = ''
         print "Reading MAC Address...."
         while port.inWaiting() > 0:
@@ -70,4 +70,12 @@ def map_values(value, i_start, i_stop, o_start, o_stop):
     Ouput: A mapping of the input to the output values
     """
     return o_start + (o_stop - o_start) * ((value - i_start) / (i_stop - i_start))
+
+def lerp(color2, color1, amt):
+    """
+    c1,c2 - Colors to interpolate between
+    amt - amount of interpolation
+    Returns: interpotalted color
+    """
+    return round(color1 + (color2-color1)*amt)
         
