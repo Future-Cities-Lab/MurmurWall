@@ -13,7 +13,8 @@ class Packet(object):
     def __init__(self, length, speed, red,
                  green, blue, brightness, text,
                  current_position, target_position,
-                 prev_target_position, text_being_displayed):
+                 prev_target_position, text_being_displayed, theta,
+                 is_passsing, passing_pos):
         self.length = length
         self.speed = speed
         self.red = red
@@ -25,4 +26,6 @@ class Packet(object):
         self.prev_target_position = prev_target_position
         self.target_position = target_position
         self.text_being_displayed = text_being_displayed
-        
+        self.theta = theta
+        self.is_passsing = is_passsing
+        self.passing_pos = passing_pos
