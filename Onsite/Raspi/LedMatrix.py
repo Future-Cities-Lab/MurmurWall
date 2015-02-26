@@ -28,10 +28,10 @@ class LedMatrix(object):
             self.port_address.write(chr(text_speed))
             self.port_address.write(self.packet.text)
         else:
-            self.port_address.write(str(bytearray(red)))
-            self.port_address.write(str(bytearray(green)))
-            self.port_address.write(str(bytearray(blue)))  
-            self.port_address.write(str(bytearray(text_speed)))                        
+            self.port_address.write(red)
+            self.port_address.write(green)
+            self.port_address.write(blue)  
+            self.port_address.write(chr(text_speed))                        
             self.port_address.write(str(bytearray(self.packet.text)))
 
     def is_finished(self):

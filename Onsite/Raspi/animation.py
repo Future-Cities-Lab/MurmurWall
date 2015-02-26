@@ -33,6 +33,9 @@ WAIT_TIME = 0.076
 
 POD_AMT = 0.4
 
+LED_START_PERCENT = [100,50,25,0]
+LED_DIFF = [50,25,12,6]
+
 def get_new_packet(word_list, speed):
     """
     Creates a new data packet to be used in MurmurWall
@@ -90,21 +93,22 @@ def send_packet_to_end(packet):
     packet.current_position = MATRIX_POS + 1
 
 def color_strand_for_packet(led_strand, packet):
-    strands = packet.length/2
-    led_strand.color_state[3*packet.current_position] = packet.red
-    led_strand.color_state[3*packet.current_position + 1] = packet.green
-    led_strand.color_state[3*packet.current_position + 2] = packet.blue
+    
+    #strands = packet.length/2
+    #led_strand.color_state[3*packet.current_position] = packet.red
+    #led_strand.color_state[3*packet.current_position + 1] = packet.green
+    #led_strand.color_state[3*packet.current_position + 2] = packet.blue
 
-    # for i in range(1, strands):
-    #     if packet.current_position - i > packet.prev_target_position:
-    #         led_strand.color_state[3 * (packet.current_position - i)] = chr(int(lerp(float(ord(packet.red)), FADE_COLOR, 1.0-float(i)/float(strands))))
-    #         led_strand.color_state[3 * (packet.current_position - i) + 1] = chr(int(lerp(float(ord(packet.green)), FADE_COLOR, 1.0-float(i)/float(strands))))
-    #         led_strand.color_state[3 * (packet.current_position - i) + 2] = chr(int(lerp(float(ord(packet.blue)), FADE_COLOR, 1.0-float(i)/float(strands))))
+    #for i in range(1, strands):
+         #if packet.current_position - i > packet.prev_target_position:
+             #led_strand.color_state[3 * (packet.current_position - i)] = chr(int(lerp(float(ord(packet.red)), FADE_COLOR, 1.0-float(i)/float(strands))))
+             #led_strand.color_state[3 * (packet.current_position - i) + 1] = chr(int(lerp(float(ord(packet.green)), FADE_COLOR, 1.0-float(i)/float(strands))))
+             #led_strand.color_state[3 * (packet.current_position - i) + 2] = chr(int(lerp(float(ord(packet.blue)), FADE_COLOR, 1.0-float(i)/float(strands))))
 
-    #     if packet.current_position + i < packet.target_position:
-    #         led_strand.color_state[3 * (packet.current_position + i)] = chr(int(lerp(float(ord(packet.red)), FADE_COLOR, 1.0-float(i)/float(strands))))
-    #         led_strand.color_state[3 * (packet.current_position + i) + 1] = chr(int(lerp(float(ord(packet.green)), FADE_COLOR, 1.0-float(i)/float(strands))))
-    #         led_strand.color_state[3 * (packet.current_position + i) + 2] = chr(int(lerp(float(ord(packet.blue)), FADE_COLOR, 1.0-float(i)/float(strands))))    
+         #if packet.current_position + i < packet.target_position:
+             #led_strand.color_state[3 * (packet.current_position + i)] = chr(int(lerp(float(ord(packet.red)), FADE_COLOR, 1.0-float(i)/float(strands))))
+             #led_strand.color_state[3 * (packet.current_position + i) + 1] = chr(int(lerp(float(ord(packet.green)), FADE_COLOR, 1.0-float(i)/float(strands))))
+             #led_strand.color_state[3 * (packet.current_position + i) + 2] = chr(int(lerp(float(ord(packet.blue)), FADE_COLOR, 1.0-float(i)/float(strands))))    
 
 def update_matrix(led_matrices, led_matrix):
     led_matrix.is_showing_packet = False
@@ -142,10 +146,10 @@ def animate(packets, led_strand, word_list, led_matrices):
         led_strand.clear_state()
         for packet in packets:  
 
-            print "Packet red = " + str(ord(packet.red))
-            print "Packet green = " + str(ord(packet.green))
-            print "Packet blue = " + str(ord(packet.blue))
-            print ""
+            #print "Packet red = " + str(ord(packet.red))
+            #print "Packet green = " + str(ord(packet.green))
+            #print "Packet blue = " + str(ord(packet.blue))
+            #print ""
 
             if not packet.text_being_displayed and not packet.is_passsing:
                 color_strand_for_packet(led_strand, packet)
@@ -180,7 +184,7 @@ def animate(packets, led_strand, word_list, led_matrices):
         for i in range(0, to_append):
             packets.append(get_new_packet(word_list, randint(int(MIN_SPEED), int(MAX_SPEED))))
 
-        time.sleep(WAIT_TIME)
+        #time.sleep(WAIT_TIME)
 
 def main():
     """
