@@ -23,6 +23,8 @@ class LedStrand(object):
 
         #pprint.PrettyPrinter(indent=4).pprint([ord(x) for x in self.color_state])
         if platform.system() == "Darwin":
+            # flush input?
+            self.port_address.write('*')
             self.port_address.write(self.color_state)
         else:
             self.port_address.write(str(bytearray(self.color_state)))
