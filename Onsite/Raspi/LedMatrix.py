@@ -31,7 +31,7 @@ class LedMatrix(object):
             for i in range(0, 141 - len(self.packet.text)):
                 to_send.append('\n')
             self.port_address.write('*')
-            self.port_address.write(to_send)
+            self.port_address.write(str(bytearray(to_send)))
             # print len(to_send)
             # print len(self.packet.text)
             # pprint.PrettyPrinter(indent=4).pprint(to_send)
