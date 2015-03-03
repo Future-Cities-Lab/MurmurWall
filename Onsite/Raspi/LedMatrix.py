@@ -41,11 +41,19 @@ class LedMatrix(object):
             # self.port_address.write(chr(text_speed))
             #self.port_address.write(self.packet.text)
         else:
-            self.port_address.write(red)
-            self.port_address.write(green)
-            self.port_address.write(blue)  
-            self.port_address.write(chr(text_speed))                        
-            self.port_address.write(str(bytearray(self.packet.text)))
+            # self.port_address.write(red)
+            # self.port_address.write(green)
+            # self.port_address.write(blue)  
+            # self.port_address.write(chr(text_speed))                        
+            # self.port_address.write(str(bytearray(self.packet.text)))
+            print 'Sending : ' + self.packet.text
+            to_send = [red,green,blue,chr(text_speed)]
+            for letter in self.packet.text:
+                to_send.append(letter)
+            for i in range(0, 141 - len(self.packet.text)):
+                to_send.append('\n')
+            self.port_address.write('*')
+            self.port_address.write(to_send)
 
     def is_finished(self):
         """
