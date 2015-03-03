@@ -27,6 +27,7 @@ class LedStrand(object):
             self.port_address.write('*')
             self.port_address.write(self.color_state)
         else:
+            self.port_address.write('*')
             self.port_address.write(str(bytearray(self.color_state)))
 
     def check_response(self):
