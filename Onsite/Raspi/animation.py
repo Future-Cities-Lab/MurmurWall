@@ -80,11 +80,8 @@ def test_leds(led_strand):
         time.sleep(WAIT_TIME)
 
 def color_pod(led_strand, packet, led_matrices):
-
     middle_pos = int(math.floor(led_matrices[MATRIX_POS].text_pos + 0.00001))
-
     currnt_count = led_matrices[MATRIX_POS].text_pos - middle_pos
-
     for i in range(0, 5):
         pos = 0
         if i % 2 == 0:
@@ -92,16 +89,13 @@ def color_pod(led_strand, packet, led_matrices):
         else:
             by_pos = 300 + ((i+1)*12)
             pos = 2*(by_pos) - (middle_pos + ((i+1)*12) + 1)
-
         pos_n_two = ORIG[2] - (DIFF[2] * currnt_count)
         pos_n_one = ORIG[1] - (DIFF[1] * currnt_count)
         pos_middle = ORIG[0] - (DIFF[0] * currnt_count)
         pos_one = ORIG[1] + (DIFF[1] * currnt_count)
         pos_two = ORIG[2] + (DIFF[2] * currnt_count)
         pos_tree = ORIG[3] + (DIFF[3] * currnt_count)
-
         pos_list = [pos_n_two, pos_n_one, pos_middle, pos_one, pos_two, pos_tree]
-
         for j in range(-2, 4):
             if i % 2 == 0:
                 if j > 0:
@@ -119,14 +113,6 @@ def color_pod(led_strand, packet, led_matrices):
                     led_strand.color_state[3*pixel_pos] = new_red
                     led_strand.color_state[3*pixel_pos + 1] = new_green
                     led_strand.color_state[3*pixel_pos + 2] = new_blue
-                    
-        # for j in range(1,3):
-        #     if i % 2 == 0 and pixel_pos + j >= 300 + (i*12) and pixel_pos + j <= 300 + (i*12) + 11:          
-        #         led_strand.color_state[3*(pos+j)] = packet.red
-        #         led_strand.color_state[3*(pos+j) + 1] = packet.green
-        #         led_strand.color_state[3*(pos+j) + 2] = packet.blue
-
-
     led_matrices[MATRIX_POS].text_pos += led_matrices[MATRIX_POS].text_speed
 
 
