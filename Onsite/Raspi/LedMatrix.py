@@ -1,6 +1,7 @@
 import serial
 import platform
 import pprint
+import time
 
 class LedMatrix(object):
     """
@@ -54,3 +55,12 @@ class LedMatrix(object):
         returns if hardware is showing any text
         """
         return len(self.packets) > 0
+
+    def shut_off(self):
+        """
+        returns if hardware is showing any text
+        """
+        print 'sending'
+        self.port_address.write('&')
+        time.sleep(1)
+        self.port_address.close()

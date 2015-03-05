@@ -12,7 +12,7 @@ class Packet(object):
     """
     def __init__(self, length, speed, color, brightness, text,
                  current_position, target_position,
-                 prev_target_position, text_being_displayed):
+                 prev_target_position, text_being_displayed, is_special=False):
         self.length = length
         self.speed = speed
         self.red, self.green, self.blue = color
@@ -23,4 +23,5 @@ class Packet(object):
         self.target_position = target_position
         self.text_being_displayed = text_being_displayed
         self.pod_speed = 0.017
+        self.is_special = is_special
 

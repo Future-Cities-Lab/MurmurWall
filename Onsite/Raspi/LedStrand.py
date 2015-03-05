@@ -2,6 +2,7 @@
 
 import serial
 import platform
+import time
 
 class LedStrand(object):
     """
@@ -42,3 +43,8 @@ class LedStrand(object):
         clears the color state (sets all RGB values to black)
         """
         self.color_state = [chr(0)] * 3*self.num_pixels
+
+    def shut_off(self):
+        self.port_address.write('%')
+        time.sleep(1)
+        self.port_address.close()

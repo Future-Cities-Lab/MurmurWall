@@ -39,14 +39,17 @@ POD_AMT = 0.4
 ORIG = [100.0, 25.0, 10.0, 0.0001]
 DIFF = [75.0, 15.0, 5.0, 2.0]
 
-def get_new_packet(text, speed):
+BUZZ_WORD = ['YBCA', 'YERBA BUENA', 'SF MOMA', 'MARKET ST. PROTOTYPING FESTIVAL', 'MISSION ST.', 'MURMURWALL']
+
+def get_new_packet(text, speed, color, is_special=False):
     """
     Creates a new data packet to be used in MurmurWall
     """
-    red = chr(randrange(0, 255))
-    green = chr(0)
-    blue = chr(255)
-    color = (red, green, blue)
+    if color is None:    
+        red = chr(randrange(0, 255))
+        green = chr(0)
+        blue = chr(255)
+        color = (red, green, blue)
     bright = 255
 
     length = len(text)
@@ -56,7 +59,7 @@ def get_new_packet(text, speed):
     tar_pos = MATRIX_POS
     prev_tar_pos = START_PIX
     displaying = False
-    return Packet(length, speed, color, bright, text, cur_pos, tar_pos, prev_tar_pos, displaying)
+    return Packet(length, speed, color, bright, text, cur_pos, tar_pos, prev_tar_pos, displaying, is_special)
 
 def get_next_available_matrix():
     """
@@ -174,29 +177,34 @@ def animate(packets, led_strand, related_terms_queue, led_matrices):
     packets_to_remove = []
     num_of_packets_to_append = 0
     led_strand.clear_state()
+    print ''
     for packet in packets:
-        # print packet.current_position
-        # print packet.text
-        # print ''
-        if not packet.text_being_displayed:
-            color_strand_for_packet(led_strand, packet)
-            packet.current_position += packet.speed
-            if packet.current_position >= packet.target_position:
-                if packet.target_position == END_PIX:
-                    packets_to_remove.append(packet)
-                    num_of_packets_to_append += 1
-                else:
-                    send_packet_to_matrix(packet, led_matrices)
+        print packet.current_position
+        print packet.text
+        print ''
+        if packet.current_position > 400:
+            packets_to_remove.append(packet)
+            if not packet.is_special:
+                num_of_packets_to_append += 1
         else:
-            color_pod(led_strand, packet)
+            if not packet.text_being_displayed:
+                color_strand_for_packet(led_strand, packet)
+                packet.current_position += packet.speed
+                if packet.current_position >= packet.target_position:
+                    if packet.target_position == END_PIX:
+                        packets_to_remove.append(packet)
+                        if not packet.is_special:
+                            num_of_packets_to_append += 1
+                    else:
+                        send_packet_to_matrix(packet, led_matrices)
+            else:
+                color_pod(led_strand, packet)
 
     led_strand.update_hardware()        
     
     for led_matrix in led_matrices.values():
         word = led_matrix.check_status()
-
         if word is not '' and 'messed up':
-            #print word
             for packet in led_matrix.packets:
                 if packet.text == word:
                     packet_to_update = packet
@@ -211,9 +219,9 @@ def animate(packets, led_strand, related_terms_queue, led_matrices):
 
     for i in range(0, num_of_packets_to_append):
         text = related_terms_queue.get()
-        packets.append(get_new_packet(text, uniform(MIN_SPEED, MAX_SPEED)))
+        packets.append(get_new_packet(text, uniform(MIN_SPEED, MAX_SPEED), None))
 
-def update_queue(related_terms_queue):
+def update_queue(related_terms_pqueue):
     """
     updates the words being displayed in the queue
     """
@@ -226,10 +234,10 @@ def update_queue(related_terms_queue):
                 related_terms_list.append(term)
     shuffle(related_terms_list)
     for i in range(0, len(related_terms_list)):
-        related_terms_queue.put(related_terms_list[i])
+        related_terms_pqueue.put(related_terms_list[i])
     global updating
     updating = True
-    print related_terms_queue.qsize()
+    print related_terms_pqueue.qsize()
 
 
 def main():
@@ -244,7 +252,7 @@ def main():
 
     for i in range(0, NUM_PACKETS):
         text = related_terms_queue.get()
-        packets.append(get_new_packet(text, uniform(MIN_SPEED, MAX_SPEED)))
+        packets.append(get_new_packet(text, uniform(MIN_SPEED, MAX_SPEED), None))
 
     led_port, matrix_port = get_ports()
 
@@ -260,6 +268,10 @@ def main():
 
     saved_timed = time.time()
 
+    priority_time = time.time()
+
+    buzz_pos = 0
+
     while True:
         try:
             if related_terms_queue.qsize() <= 300 and not updating:
@@ -271,6 +283,12 @@ def main():
                 print 'Refreshing ports'
                 saved_timed = time.time()
                 led_port, matrix_port = get_ports()
+            if time.time() - priority_time >= 50:
+                priority_time = time.time()
+                packets.append(get_new_packet(BUZZ_WORD[buzz_pos], 0.5, (chr(255), chr(255), chr(255)), True))
+                buzz_pos += 1
+                buzz_pos %= len(BUZZ_WORD)
+            print len(packets)
             animate(packets, led_strand, related_terms_queue, led_matrices)
             current_time = time.time()
             sleep_time = 1./FRAMES_PER_SECOND - (current_time - last_time)
@@ -280,8 +298,8 @@ def main():
         except (KeyboardInterrupt, SystemExit):
             print ''
             print 'Goodbye!'
-            led_strand.port_address.close()
-            led_matrices[MATRIX_POS].port_address.close()
+            led_matrices[MATRIX_POS].shut_off()
+            led_strand.shut_off()
             raise
 
     #test_leds(led_strand)
