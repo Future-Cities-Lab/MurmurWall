@@ -177,11 +177,11 @@ def animate(packets, led_strand, related_terms_queue, led_matrices):
     packets_to_remove = []
     num_of_packets_to_append = 0
     led_strand.clear_state()
-    print ''
+    #print ''
     for packet in packets:
-        print packet.current_position
-        print packet.text
-        print ''
+        #print packet.current_position
+        #print packet.text
+        #print ''
         if packet.current_position > 400:
             packets_to_remove.append(packet)
             if not packet.is_special:
@@ -288,7 +288,7 @@ def main():
                 packets.append(get_new_packet(BUZZ_WORD[buzz_pos], 0.5, (chr(255), chr(255), chr(255)), True))
                 buzz_pos += 1
                 buzz_pos %= len(BUZZ_WORD)
-            print len(packets)
+            #print len(packets)
             animate(packets, led_strand, related_terms_queue, led_matrices)
             current_time = time.time()
             sleep_time = 1./FRAMES_PER_SECOND - (current_time - last_time)
