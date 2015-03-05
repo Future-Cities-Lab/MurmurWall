@@ -35,9 +35,9 @@ def get_ports():
         led_port.flushInput()
     else:
         for port in current_ports:
-            if 'AM01' in port:
+            if 'ACM1' in port:
                 led_port = serial.Serial(port, BAUD_RATE, timeout=TIMEOUT)
-            elif 'AM02' in port:
+            elif 'ACM2' in port:
                 matrix_port = serial.Serial(port, BAUD_RATE, timeout=TIMEOUT)
         matrix_port.flushInput()
         led_port.flushInput()     
