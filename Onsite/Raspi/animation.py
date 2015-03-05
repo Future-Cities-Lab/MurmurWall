@@ -278,14 +278,15 @@ def main():
                 updating = True
                 thread = threading.Thread(target=update_queue, args=(related_terms_queue,))
                 thread.start()
-            if time.time() - saved_timed >= 1800:
+            if time.time() - saved_timed >= 120:
                 # Need to make sure shit's clear
                 print 'Refreshing ports'
                 saved_timed = time.time()
                 led_port, matrix_port = get_ports()
             if time.time() - priority_time >= 50:
                 priority_time = time.time()
-                packets.append(get_new_packet(BUZZ_WORD[buzz_pos], 0.5, (chr(255), chr(255), chr(255)), True))
+                color = (chr(255), chr(255), chr(255))
+                packets.append(get_new_packet(BUZZ_WORD[buzz_pos], 0.5, color, True))
                 buzz_pos += 1
                 buzz_pos %= len(BUZZ_WORD)
             #print len(packets)
