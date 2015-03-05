@@ -10,22 +10,17 @@ class Packet(object):
         target_position - which LED the packet is heading towards
         text_being_displayed - a state representing if this packet is being shown on an LED screen
     """
-    def __init__(self, length, speed, red,
-                 green, blue, brightness, text,
+    def __init__(self, length, speed, color, brightness, text,
                  current_position, target_position,
-                 prev_target_position, text_being_displayed, theta,
-                 is_passsing, passing_pos):
+                 prev_target_position, text_being_displayed):
         self.length = length
         self.speed = speed
-        self.red = red
-        self.green = green
-        self.blue = blue
+        self.red, self.green, self.blue = color
         self.brightness = brightness
         self.text = text
         self.current_position = current_position
         self.prev_target_position = prev_target_position
         self.target_position = target_position
         self.text_being_displayed = text_being_displayed
-        self.theta = theta
-        self.is_passsing = is_passsing
-        self.passing_pos = passing_pos
+        self.pod_speed = 0.017
+

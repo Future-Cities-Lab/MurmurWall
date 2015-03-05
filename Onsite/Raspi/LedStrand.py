@@ -2,7 +2,6 @@
 
 import serial
 import platform
-import pprint
 
 class LedStrand(object):
     """
@@ -20,14 +19,10 @@ class LedStrand(object):
         """
         Updates the LEDs with the next color state
         """
-
-        #pprint.PrettyPrinter(indent=4).pprint([ord(x) for x in self.color_state])
+        self.port_address.write('*')
         if platform.system() == "Darwin":
-            # flush input?
-            self.port_address.write('*')
             self.port_address.write(self.color_state)
         else:
-            self.port_address.write('*')
             self.port_address.write(str(bytearray(self.color_state)))
 
     def check_response(self):

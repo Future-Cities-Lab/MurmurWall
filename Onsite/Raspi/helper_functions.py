@@ -4,7 +4,7 @@ import time
 import serial
 
 BAUD_RATE = 115200
-TIMEOUT = 1
+TIMEOUT = None
 
 def get_available_ports():
     """
@@ -24,27 +24,38 @@ def get_ports():
     print 'Available Ports are : \n'
     print current_ports
     print ''
+
+    for port in current_ports:
+        if '604971' in port:
+            led_port = serial.Serial(port, BAUD_RATE, timeout=TIMEOUT)
+        elif '688531' in port:
+            matrix_port = serial.Serial(port, BAUD_RATE, timeout=TIMEOUT)
+    matrix_port.flushInput()
+    led_port.flushInput()
     
-    for i in range(0, 2):
-        if platform.system() == "Darwin":
-            pos = 2+i
-        else:
-            pos = i
-        port = serial.Serial(current_ports[pos], BAUD_RATE, timeout=TIMEOUT)
-        time.sleep(1.516)
-        port.flushInput()
-        port.flushOutput()
-        port.write('#')
-        time.sleep(1.516)
-        out = ''
-        print "Reading MAC Address...."
-        while port.inWaiting() > 0:
-            out += port.read(1)
-            print out
-        if out == '04:E9:E5:00:EC:51':
-            led_port = port
-        elif out == '04:E9:E5:01:0C:E0':
-            matrix_port = port     
+    # for i in range(0, 2):
+    #     if platform.system() == "Darwin":
+    #         pos = 2+i
+    #     else:
+    #         pos = i
+    #     port = serial.Serial(current_ports[pos], BAUD_RATE, timeout=TIMEOUT)
+    #     print port
+    #     time.sleep(3.516)
+    #     # port.flush()
+    #     # port.flushInput()
+    #     # port.flushOutput()
+    #     port.write('#')
+    #     time.sleep(3.516)
+    #     out = ''
+    #     print "Reading MAC Address...."
+    #     time.sleep(3.516)
+    #     while port.inWaiting() > 0:
+    #         out += port.read(1)
+    #         print out
+    #     if out == '04:E9:E5:00:EC:51':
+    #         led_port = port
+    #     elif out == '04:E9:E5:01:0C:E0':
+    #         matrix_port = port     
     
     print '\nFound LED Port, it is : \n'
     print led_port
