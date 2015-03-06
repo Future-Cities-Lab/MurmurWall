@@ -3,7 +3,6 @@ import math
 import Queue
 import pprint
 import threading
-
 from random import randrange, uniform, shuffle
 
 from Packet import Packet
@@ -192,8 +191,8 @@ def animate(packets, led_strand, related_terms_queue, led_matrices):
                             num_of_packets_to_append += 1
                     else:
                         send_packet_to_matrix(packet, led_matrices)
-            else:
-                color_pod(led_strand, packet)
+            # else:
+            #     color_pod(led_strand, packet)
 
     led_strand.update_hardware()        
     
@@ -240,31 +239,18 @@ def main():
     main thread for MurmurWall
     """
     related_terms_queue = Queue.Queue()
-
     update_queue(related_terms_queue)
-
     packets = []
-
     for i in range(0, NUM_PACKETS):
         text = related_terms_queue.get()
         packets.append(get_new_packet(text, uniform(MIN_SPEED, MAX_SPEED), None))
-
     led_port, matrix_port = get_ports()
-
     led_matrices = {MATRIX_POS: LedMatrix(matrix_port, MATRIX_POS)}
-
     led_strand = LedStrand(led_port, TOTAL_PIXELS)
-    
     sleep_time = 0
-
     last_time = time.time()
-
     updating = False
-
-    saved_timed = time.time()
-
     priority_time = time.time()
-
     buzz_pos = 0
 
     while True:
@@ -293,34 +279,21 @@ def main():
             raise
         except IOError:
             print 'Shit Error Restarting'
+            time.sleep(5)
             related_terms_queue = Queue.Queue()
-
             update_queue(related_terms_queue)
-
             packets = []
-
             for i in range(0, NUM_PACKETS):
                 text = related_terms_queue.get()
                 packets.append(get_new_packet(text, uniform(MIN_SPEED, MAX_SPEED), None))
-
             led_port, matrix_port = get_ports()
-
             led_matrices = {MATRIX_POS: LedMatrix(matrix_port, MATRIX_POS)}
-
             led_strand = LedStrand(led_port, TOTAL_PIXELS)
-            
             sleep_time = 0
-
             last_time = time.time()
-
             updating = False
-
-            saved_timed = time.time()
-
             priority_time = time.time()
-
             buzz_pos = 0
-
 
 if __name__ == "__main__":
     print 'running main animation...'

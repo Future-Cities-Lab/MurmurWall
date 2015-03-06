@@ -67,7 +67,7 @@ def get_google_trends_responses(trends,new_trends):
         try:
             connector.request_report(trend)
         except URLError:
-            print 'Bummer'
+            print('Bummer')
 
         time.sleep(randint(10, 20))
         connector.save_csv(PATH, trend)
