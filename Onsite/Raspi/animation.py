@@ -161,7 +161,6 @@ def send_packet_to_matrix(packet, led_matrices):
     Send packet to matrix to be displayed
     """
     packet.text_being_displayed = True
-    #packet.current_position = led_matrices[packet.target_position].position
     packet.current_position = 300
     led_matrices[packet.target_position].packets.append(packet)
     text_speed = int(map_values(packet.speed, MAX_SPEED, MIN_SPEED, MIN_SPEED_LED, MAX_SPEED_LED))
@@ -171,17 +170,13 @@ def send_packet_to_matrix(packet, led_matrices):
 def animate(packets, led_strand, related_terms_queue, led_matrices):
     """
     The animation begins by drawing the previous state, and then updating.
-    i.e, it draws each atom at the position determined by the previous iteration
+    i.e, it draws each packet at the position determined by the previous iteration
     and then procedes to determine its next position
     """
     packets_to_remove = []
     num_of_packets_to_append = 0
     led_strand.clear_state()
-    #print ''
     for packet in packets:
-        #print packet.current_position
-        #print packet.text
-        #print ''
         if packet.current_position > 400:
             packets_to_remove.append(packet)
             if not packet.is_special:
@@ -278,18 +273,12 @@ def main():
                 updating = True
                 thread = threading.Thread(target=update_queue, args=(related_terms_queue,))
                 thread.start()
-            if time.time() - saved_timed >= 120:
-                # Need to make sure shit's clear
-                print 'Refreshing ports'
-                saved_timed = time.time()
-                led_port, matrix_port = get_ports()
             if time.time() - priority_time >= 50:
                 priority_time = time.time()
                 color = (chr(255), chr(255), chr(255))
                 packets.append(get_new_packet(BUZZ_WORD[buzz_pos], 0.5, color, True))
                 buzz_pos += 1
                 buzz_pos %= len(BUZZ_WORD)
-            #print len(packets)
             animate(packets, led_strand, related_terms_queue, led_matrices)
             current_time = time.time()
             sleep_time = 1./FRAMES_PER_SECOND - (current_time - last_time)
@@ -302,8 +291,36 @@ def main():
             led_matrices[MATRIX_POS].shut_off()
             led_strand.shut_off()
             raise
+        except IOError:
+            print 'Shit Error Restarting'
+            related_terms_queue = Queue.Queue()
 
-    #test_leds(led_strand)
+            update_queue(related_terms_queue)
+
+            packets = []
+
+            for i in range(0, NUM_PACKETS):
+                text = related_terms_queue.get()
+                packets.append(get_new_packet(text, uniform(MIN_SPEED, MAX_SPEED), None))
+
+            led_port, matrix_port = get_ports()
+
+            led_matrices = {MATRIX_POS: LedMatrix(matrix_port, MATRIX_POS)}
+
+            led_strand = LedStrand(led_port, TOTAL_PIXELS)
+            
+            sleep_time = 0
+
+            last_time = time.time()
+
+            updating = False
+
+            saved_timed = time.time()
+
+            priority_time = time.time()
+
+            buzz_pos = 0
+
 
 if __name__ == "__main__":
     print 'running main animation...'
