@@ -2,7 +2,7 @@ from libc.math cimport round
 from libc.stdlib cimport atoi
 
 
-ORIG = [100.0, 25.0, 10.0, 0.0001]
+ORIG = [100.0, 25.0, 10.0, 5]
 DIFF = [75.0, 15.0, 5.0, 2.0]
 
 def map_values(double value, double i_start, double i_stop, double o_start, double o_stop): 
@@ -21,25 +21,32 @@ def color_strand_for_packet(list color_state, double current_position, bytes red
     color_state[3*(middle_pixel+1) + 1] = green
     color_state[3*(middle_pixel+1) + 2] = blue
 
-    # current_count = current_position - middle_pixel
-    # curve = []
-    # for i in range(-2, 4):
-    #     if i < 0:
-    #         i = i * -1
-    #     curve.append(ORIG[i] - (DIFF[i] * current_count))
-    # cdef int pixel_pos
-    # cdef double alpha
-    # cdef int new_red, new_green, new_blue
-    # for i in range(-2, 4):
-    #     if i > 0:
-    #         pixel_pos = middle_pixel + i + 1
-    #     else:
-    #         pixel_pos = middle_pixel + i
-    #     if pixel_pos > prev_target_position and pixel_pos < target_position:
-    #         alpha = map_values(curve[i+2], 0.0, 100.0, 0.0, 1.0)
-    #         new_red = lerp(<float>red, 0.0, alpha)
-    #         new_green = lerp(<float>green, 0.0, alpha)
-    #         new_blue = lerp(<float>blue, 0.0, alpha)
-    #         color_state[3*pixel_pos] = <char*>&new_red
-    #         color_state[3*pixel_pos + 1] = <char*>&new_green
-    #         color_state[3*pixel_pos + 2] = <char*>&new_blue
+    current_count = current_position - middle_pixel
+    #print current_position
+    # print current_count
+    # print ''
+    # print current_position
+    # print current_count
+    curve = []
+    for i in range(-2, 4):
+        if i < 0:
+            i = i * -1
+        curve.append(ORIG[i] - (DIFF[i] * current_count))
+
+    cdef int pixel_pos
+    cdef double alpha
+    cdef int new_red, new_green, new_blue
+    for i in range(-2, 4):
+        if i > 0:
+            pixel_pos = middle_pixel + i + 1
+        else:
+            pixel_pos = middle_pixel + i
+        if pixel_pos > prev_target_position and pixel_pos < target_position:
+            alpha = map_values(curve[i+2], 0.0, 100.0, 0.0, 1.0)
+            new_red = lerp(float(ord(red)), 0.0, alpha)
+            new_green = lerp(float(ord(green)), 0.0, alpha)
+            new_blue = lerp(float(ord(blue)), 0.0, alpha)
+            color_state[3*pixel_pos] = chr(new_red)
+            color_state[3*pixel_pos + 1] = chr(new_green)
+            color_state[3*pixel_pos + 2] = chr(new_blue)
+    print ''

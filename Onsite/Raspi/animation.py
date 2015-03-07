@@ -184,7 +184,6 @@ def animate(packets, led_strand, related_terms_queue, led_matrices):
                 num_of_packets_to_append += 1
         else:
             if not packet.text_being_displayed:
-                #print packet.current_position
                 #color_strand_for_packet(led_strand, packet)
                 color_strand_for_packet(led_strand.color_state, packet.current_position, packet.red, packet.green, packet.blue, packet.prev_target_position, packet.target_position)
                 packet.current_position += packet.speed
@@ -198,7 +197,6 @@ def animate(packets, led_strand, related_terms_queue, led_matrices):
             # else:
             #     color_pod(led_strand, packet)
     
-    #print led_strand.color_state
     led_strand.update_hardware()        
     
     for led_matrix in led_matrices.values():
