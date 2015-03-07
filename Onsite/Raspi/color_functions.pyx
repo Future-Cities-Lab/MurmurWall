@@ -49,4 +49,4 @@ def color_strand_for_packet(list color_state, double current_position, bytes red
             color_state[3*pixel_pos] = chr(new_red)
             color_state[3*pixel_pos + 1] = chr(new_green)
             color_state[3*pixel_pos + 2] = chr(new_blue)
-    print ''
+    #print ''
