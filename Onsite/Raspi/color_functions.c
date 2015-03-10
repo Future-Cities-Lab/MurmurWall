@@ -606,14 +606,6 @@ static CYTHON_INLINE PyObject* __Pyx_PyInt_From_long(long value);
 
 static CYTHON_INLINE PyObject* __Pyx_PyInt_From_int(int value);
 
-static int __Pyx_Print(PyObject*, PyObject *, int);
-#if CYTHON_COMPILING_IN_PYPY || PY_MAJOR_VERSION >= 3
-static PyObject* __pyx_print = 0;
-static PyObject* __pyx_print_kwargs = 0;
-#endif
-
-static int __Pyx_PrintOne(PyObject* stream, PyObject *o);
-
 static CYTHON_INLINE long __Pyx_PyInt_As_long(PyObject *);
 
 static int __Pyx_check_binary_version(void);
@@ -639,23 +631,19 @@ static PyObject *__pyx_pf_15color_functions_map_values(CYTHON_UNUSED PyObject *_
 static PyObject *__pyx_pf_15color_functions_2lerp(CYTHON_UNUSED PyObject *__pyx_self, int __pyx_v_channel_2, int __pyx_v_channel_1, double __pyx_v_amt); /* proto */
 static PyObject *__pyx_pf_15color_functions_4color_strand_for_packet(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_color_state, double __pyx_v_current_position, PyObject *__pyx_v_red, PyObject *__pyx_v_green, PyObject *__pyx_v_blue, int __pyx_v_prev_target_position, int __pyx_v_target_position); /* proto */
 static char __pyx_k_i[] = "i";
-static char __pyx_k__3[] = "";
 static char __pyx_k_amt[] = "amt";
 static char __pyx_k_chr[] = "chr";
-static char __pyx_k_end[] = "end";
 static char __pyx_k_ord[] = "ord";
 static char __pyx_k_red[] = "red";
 static char __pyx_k_DIFF[] = "DIFF";
 static char __pyx_k_ORIG[] = "ORIG";
 static char __pyx_k_blue[] = "blue";
-static char __pyx_k_file[] = "file";
 static char __pyx_k_lerp[] = "lerp";
 static char __pyx_k_main[] = "__main__";
 static char __pyx_k_test[] = "__test__";
 static char __pyx_k_alpha[] = "alpha";
 static char __pyx_k_curve[] = "curve";
 static char __pyx_k_green[] = "green";
-static char __pyx_k_print[] = "print";
 static char __pyx_k_range[] = "range";
 static char __pyx_k_value[] = "value";
 static char __pyx_k_i_stop[] = "i_stop";
@@ -677,11 +665,9 @@ static char __pyx_k_target_position[] = "target_position";
 static char __pyx_k_current_position[] = "current_position";
 static char __pyx_k_prev_target_position[] = "prev_target_position";
 static char __pyx_k_color_strand_for_packet[] = "color_strand_for_packet";
-static char __pyx_k_Users_collinschupman_Documents[] = "/Users/collinschupman/Documents/FutureCities/MurmurWall/Onsite/Raspi/color_functions.pyx";
+static char __pyx_k_home_pi_MurmurWall_Onsite_Raspi[] = "/home/pi/MurmurWall/Onsite/Raspi/color_functions.pyx";
 static PyObject *__pyx_n_s_DIFF;
 static PyObject *__pyx_n_s_ORIG;
-static PyObject *__pyx_kp_s_Users_collinschupman_Documents;
-static PyObject *__pyx_kp_s__3;
 static PyObject *__pyx_n_s_alpha;
 static PyObject *__pyx_n_s_amt;
 static PyObject *__pyx_n_s_blue;
@@ -694,9 +680,8 @@ static PyObject *__pyx_n_s_color_strand_for_packet;
 static PyObject *__pyx_n_s_current_count;
 static PyObject *__pyx_n_s_current_position;
 static PyObject *__pyx_n_s_curve;
-static PyObject *__pyx_n_s_end;
-static PyObject *__pyx_n_s_file;
 static PyObject *__pyx_n_s_green;
+static PyObject *__pyx_kp_s_home_pi_MurmurWall_Onsite_Raspi;
 static PyObject *__pyx_n_s_i;
 static PyObject *__pyx_n_s_i_start;
 static PyObject *__pyx_n_s_i_stop;
@@ -712,7 +697,6 @@ static PyObject *__pyx_n_s_o_stop;
 static PyObject *__pyx_n_s_ord;
 static PyObject *__pyx_n_s_pixel_pos;
 static PyObject *__pyx_n_s_prev_target_position;
-static PyObject *__pyx_n_s_print;
 static PyObject *__pyx_n_s_range;
 static PyObject *__pyx_n_s_red;
 static PyObject *__pyx_n_s_target_position;
@@ -736,12 +720,12 @@ static PyObject *__pyx_int_neg_1;
 static PyObject *__pyx_int_neg_2;
 static PyObject *__pyx_tuple_;
 static PyObject *__pyx_tuple__2;
-static PyObject *__pyx_tuple__4;
-static PyObject *__pyx_tuple__6;
-static PyObject *__pyx_tuple__8;
-static PyObject *__pyx_codeobj__5;
-static PyObject *__pyx_codeobj__7;
-static PyObject *__pyx_codeobj__9;
+static PyObject *__pyx_tuple__3;
+static PyObject *__pyx_tuple__5;
+static PyObject *__pyx_tuple__7;
+static PyObject *__pyx_codeobj__4;
+static PyObject *__pyx_codeobj__6;
+static PyObject *__pyx_codeobj__8;
 
 /* "color_functions.pyx":8
  * DIFF = [75.0, 15.0, 5.0, 2.0]
@@ -1737,7 +1721,7 @@ static PyObject *__pyx_pf_15color_functions_4color_strand_for_packet(CYTHON_UNUS
  *             color_state[3*pixel_pos] = chr(new_red)
  *             color_state[3*pixel_pos + 1] = chr(new_green)             # <<<<<<<<<<<<<<
  *             color_state[3*pixel_pos + 2] = chr(new_blue)
- *     print ''
+ *     #print ''
  */
       __pyx_t_9 = __Pyx_PyInt_From_int(__pyx_v_new_green); if (unlikely(!__pyx_t_9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 50; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_9);
@@ -1761,7 +1745,7 @@ static PyObject *__pyx_pf_15color_functions_4color_strand_for_packet(CYTHON_UNUS
  *             color_state[3*pixel_pos] = chr(new_red)
  *             color_state[3*pixel_pos + 1] = chr(new_green)
  *             color_state[3*pixel_pos + 2] = chr(new_blue)             # <<<<<<<<<<<<<<
- *     print ''
+ *     #print ''
  */
       __pyx_t_9 = __Pyx_PyInt_From_int(__pyx_v_new_blue); if (unlikely(!__pyx_t_9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 51; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_9);
@@ -1793,13 +1777,6 @@ static PyObject *__pyx_pf_15color_functions_4color_strand_for_packet(CYTHON_UNUS
  */
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-
-  /* "color_functions.pyx":52
- *             color_state[3*pixel_pos + 1] = chr(new_green)
- *             color_state[3*pixel_pos + 2] = chr(new_blue)
- *     print ''             # <<<<<<<<<<<<<<
- */
-  if (__Pyx_PrintOne(0, __pyx_kp_s__3) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 52; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
   /* "color_functions.pyx":14
  *     return round(channel_1 + (channel_2 - channel_1) * amt)
@@ -1855,8 +1832,6 @@ static struct PyModuleDef __pyx_moduledef = {
 static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_DIFF, __pyx_k_DIFF, sizeof(__pyx_k_DIFF), 0, 0, 1, 1},
   {&__pyx_n_s_ORIG, __pyx_k_ORIG, sizeof(__pyx_k_ORIG), 0, 0, 1, 1},
-  {&__pyx_kp_s_Users_collinschupman_Documents, __pyx_k_Users_collinschupman_Documents, sizeof(__pyx_k_Users_collinschupman_Documents), 0, 0, 1, 0},
-  {&__pyx_kp_s__3, __pyx_k__3, sizeof(__pyx_k__3), 0, 0, 1, 0},
   {&__pyx_n_s_alpha, __pyx_k_alpha, sizeof(__pyx_k_alpha), 0, 0, 1, 1},
   {&__pyx_n_s_amt, __pyx_k_amt, sizeof(__pyx_k_amt), 0, 0, 1, 1},
   {&__pyx_n_s_blue, __pyx_k_blue, sizeof(__pyx_k_blue), 0, 0, 1, 1},
@@ -1869,9 +1844,8 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_current_count, __pyx_k_current_count, sizeof(__pyx_k_current_count), 0, 0, 1, 1},
   {&__pyx_n_s_current_position, __pyx_k_current_position, sizeof(__pyx_k_current_position), 0, 0, 1, 1},
   {&__pyx_n_s_curve, __pyx_k_curve, sizeof(__pyx_k_curve), 0, 0, 1, 1},
-  {&__pyx_n_s_end, __pyx_k_end, sizeof(__pyx_k_end), 0, 0, 1, 1},
-  {&__pyx_n_s_file, __pyx_k_file, sizeof(__pyx_k_file), 0, 0, 1, 1},
   {&__pyx_n_s_green, __pyx_k_green, sizeof(__pyx_k_green), 0, 0, 1, 1},
+  {&__pyx_kp_s_home_pi_MurmurWall_Onsite_Raspi, __pyx_k_home_pi_MurmurWall_Onsite_Raspi, sizeof(__pyx_k_home_pi_MurmurWall_Onsite_Raspi), 0, 0, 1, 0},
   {&__pyx_n_s_i, __pyx_k_i, sizeof(__pyx_k_i), 0, 0, 1, 1},
   {&__pyx_n_s_i_start, __pyx_k_i_start, sizeof(__pyx_k_i_start), 0, 0, 1, 1},
   {&__pyx_n_s_i_stop, __pyx_k_i_stop, sizeof(__pyx_k_i_stop), 0, 0, 1, 1},
@@ -1887,7 +1861,6 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_ord, __pyx_k_ord, sizeof(__pyx_k_ord), 0, 0, 1, 1},
   {&__pyx_n_s_pixel_pos, __pyx_k_pixel_pos, sizeof(__pyx_k_pixel_pos), 0, 0, 1, 1},
   {&__pyx_n_s_prev_target_position, __pyx_k_prev_target_position, sizeof(__pyx_k_prev_target_position), 0, 0, 1, 1},
-  {&__pyx_n_s_print, __pyx_k_print, sizeof(__pyx_k_print), 0, 0, 1, 1},
   {&__pyx_n_s_range, __pyx_k_range, sizeof(__pyx_k_range), 0, 0, 1, 1},
   {&__pyx_n_s_red, __pyx_k_red, sizeof(__pyx_k_red), 0, 0, 1, 1},
   {&__pyx_n_s_target_position, __pyx_k_target_position, sizeof(__pyx_k_target_position), 0, 0, 1, 1},
@@ -1937,10 +1910,10 @@ static int __Pyx_InitCachedConstants(void) {
  *     return o_start + (o_stop - o_start) * ((value - i_start) / (i_stop - i_start))
  * 
  */
-  __pyx_tuple__4 = PyTuple_Pack(5, __pyx_n_s_value, __pyx_n_s_i_start, __pyx_n_s_i_stop, __pyx_n_s_o_start, __pyx_n_s_o_stop); if (unlikely(!__pyx_tuple__4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 8; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple__4);
-  __Pyx_GIVEREF(__pyx_tuple__4);
-  __pyx_codeobj__5 = (PyObject*)__Pyx_PyCode_New(5, 0, 5, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__4, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Users_collinschupman_Documents, __pyx_n_s_map_values, 8, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 8; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__3 = PyTuple_Pack(5, __pyx_n_s_value, __pyx_n_s_i_start, __pyx_n_s_i_stop, __pyx_n_s_o_start, __pyx_n_s_o_stop); if (unlikely(!__pyx_tuple__3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 8; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__3);
+  __Pyx_GIVEREF(__pyx_tuple__3);
+  __pyx_codeobj__4 = (PyObject*)__Pyx_PyCode_New(5, 0, 5, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__3, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_pi_MurmurWall_Onsite_Raspi, __pyx_n_s_map_values, 8, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 8; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
   /* "color_functions.pyx":11
  *     return o_start + (o_stop - o_start) * ((value - i_start) / (i_stop - i_start))
@@ -1949,10 +1922,10 @@ static int __Pyx_InitCachedConstants(void) {
  *     return round(channel_1 + (channel_2 - channel_1) * amt)
  * 
  */
-  __pyx_tuple__6 = PyTuple_Pack(3, __pyx_n_s_channel_2, __pyx_n_s_channel_1, __pyx_n_s_amt); if (unlikely(!__pyx_tuple__6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 11; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple__6);
-  __Pyx_GIVEREF(__pyx_tuple__6);
-  __pyx_codeobj__7 = (PyObject*)__Pyx_PyCode_New(3, 0, 3, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__6, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Users_collinschupman_Documents, __pyx_n_s_lerp, 11, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 11; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__5 = PyTuple_Pack(3, __pyx_n_s_channel_2, __pyx_n_s_channel_1, __pyx_n_s_amt); if (unlikely(!__pyx_tuple__5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 11; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__5);
+  __Pyx_GIVEREF(__pyx_tuple__5);
+  __pyx_codeobj__6 = (PyObject*)__Pyx_PyCode_New(3, 0, 3, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__5, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_pi_MurmurWall_Onsite_Raspi, __pyx_n_s_lerp, 11, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 11; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
   /* "color_functions.pyx":14
  *     return round(channel_1 + (channel_2 - channel_1) * amt)
@@ -1961,10 +1934,10 @@ static int __Pyx_InitCachedConstants(void) {
  *     cdef int middle_pixel
  *     cdef double current_count
  */
-  __pyx_tuple__8 = PyTuple_Pack(16, __pyx_n_s_color_state, __pyx_n_s_current_position, __pyx_n_s_red, __pyx_n_s_green, __pyx_n_s_blue, __pyx_n_s_prev_target_position, __pyx_n_s_target_position, __pyx_n_s_middle_pixel, __pyx_n_s_current_count, __pyx_n_s_curve, __pyx_n_s_i, __pyx_n_s_pixel_pos, __pyx_n_s_alpha, __pyx_n_s_new_red, __pyx_n_s_new_green, __pyx_n_s_new_blue); if (unlikely(!__pyx_tuple__8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 14; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple__8);
-  __Pyx_GIVEREF(__pyx_tuple__8);
-  __pyx_codeobj__9 = (PyObject*)__Pyx_PyCode_New(7, 0, 16, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__8, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Users_collinschupman_Documents, __pyx_n_s_color_strand_for_packet, 14, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 14; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__7 = PyTuple_Pack(16, __pyx_n_s_color_state, __pyx_n_s_current_position, __pyx_n_s_red, __pyx_n_s_green, __pyx_n_s_blue, __pyx_n_s_prev_target_position, __pyx_n_s_target_position, __pyx_n_s_middle_pixel, __pyx_n_s_current_count, __pyx_n_s_curve, __pyx_n_s_i, __pyx_n_s_pixel_pos, __pyx_n_s_alpha, __pyx_n_s_new_red, __pyx_n_s_new_green, __pyx_n_s_new_blue); if (unlikely(!__pyx_tuple__7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 14; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__7);
+  __Pyx_GIVEREF(__pyx_tuple__7);
+  __pyx_codeobj__8 = (PyObject*)__Pyx_PyCode_New(7, 0, 16, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__7, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_pi_MurmurWall_Onsite_Raspi, __pyx_n_s_color_strand_for_packet, 14, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 14; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -2840,147 +2813,6 @@ static CYTHON_INLINE PyObject* __Pyx_PyInt_From_int(int value) {
                                      little, !is_unsigned);
     }
 }
-
-#if !CYTHON_COMPILING_IN_PYPY && PY_MAJOR_VERSION < 3
-static PyObject *__Pyx_GetStdout(void) {
-    PyObject *f = PySys_GetObject((char *)"stdout");
-    if (!f) {
-        PyErr_SetString(PyExc_RuntimeError, "lost sys.stdout");
-    }
-    return f;
-}
-static int __Pyx_Print(PyObject* f, PyObject *arg_tuple, int newline) {
-    int i;
-    if (!f) {
-        if (!(f = __Pyx_GetStdout()))
-            return -1;
-    }
-    Py_INCREF(f);
-    for (i=0; i < PyTuple_GET_SIZE(arg_tuple); i++) {
-        PyObject* v;
-        if (PyFile_SoftSpace(f, 1)) {
-            if (PyFile_WriteString(" ", f) < 0)
-                goto error;
-        }
-        v = PyTuple_GET_ITEM(arg_tuple, i);
-        if (PyFile_WriteObject(v, f, Py_PRINT_RAW) < 0)
-            goto error;
-        if (PyString_Check(v)) {
-            char *s = PyString_AsString(v);
-            Py_ssize_t len = PyString_Size(v);
-            if (len > 0) {
-                switch (s[len-1]) {
-                    case ' ': break;
-                    case '\f': case '\r': case '\n': case '\t': case '\v':
-                        PyFile_SoftSpace(f, 0);
-                        break;
-                    default:  break;
-                }
-            }
-        }
-    }
-    if (newline) {
-        if (PyFile_WriteString("\n", f) < 0)
-            goto error;
-        PyFile_SoftSpace(f, 0);
-    }
-    Py_DECREF(f);
-    return 0;
-error:
-    Py_DECREF(f);
-    return -1;
-}
-#else
-static int __Pyx_Print(PyObject* stream, PyObject *arg_tuple, int newline) {
-    PyObject* kwargs = 0;
-    PyObject* result = 0;
-    PyObject* end_string;
-    if (unlikely(!__pyx_print)) {
-        __pyx_print = PyObject_GetAttr(__pyx_b, __pyx_n_s_print);
-        if (!__pyx_print)
-            return -1;
-    }
-    if (stream) {
-        kwargs = PyDict_New();
-        if (unlikely(!kwargs))
-            return -1;
-        if (unlikely(PyDict_SetItem(kwargs, __pyx_n_s_file, stream) < 0))
-            goto bad;
-        if (!newline) {
-            end_string = PyUnicode_FromStringAndSize(" ", 1);
-            if (unlikely(!end_string))
-                goto bad;
-            if (PyDict_SetItem(kwargs, __pyx_n_s_end, end_string) < 0) {
-                Py_DECREF(end_string);
-                goto bad;
-            }
-            Py_DECREF(end_string);
-        }
-    } else if (!newline) {
-        if (unlikely(!__pyx_print_kwargs)) {
-            __pyx_print_kwargs = PyDict_New();
-            if (unlikely(!__pyx_print_kwargs))
-                return -1;
-            end_string = PyUnicode_FromStringAndSize(" ", 1);
-            if (unlikely(!end_string))
-                return -1;
-            if (PyDict_SetItem(__pyx_print_kwargs, __pyx_n_s_end, end_string) < 0) {
-                Py_DECREF(end_string);
-                return -1;
-            }
-            Py_DECREF(end_string);
-        }
-        kwargs = __pyx_print_kwargs;
-    }
-    result = PyObject_Call(__pyx_print, arg_tuple, kwargs);
-    if (unlikely(kwargs) && (kwargs != __pyx_print_kwargs))
-        Py_DECREF(kwargs);
-    if (!result)
-        return -1;
-    Py_DECREF(result);
-    return 0;
-bad:
-    if (kwargs != __pyx_print_kwargs)
-        Py_XDECREF(kwargs);
-    return -1;
-}
-#endif
-
-#if !CYTHON_COMPILING_IN_PYPY && PY_MAJOR_VERSION < 3
-static int __Pyx_PrintOne(PyObject* f, PyObject *o) {
-    if (!f) {
-        if (!(f = __Pyx_GetStdout()))
-            return -1;
-    }
-    Py_INCREF(f);
-    if (PyFile_SoftSpace(f, 0)) {
-        if (PyFile_WriteString(" ", f) < 0)
-            goto error;
-    }
-    if (PyFile_WriteObject(o, f, Py_PRINT_RAW) < 0)
-        goto error;
-    if (PyFile_WriteString("\n", f) < 0)
-        goto error;
-    Py_DECREF(f);
-    return 0;
-error:
-    Py_DECREF(f);
-    return -1;
-    /* the line below is just to avoid C compiler
-     * warnings about unused functions */
-    return __Pyx_Print(f, NULL, 0);
-}
-#else
-static int __Pyx_PrintOne(PyObject* stream, PyObject *o) {
-    int res;
-    PyObject* arg_tuple = PyTuple_Pack(1, o);
-    if (unlikely(!arg_tuple))
-        return -1;
-    res = __Pyx_Print(stream, arg_tuple, 1);
-    Py_DECREF(arg_tuple);
-    return res;
-}
-#endif
 
 static CYTHON_INLINE long __Pyx_PyInt_As_long(PyObject *x) {
     const long neg_one = (long) -1, const_zero = 0;
