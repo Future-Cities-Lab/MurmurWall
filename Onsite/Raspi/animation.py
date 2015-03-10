@@ -132,7 +132,7 @@ def update_packets(packets, packets_to_remove, led_strand, led_matrices):
                 color_strand_for_packet(led_strand.color_state, packet.current_position,
                                         packet.red, packet.green, packet.blue, 
                                         packet.prev_target_position, packet.target_position)
-                packet.update_postion()
+                packet.update_postion_strand()
                 if packet.has_reached_target():
                     if packet.target_is_end(300):
                         packets_to_remove.append(packet)
@@ -143,7 +143,7 @@ def update_packets(packets, packets_to_remove, led_strand, led_matrices):
             else:
                 color_pod_for_packet(led_strand.color_state, packet.current_position,
                                      packet.red, packet.green, packet.blue)
-                packet.update_postion()
+                packet.update_postion_pod()
     return num_of_packets_to_append
 
 def animate(packets, led_strand, related_terms_queue, led_matrices):

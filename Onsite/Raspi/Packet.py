@@ -24,11 +24,17 @@ class Packet(object):
         self.pod_speed = 0.017
         self.is_special = is_special
 
-    def update_postion(self):
+    def update_postion_strand(self):
         """
         updates current position based on velocity
         """
         self.current_position += self.speed
+
+    def update_postion_pod(self):
+        """
+        updates current position based on velocity
+        """
+        self.current_position += self.pod_speed
 
     def is_out_of_bounds(self, out_of_bounds):
         """
