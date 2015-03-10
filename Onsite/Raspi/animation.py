@@ -21,7 +21,9 @@ NUM_PIXELS = 360
 TOTAL_PIXELS = NUM_PIXELS
 
 START_PIX = 0
-END_PIX = 299 
+END_PIX = 299
+
+OUT_OF_BOUNDS = 400 
 
 MATRIX_POS = 149
 
@@ -105,9 +107,12 @@ def update_matrices(led_matrices):
     checks if matrices are finished displaying a word
     if so, they send the packet along
     """
+    print "Checking matrices"
     for led_matrix in led_matrices.values():
+        print "Checking word"
         word = led_matrix.check_status()
         if word is not '' and 'messed up':
+            print word
             for packet in led_matrix.packets:
                 if packet.text == word:
                     packet_to_update = packet
@@ -121,26 +126,34 @@ def update_packets(packets, packets_to_remove, led_strand, led_matrices):
     """
     does a bunch of complicated shit to update the packets
     """
+    print "Checking Packets"
     num_of_packets_to_append = 0
     for packet in packets:
-        if packet.is_out_of_bounds(400):
+        if packet.is_out_of_bounds(OUT_OF_BOUNDS):
+            print "Removing out of bounds packet"
             packets_to_remove.append(packet)
             if not packet.is_special:
                 num_of_packets_to_append += 1
         else:
             if not packet.text_being_displayed:
+                print "Drawing packet strand"
                 color_strand_for_packet(led_strand.color_state, packet.current_position,
                                         packet.red, packet.green, packet.blue, 
                                         packet.prev_target_position, packet.target_position)
                 packet.update_postion_strand()
                 if packet.has_reached_target():
-                    if packet.target_is_end(300):
+                    if packet.target_is_end(END_PIX):
+                        print 'Removing finished packet'
                         packets_to_remove.append(packet)
                         if not packet.is_special:
                             num_of_packets_to_append += 1
                     else:
+                        print 'Sending packet to matrix'
                         send_packet_to_matrix(packet, led_matrices)
+                        print 'Finished sendind packet to matrix'
+
             else:
+                print "Drawing packet pod"
                 color_pod_for_packet(led_strand.color_state, packet.current_position,
                                      packet.red, packet.green, packet.blue)
                 packet.update_postion_pod()
@@ -165,6 +178,7 @@ def animate(packets, led_strand, related_terms_queue, led_matrices):
     remove_packets(packets_to_remove, packets)
 
     add_new_packets(num_of_packets_to_append, packets, related_terms_queue)
+    print ''
 
 def update_queue(related_terms_pqueue):
     """
