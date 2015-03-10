@@ -1,7 +1,7 @@
 import serial
 import platform
-import pprint
 import time
+import itertools
 
 class LedMatrix(object):
     """
@@ -27,7 +27,7 @@ class LedMatrix(object):
         self.packets.append(packet)        
         for letter in packet.text:
             to_send.append(letter)
-        for i in range(0, 141 - len(packet.text)):
+        for _ in itertools.repeat(None, 141 - len(packet.text)):
             to_send.append('\n')
         self.port_address.write('*')
         if platform.system() == "Darwin":

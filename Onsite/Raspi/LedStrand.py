@@ -45,6 +45,9 @@ class LedStrand(object):
         self.color_state = [chr(0)] * 3*self.num_pixels
 
     def shut_off(self):
+        """
+        sends a message to arduino to shut off the current animation
+        """
         self.port_address.write('%')
         time.sleep(1)
         self.port_address.close()

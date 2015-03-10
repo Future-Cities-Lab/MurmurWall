@@ -10,13 +10,12 @@ class Packet(object):
         target_position - which LED the packet is heading towards
         text_being_displayed - a state representing if this packet is being shown on an LED screen
     """
-    def __init__(self, length, speed, color, brightness, text,
+    def __init__(self, length, speed, color, text,
                  current_position, target_position,
                  prev_target_position, text_being_displayed, is_special=False):
         self.length = length
         self.speed = speed
         self.red, self.green, self.blue = color
-        self.brightness = brightness
         self.text = text
         self.current_position = current_position
         self.prev_target_position = prev_target_position
@@ -25,3 +24,26 @@ class Packet(object):
         self.pod_speed = 0.017
         self.is_special = is_special
 
+    def update_postion(self):
+        """
+        updates current position based on velocity
+        """
+        self.current_position += self.speed
+
+    def is_out_of_bounds(self, out_of_bounds):
+        """
+        returns if packet is out of bounds
+        """
+        return self.current_position > out_of_bounds
+
+    def has_reached_target(self):
+        """
+        returns if packet has reached it's current target
+        """
+        return self.current_position >= self.target_position
+
+    def target_is_end(self, end):
+        """
+        returns if packet's target is the end of the LED Strip
+        """
+        return self.target_position == end
