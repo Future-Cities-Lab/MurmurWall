@@ -22,11 +22,6 @@ def color_strand_for_packet(list color_state, double current_position, bytes red
     color_state[3*(middle_pixel+1) + 2] = blue
 
     current_count = current_position - middle_pixel
-    #print current_position
-    # print current_count
-    # print ''
-    # print current_position
-    # print current_count
     curve = []
     for i in range(-2, 4):
         if i < 0:
@@ -49,4 +44,40 @@ def color_strand_for_packet(list color_state, double current_position, bytes red
             color_state[3*pixel_pos] = chr(new_red)
             color_state[3*pixel_pos + 1] = chr(new_green)
             color_state[3*pixel_pos + 2] = chr(new_blue)
-    #print ''
+
+def color_pod_for_packet(list color_state, double current_position, bytes red, bytes green, bytes blue):
+
+    cdef int middle_pixel
+    cdef double current_count
+
+    middle_pixel = <int>(current_position + 0.00001)
+
+    current_count = current_position - middle_pixel
+
+    curve = []
+    for i in range(-2, 4):
+        if i < 0:
+            i = i * -1
+        curve.append(ORIG[i] - (DIFF[i] * current_count))
+
+    cdef int pos, by_pos, pixel_pos
+    cdef double alpha
+    cdef int new_red, new_green, new_blue
+    for i in range(0, 5):
+        pos = 0
+        if i % 2 == 0:
+            pos = middle_pixel + (i*12)
+        else:
+            by_pos = 300 + ((i+1)*12)
+            pos = 2*(by_pos) - (middle_pixel + ((i+1)*12) + 1)
+        for j in range(-2, 4):
+            if i % 2 == 0:
+                pixel_pos = pos + j
+                if pixel_pos >= 300 + (i*12) and pixel_pos <= 300 + (i*12) + 11:
+                    alpha = map_values(curve[j+2], 0.0, 100.0, 0.0, 1.0)
+                    new_red = lerp(float(ord(red)), 0.0, alpha)
+                    new_green = lerp(float(ord(green)), 0.0, alpha)
+                    new_blue = lerp(float(ord(blue)), 0.0, alpha)
+                    color_state[3*pixel_pos] = chr(new_red)
+                    color_state[3*pixel_pos + 1] = chr(new_green)
+                    color_state[3*pixel_pos + 2] = chr(new_blue)

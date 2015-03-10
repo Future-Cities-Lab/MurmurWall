@@ -12,7 +12,7 @@ from LedStrand import LedStrand
 from helper_functions import get_ports
 from data_manager import get_latest_buckets
 
-from color_functions import map_values, lerp, color_strand_for_packet
+from color_functions import map_values, lerp, color_strand_for_packet, color_pod_for_packet
 
 FRAMES_PER_SECOND = 30.0
 SKIP_TICKS = 1000.0 / FRAMES_PER_SECOND
@@ -78,7 +78,6 @@ def test_leds(led_strand):
         led_strand.clear_state()
         led_strand.color_state[3*i] = chr(255)
         led_strand.update_hardware()
-        #time.sleep(WAIT_TIME)
 
 def color_pod(led_strand, packet):
 
@@ -119,44 +118,6 @@ def color_pod(led_strand, packet):
                     led_strand.color_state[3*pixel_pos + 2] = new_blue
     packet.current_position += packet.pod_speed
 
-# def color_strand_for_packet(led_strand, packet):
-#     """
-#     Colors the appropiate leds for this packet's position
-#     """
-#     middle_pos = int(math.floor(packet.current_position + 0.00001))
-
-#     # currnt_count = packet.current_position - middle_pos
-
-#     # pos_n_two = ORIG[2] - (DIFF[2] * currnt_count)
-#     # pos_n_one = ORIG[1] - (DIFF[1] * currnt_count)    
-#     # pos_middle = ORIG[0] - (DIFF[0] * currnt_count)
-#     # pos_one = ORIG[1] + (DIFF[1] * currnt_count)
-#     # pos_two = ORIG[2] + (DIFF[2] * currnt_count)
-#     # pos_tree = ORIG[3] + (DIFF[3] * currnt_count)
-
-#     # pos_list = [pos_n_two, pos_n_one, pos_middle, pos_one, pos_two, pos_tree]
-
-#     # for i in range(-2, 4):
-#     #     if i > 0:
-#     #         pixel_pos = middle_pos + i + 1
-#     #     else:
-#     #         pixel_pos = middle_pos + i
-#     #     if pixel_pos > packet.prev_target_position and pixel_pos < packet.target_position:
-#     #         alpha = map_values(pos_list[i+2], 0.0, 100.0, 0.0, 1.0)
-#     #         float_red = float(ord(packet.red))
-#     #         float_green = float(ord(packet.green))
-#     #         float_blue = float(ord(packet.blue))
-#     #         new_red = chr(int(lerp(float_red, FADE_COLOR, alpha)))
-#     #         new_green = chr(int(lerp(float_green, FADE_COLOR, alpha)))
-#     #         new_blue = chr(int(lerp(float_blue, FADE_COLOR, alpha)))
-#     #         led_strand.color_state[3*pixel_pos] = new_red
-#     #         led_strand.color_state[3*pixel_pos + 1] = new_green
-#     #         led_strand.color_state[3*pixel_pos + 2] = new_blue
-
-#     led_strand.color_state[3*(middle_pos+1)] = packet.red
-#     led_strand.color_state[3*(middle_pos+1) + 1] = packet.green
-#     led_strand.color_state[3*(middle_pos+1) + 2] = packet.blue
-
 def send_packet_to_matrix(packet, led_matrices):
     """
     Send packet to matrix to be displayed
@@ -184,7 +145,6 @@ def animate(packets, led_strand, related_terms_queue, led_matrices):
                 num_of_packets_to_append += 1
         else:
             if not packet.text_being_displayed:
-                #color_strand_for_packet(led_strand, packet)
                 color_strand_for_packet(led_strand.color_state, packet.current_position, packet.red, packet.green, packet.blue, packet.prev_target_position, packet.target_position)
                 packet.current_position += packet.speed
                 if packet.current_position >= packet.target_position:
@@ -194,8 +154,9 @@ def animate(packets, led_strand, related_terms_queue, led_matrices):
                             num_of_packets_to_append += 1
                     else:
                         send_packet_to_matrix(packet, led_matrices)
-            # else:
-            #     color_pod(led_strand, packet)
+            else:
+                color_pod_for_packet(led_strand.color_state, packet.current_position, packet.red, packet.green, packet.blue)
+                packet.current_position += packet.pod_speed
     
     led_strand.update_hardware()        
     
