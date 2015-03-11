@@ -165,18 +165,24 @@ def animate(packets, led_strand, related_terms_queue, led_matrices):
     i.e, it draws each packet at the position determined by the previous iteration
     and then procedes to determine its next position
     """        
+    print 'Clearing state'
     led_strand.clear_state()
 
     packets_to_remove = []
 
+    print 'Updating packets'
     num_of_packets_to_append = update_packets(packets, packets_to_remove, led_strand, led_matrices)
 
+    print 'Updating strand hardware'
     led_strand.update_hardware()        
     
+    print 'Updating matrices'
     update_matrices(led_matrices)
     
+    print 'Removing packets'
     remove_packets(packets_to_remove, packets)
 
+    print 'Adding new packets'
     add_new_packets(num_of_packets_to_append, packets, related_terms_queue)
     print ''
 

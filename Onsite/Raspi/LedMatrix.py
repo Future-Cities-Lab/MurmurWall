@@ -39,9 +39,13 @@ class LedMatrix(object):
         """
         Returns if hardware has finished displaying its current text
         """
+        print 'Reading....'
         if self.port_address.inWaiting() > 0:
+            print 'Got something, reading more'
             first_byte = self.port_address.read(1)
+            print 'Time to get it all'
             if first_byte == '*':
+                print 'Got it all'
                 out = self.port_address.read(100)
                 return out.replace('\n', '')
             else:
