@@ -27,15 +27,33 @@ def get_ports():
 
     if platform.system() == "Darwin":
         for port in current_ports:
-            if '604971' in port:
-                led_port = serial.Serial(port, BAUD_RATE, timeout=TIMEOUT)
-            elif '688531' in port:
-                matrix_port = serial.Serial(port, BAUD_RATE, timeout=TIMEOUT)
+            if 'Bluetooth' not in port:
+                print port
+                pot_port = serial.Serial(port, BAUD_RATE, timeout=TIMEOUT)
+                time.sleep(1)
+                pot_port.write('#')
+                time.sleep(1)
+                response = pot_port.read(1)
+                print response
+                if response is 'a':
+                    matrix_port = pot_port
+                elif response is 'b':
+                    led_port = pot_port
         matrix_port.flushInput()
         led_port.flushInput()
     else:
-        led_port = serial.Serial(current_ports[0], BAUD_RATE, timeout=TIMEOUT)
-        matrix_port = serial.Serial(current_ports[1], BAUD_RATE, timeout=TIMEOUT)
+        for i in range(0, 2):
+            port = serial.Serial(current_ports[i], BAUD_RATE, timeout=TIMEOUT)
+            time.sleep(1)
+            port.write('#')
+            time.sleep(1)
+            response = port.read(1)
+            if response is 'a':
+                matrix_port = port
+            elif response is 'b':
+                led_port = port
+        # led_port = serial.Serial(current_ports[0], BAUD_RATE, timeout=TIMEOUT)
+        # matrix_port = serial.Serial(current_ports[1], BAUD_RATE, timeout=TIMEOUT)
         matrix_port.flushInput()
         led_port.flushInput()     
     
