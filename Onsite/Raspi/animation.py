@@ -2,6 +2,8 @@ import time
 import Queue
 import threading
 import itertools
+import sys
+import os
 
 from random import randrange, uniform, shuffle
 
@@ -107,12 +109,9 @@ def update_matrices(led_matrices):
     checks if matrices are finished displaying a word
     if so, they send the packet along
     """
-    print "Checking matrices"
     for led_matrix in led_matrices.values():
-        print "Checking word"
         word = led_matrix.check_status()
         if word is not '' and 'messed up':
-            print word
             for packet in led_matrix.packets:
                 if packet.text == word:
                     packet_to_update = packet
@@ -126,34 +125,26 @@ def update_packets(packets, packets_to_remove, led_strand, led_matrices):
     """
     does a bunch of complicated shit to update the packets
     """
-    print "Checking Packets"
     num_of_packets_to_append = 0
     for packet in packets:
         if packet.is_out_of_bounds(OUT_OF_BOUNDS):
-            print "Removing out of bounds packet"
             packets_to_remove.append(packet)
             if not packet.is_special:
                 num_of_packets_to_append += 1
         else:
             if not packet.text_being_displayed:
-                print "Drawing packet strand"
                 color_strand_for_packet(led_strand.color_state, packet.current_position,
                                         packet.red, packet.green, packet.blue, 
                                         packet.prev_target_position, packet.target_position)
                 packet.update_postion_strand()
                 if packet.has_reached_target():
                     if packet.target_is_end(END_PIX):
-                        print 'Removing finished packet'
                         packets_to_remove.append(packet)
                         if not packet.is_special:
                             num_of_packets_to_append += 1
                     else:
-                        print 'Sending packet to matrix'
                         send_packet_to_matrix(packet, led_matrices)
-                        print 'Finished sendind packet to matrix'
-
             else:
-                print "Drawing packet pod"
                 color_pod_for_packet(led_strand.color_state, packet.current_position,
                                      packet.red, packet.green, packet.blue)
                 packet.update_postion_pod()
@@ -165,26 +156,19 @@ def animate(packets, led_strand, related_terms_queue, led_matrices):
     i.e, it draws each packet at the position determined by the previous iteration
     and then procedes to determine its next position
     """        
-    print 'Clearing state'
     led_strand.clear_state()
 
     packets_to_remove = []
 
-    print 'Updating packets'
     num_of_packets_to_append = update_packets(packets, packets_to_remove, led_strand, led_matrices)
 
-    print 'Updating strand hardware'
     led_strand.update_hardware()        
     
-    print 'Updating matrices'
     update_matrices(led_matrices)
     
-    print 'Removing packets'
     remove_packets(packets_to_remove, packets)
 
-    print 'Adding new packets'
     add_new_packets(num_of_packets_to_append, packets, related_terms_queue)
-    print ''
 
 def update_queue(related_terms_pqueue):
     """
@@ -219,10 +203,11 @@ def main():
     led_matrices = {MATRIX_POS: LedMatrix(matrix_port, MATRIX_POS)}
     led_strand = LedStrand(led_port, TOTAL_PIXELS)
     sleep_time = 0
-    last_time = time.time()
     updating = False
+    last_time = time.time()
     priority_time = time.time()
     buzz_pos = 0
+    restart_time = time.time()
 
     while True:
         try:
@@ -231,11 +216,21 @@ def main():
                 thread = threading.Thread(target=update_queue, args=(related_terms_queue,))
                 thread.start()
             if time.time() - priority_time >= 50:
+                print 'HUH'
                 priority_time = time.time()
                 color = (chr(255), chr(255), chr(255))
                 packets.append(get_new_packet(BUZZ_WORDS[buzz_pos], 0.5, color, True))
                 buzz_pos += 1
                 buzz_pos %= len(BUZZ_WORDS)
+
+            if time.time() -  restart_time >= 10:
+                restart_time = time.time()
+                print 'ICANT!'
+                led_matrices[MATRIX_POS].shut_off()
+                led_strand.shut_off()
+                time.sleep(2)
+                os.execv(sys.executable, [sys.executable] + sys.argv)
+
             animate(packets, led_strand, related_terms_queue, led_matrices)
             current_time = time.time()
             sleep_time = 1./FRAMES_PER_SECOND - (current_time - last_time)
