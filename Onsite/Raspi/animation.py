@@ -223,7 +223,7 @@ def main():
                 buzz_pos += 1
                 buzz_pos %= len(BUZZ_WORDS)
 
-            if time.time() -  restart_time >= 10:
+            if time.time() -  restart_time >= 3600:
                 restart_time = time.time()
                 print 'ICANT!'
                 led_matrices[MATRIX_POS].shut_off()
