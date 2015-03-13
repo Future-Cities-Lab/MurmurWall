@@ -19,7 +19,6 @@ def get_ports():
     """
     Returns the correct ports to be used by the hardware
     """
-    # TODO: FIGURE OUT WHY THIS FAILS SOMETIMES......
     current_ports = get_available_ports()
     print 'Available Ports are : \n'
     print current_ports
@@ -42,20 +41,26 @@ def get_ports():
         matrix_port.flushInput()
         led_port.flushInput()
     else:
-        for i in range(0, 2):
-            port = serial.Serial(current_ports[i], BAUD_RATE, timeout=TIMEOUT)
-            time.sleep(1)
-            port.write('#')
-            time.sleep(1)
-            response = port.read(1)
-            if response is 'a':
-                matrix_port = port
-            elif response is 'b':
-                led_port = port
-        # led_port = serial.Serial(current_ports[0], BAUD_RATE, timeout=TIMEOUT)
-        # matrix_port = serial.Serial(current_ports[1], BAUD_RATE, timeout=TIMEOUT)
-        matrix_port.flushInput()
-        led_port.flushInput()     
+        for port in current_ports:
+            if 'ACM' in port:
+                print port
+                pot_port = serial.Serial(port, BAUD_RATE, timeout=TIMEOUT)
+                print pot_port.inWaiting()
+                pot_port.flushInput()
+                print pot_port.inWaiting()
+                while pot_port.inWaiting() == 0:
+                     pot_port.flushInput()
+                     time.sleep(1)
+                     pot_port.write('#')
+                     time.sleep(1)
+                     print pot_port.inWaiting()
+                response = pot_port.read(1)
+                pot_port.flushInput()
+                print response
+                if response is 'a':
+                    matrix_port = pot_port
+                elif response is 'b':
+                    led_port = pot_port
     
     print '\nFound LED Port, it is : \n'
     print led_port

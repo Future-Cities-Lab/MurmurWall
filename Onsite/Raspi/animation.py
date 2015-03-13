@@ -245,7 +245,7 @@ def main():
             raise
         except IOError:
             print 'Shit Error Restarting'
-            time.sleep(10)
+            time.sleep(30)
             related_terms_queue = Queue.Queue()
             update_queue(related_terms_queue)
             packets = []
