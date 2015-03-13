@@ -1,60 +1,63 @@
-import time
-import pprint
-import requests
-import json
-import threading
-import platform
+"""
+Module provides functions for managing MURMURWALL data
+"""
 
-def get_latest_buckets():
-    """ Input: JSON file of trending words and related terms and conversation
-        Does: Manages network of teensies, LEDs, runs animation 
+from requests import get, ConnectionError 
+from json import load, dump
+from platform import system
+
+def set_backup_data(current_json):
     """
+    Takes latests JSON data loaded from the Server and saves it to disk
+    """
+    print '\nBacking up data\n'
+    if system() == "Darwin":
+        backup_location = 'Backup/backup.json'
+    else:
+        backup_location = '/home/pi/FutureCities/MurmurWall/Onsite/Raspi/Backup/backup.json'
+    with open(backup_location, 'w') as backup_json:
+        dump(current_json, backup_json)
 
-    #Uncomment to run every 10 min.
-    #threading.Timer(900.0, main).start()
 
-    #print '\nLoading backup data file.....\n'
-    if platform.system() == "Darwin":
+def get_backup_data():
+    """
+    Loads the backup JSON file to be used in this iteration of MURMURWALL 
+    """
+    print '\nConnection Error, Using Backup JSON File\n'
+    if system() == "Darwin":
         backup_file = 'Backup/backup.json'
     else:
         backup_file = '/home/pi/FutureCities/MurmurWall/Onsite/Raspi/Backup/backup.json'  
     with open(backup_file) as backup_json_file:    
-        current_json = json.load(backup_json_file)
+        current_json = load(backup_json_file)
+    return current_json
 
-    #print 'Backup data: \n'
-    #pprint.PrettyPrinter(indent=4).pprint(current_json)
-
-    #print '\nRequesting new data.....\n'
-    response = requests.get("https://api.myjson.com/bins/2csub")
-    
-    if response.status_code is 200:
-        #print 'Success (200) in downloading data\n'
-        current_json = response.json()
-        #print 'Backing up data\n'
-
-        if platform.system() == "Darwin":
-            backup_location = 'Backup/backup.json'
-        else:
-            backup_location = '/home/pi/FutureCities/MurmurWall/Onsite/Raspi/Backup/backup.json'
-        with open(backup_location, 'w') as backup_json:
-            json.dump(current_json, backup_json)
-    else: 
-        print 'Error (' + response.status_code + ')\n'
-        print 'Using backup.json'
-
-    #print 'Current data: \n'
-    #pprint.PrettyPrinter(indent=4).pprint(current_json)
-    #print '\n'
-
+def get_latest_data():
+    """ 
+    Makes request to get latest JSON from the Server
+    If there is any problem in getting the data, the script
+    resorts to using the last backup JSON file for this turn.
+    """
+    try:
+        print '\nRequesting new data.....\n'
+        response = get("https://api.myjson.com/bins/2csub")
+        if response.status_code is 200:
+            print '\nSuccess (200) in downloading data\n'
+            current_json = response.json()
+            set_backup_data(current_json)
+        else: 
+            current_json = get_backup_data()
+    except ConnectionError:
+        current_json = get_backup_data()
     return current_json
 
 def main():
-    """ Input: JSON file of trending words and related terms and conversation
-        Does: Manages network of teensies, LEDs, runs animation 
+    """ 
+    Used to test this module
+
     """
-    get_latest_words()
+    print get_latest_data()
 
 
 if __name__ == "__main__":
-    print 'Starting raspberry thread'
     main()

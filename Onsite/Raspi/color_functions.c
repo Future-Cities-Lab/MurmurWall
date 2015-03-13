@@ -670,9 +670,10 @@ static char __pyx_k_current_position[] = "current_position";
 static char __pyx_k_color_pod_for_packet[] = "color_pod_for_packet";
 static char __pyx_k_prev_target_position[] = "prev_target_position";
 static char __pyx_k_color_strand_for_packet[] = "color_strand_for_packet";
-static char __pyx_k_home_pi_MurmurWall_Onsite_Raspi[] = "/home/pi/MurmurWall/Onsite/Raspi/color_functions.pyx";
+static char __pyx_k_Users_collinschupman_Documents[] = "/Users/collinschupman/Documents/FutureCities/MurmurWall/Onsite/Raspi/color_functions.pyx";
 static PyObject *__pyx_n_s_DIFF;
 static PyObject *__pyx_n_s_ORIG;
+static PyObject *__pyx_kp_s_Users_collinschupman_Documents;
 static PyObject *__pyx_n_s_alpha;
 static PyObject *__pyx_n_s_amt;
 static PyObject *__pyx_n_s_blue;
@@ -688,7 +689,6 @@ static PyObject *__pyx_n_s_current_count;
 static PyObject *__pyx_n_s_current_position;
 static PyObject *__pyx_n_s_curve;
 static PyObject *__pyx_n_s_green;
-static PyObject *__pyx_kp_s_home_pi_MurmurWall_Onsite_Raspi;
 static PyObject *__pyx_n_s_i;
 static PyObject *__pyx_n_s_i_start;
 static PyObject *__pyx_n_s_i_stop;
@@ -2767,6 +2767,7 @@ static struct PyModuleDef __pyx_moduledef = {
 static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_DIFF, __pyx_k_DIFF, sizeof(__pyx_k_DIFF), 0, 0, 1, 1},
   {&__pyx_n_s_ORIG, __pyx_k_ORIG, sizeof(__pyx_k_ORIG), 0, 0, 1, 1},
+  {&__pyx_kp_s_Users_collinschupman_Documents, __pyx_k_Users_collinschupman_Documents, sizeof(__pyx_k_Users_collinschupman_Documents), 0, 0, 1, 0},
   {&__pyx_n_s_alpha, __pyx_k_alpha, sizeof(__pyx_k_alpha), 0, 0, 1, 1},
   {&__pyx_n_s_amt, __pyx_k_amt, sizeof(__pyx_k_amt), 0, 0, 1, 1},
   {&__pyx_n_s_blue, __pyx_k_blue, sizeof(__pyx_k_blue), 0, 0, 1, 1},
@@ -2782,7 +2783,6 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_current_position, __pyx_k_current_position, sizeof(__pyx_k_current_position), 0, 0, 1, 1},
   {&__pyx_n_s_curve, __pyx_k_curve, sizeof(__pyx_k_curve), 0, 0, 1, 1},
   {&__pyx_n_s_green, __pyx_k_green, sizeof(__pyx_k_green), 0, 0, 1, 1},
-  {&__pyx_kp_s_home_pi_MurmurWall_Onsite_Raspi, __pyx_k_home_pi_MurmurWall_Onsite_Raspi, sizeof(__pyx_k_home_pi_MurmurWall_Onsite_Raspi), 0, 0, 1, 0},
   {&__pyx_n_s_i, __pyx_k_i, sizeof(__pyx_k_i), 0, 0, 1, 1},
   {&__pyx_n_s_i_start, __pyx_k_i_start, sizeof(__pyx_k_i_start), 0, 0, 1, 1},
   {&__pyx_n_s_i_stop, __pyx_k_i_stop, sizeof(__pyx_k_i_stop), 0, 0, 1, 1},
@@ -2885,7 +2885,7 @@ static int __Pyx_InitCachedConstants(void) {
   __pyx_tuple__6 = PyTuple_Pack(5, __pyx_n_s_value, __pyx_n_s_i_start, __pyx_n_s_i_stop, __pyx_n_s_o_start, __pyx_n_s_o_stop); if (unlikely(!__pyx_tuple__6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 8; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__6);
   __Pyx_GIVEREF(__pyx_tuple__6);
-  __pyx_codeobj__7 = (PyObject*)__Pyx_PyCode_New(5, 0, 5, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__6, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_pi_MurmurWall_Onsite_Raspi, __pyx_n_s_map_values, 8, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 8; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_codeobj__7 = (PyObject*)__Pyx_PyCode_New(5, 0, 5, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__6, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Users_collinschupman_Documents, __pyx_n_s_map_values, 8, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 8; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
   /* "color_functions.pyx":11
  *     return o_start + (o_stop - o_start) * ((value - i_start) / (i_stop - i_start))
@@ -2897,7 +2897,7 @@ static int __Pyx_InitCachedConstants(void) {
   __pyx_tuple__8 = PyTuple_Pack(3, __pyx_n_s_channel_2, __pyx_n_s_channel_1, __pyx_n_s_amt); if (unlikely(!__pyx_tuple__8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 11; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__8);
   __Pyx_GIVEREF(__pyx_tuple__8);
-  __pyx_codeobj__9 = (PyObject*)__Pyx_PyCode_New(3, 0, 3, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__8, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_pi_MurmurWall_Onsite_Raspi, __pyx_n_s_lerp, 11, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 11; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_codeobj__9 = (PyObject*)__Pyx_PyCode_New(3, 0, 3, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__8, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Users_collinschupman_Documents, __pyx_n_s_lerp, 11, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 11; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
   /* "color_functions.pyx":14
  *     return round(channel_1 + (channel_2 - channel_1) * amt)
@@ -2909,7 +2909,7 @@ static int __Pyx_InitCachedConstants(void) {
   __pyx_tuple__10 = PyTuple_Pack(16, __pyx_n_s_color_state, __pyx_n_s_current_position, __pyx_n_s_red, __pyx_n_s_green, __pyx_n_s_blue, __pyx_n_s_prev_target_position, __pyx_n_s_target_position, __pyx_n_s_middle_pixel, __pyx_n_s_current_count, __pyx_n_s_curve, __pyx_n_s_i, __pyx_n_s_pixel_pos, __pyx_n_s_alpha, __pyx_n_s_new_red, __pyx_n_s_new_green, __pyx_n_s_new_blue); if (unlikely(!__pyx_tuple__10)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 14; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__10);
   __Pyx_GIVEREF(__pyx_tuple__10);
-  __pyx_codeobj__11 = (PyObject*)__Pyx_PyCode_New(7, 0, 16, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__10, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_pi_MurmurWall_Onsite_Raspi, __pyx_n_s_color_strand_for_packet, 14, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__11)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 14; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_codeobj__11 = (PyObject*)__Pyx_PyCode_New(7, 0, 16, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__10, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Users_collinschupman_Documents, __pyx_n_s_color_strand_for_packet, 14, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__11)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 14; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
   /* "color_functions.pyx":48
  *             color_state[3*pixel_pos + 2] = chr(new_blue)
@@ -2921,7 +2921,7 @@ static int __Pyx_InitCachedConstants(void) {
   __pyx_tuple__12 = PyTuple_Pack(17, __pyx_n_s_color_state, __pyx_n_s_current_position, __pyx_n_s_red, __pyx_n_s_green, __pyx_n_s_blue, __pyx_n_s_middle_pixel, __pyx_n_s_current_count, __pyx_n_s_curve, __pyx_n_s_i, __pyx_n_s_pos, __pyx_n_s_by_pos, __pyx_n_s_pixel_pos, __pyx_n_s_alpha, __pyx_n_s_new_red, __pyx_n_s_new_green, __pyx_n_s_new_blue, __pyx_n_s_j); if (unlikely(!__pyx_tuple__12)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 48; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__12);
   __Pyx_GIVEREF(__pyx_tuple__12);
-  __pyx_codeobj__13 = (PyObject*)__Pyx_PyCode_New(5, 0, 17, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__12, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_pi_MurmurWall_Onsite_Raspi, __pyx_n_s_color_pod_for_packet, 48, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__13)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 48; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_codeobj__13 = (PyObject*)__Pyx_PyCode_New(5, 0, 17, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__12, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Users_collinschupman_Documents, __pyx_n_s_color_pod_for_packet, 48, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__13)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 48; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;

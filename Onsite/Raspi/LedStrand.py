@@ -1,8 +1,8 @@
 # TODO: Make this a singleton
 
 import serial
-import platform
-import time
+from platform import system
+from time import sleep
 
 class LedStrand(object):
     """
@@ -21,7 +21,7 @@ class LedStrand(object):
         Updates the LEDs with the next color state
         """
         self.port_address.write('*')
-        if platform.system() == "Darwin":
+        if system() == "Darwin":
             self.port_address.write(self.color_state)
         else:
             self.port_address.write(str(bytearray(self.color_state)))
@@ -49,5 +49,5 @@ class LedStrand(object):
         sends a message to arduino to shut off the current animation
         """
         self.port_address.write('%')
-        time.sleep(1)
+        sleep(1)
         self.port_address.close()

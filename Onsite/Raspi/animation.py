@@ -1,10 +1,13 @@
-import time
-import Queue
-import threading
-import itertools
-import sys
-import os
+"""
+Module for Running the MurmurWall
+"""
 
+from sys import executable, argv, exit
+from os import execv
+from itertools import repeat
+from threading import Thread
+from Queue import Queue
+from time import time, sleep
 from random import randrange, uniform, shuffle
 
 from Packet import Packet
@@ -12,9 +15,14 @@ from LedMatrix import LedMatrix
 from LedStrand import LedStrand
 
 from helper_functions import get_ports
-from data_manager import get_latest_buckets
+from data_manager import get_latest_data
 
 from color_functions import map_values, color_strand_for_packet, color_pod_for_packet
+
+
+RESTART_LENGTH = 3600
+
+PRIORITY_LENGTH = 50
 
 FRAMES_PER_SECOND = 30.0
 SKIP_TICKS = 1000.0 / FRAMES_PER_SECOND
@@ -100,7 +108,7 @@ def add_new_packets(num_of_packets_to_append, packets, related_terms_queue):
     """
     adds a number of new packets into system
     """
-    for _ in itertools.repeat(None, num_of_packets_to_append):
+    for _ in repeat(None, num_of_packets_to_append):
         text = related_terms_queue.get()
         packets.append(get_new_packet(text, uniform(MIN_SPEED, MAX_SPEED), None))
 
@@ -150,7 +158,7 @@ def update_packets(packets, packets_to_remove, led_strand, led_matrices):
                 packet.update_postion_pod()
     return num_of_packets_to_append
 
-def animate(packets, led_strand, related_terms_queue, led_matrices):
+def animate_mumurwall(packets, led_strand, related_terms_queue, led_matrices, emptying):
     """
     The animation begins by drawing the previous state, and then updating.
     i.e, it draws each packet at the position determined by the previous iteration
@@ -168,13 +176,15 @@ def animate(packets, led_strand, related_terms_queue, led_matrices):
     
     remove_packets(packets_to_remove, packets)
 
-    add_new_packets(num_of_packets_to_append, packets, related_terms_queue)
+    if not emptying:
+        add_new_packets(num_of_packets_to_append, packets, related_terms_queue)
 
-def update_queue(related_terms_pqueue):
+def update_queue():
     """
     updates the words being displayed in the queue
     """
-    trend_buckets = get_latest_buckets()
+    related_terms_queue = Queue()
+    trend_buckets = get_latest_data()
     related_terms_list = []
     for trend in trend_buckets:
         for related_term in trend_buckets[trend]["Top searches for"]:
@@ -183,20 +193,39 @@ def update_queue(related_terms_pqueue):
                 related_terms_list.append(term)
     shuffle(related_terms_list)
     for i in range(0, len(related_terms_list)):
-        related_terms_pqueue.put(related_terms_list[i])
+        related_terms_queue.put(related_terms_list[i])
     global updating
     updating = True
-    print related_terms_pqueue.qsize()
+    print '\nRelated_Terms size = %i\n' % (related_terms_queue.qsize(),)
+    return related_terms_queue
+
+def restart_murmurwall(led_matrices, led_strand):
+    """
+    restarts the system
+    """
+    print '\nRestarting MurmurWall\n'
+    led_matrices[MATRIX_POS].shut_off()
+    led_strand.shut_off()
+    sleep(2)
+    execv(executable, [executable] + argv)
+
+def shutdown_murmurwall(led_matrices, led_strand):
+    """
+    shutsdown the system
+    """
+    led_matrices[MATRIX_POS].shut_off()
+    led_strand.shut_off()
+    sleep(2)
+    exit('\nShutting Down\n')
 
 
 def main():
     """
     main thread for MurmurWall
     """
-    related_terms_queue = Queue.Queue()
-    update_queue(related_terms_queue)
+    related_terms_queue = update_queue()
     packets = []
-    for _ in itertools.repeat(None, NUM_PACKETS):    
+    for _ in repeat(None, NUM_PACKETS):    
         text = related_terms_queue.get()
         packets.append(get_new_packet(text, uniform(MIN_SPEED, MAX_SPEED), None))
     led_port, matrix_port = get_ports()
@@ -204,63 +233,60 @@ def main():
     led_strand = LedStrand(led_port, TOTAL_PIXELS)
     sleep_time = 0
     updating = False
-    last_time = time.time()
-    priority_time = time.time()
+    emptying = False
+    last_time = time()
+    priority_time = time()
     buzz_pos = 0
-    restart_time = time.time()
+    restart_time = time()
 
+    print '\nStarting MurmurWall\n'
     while True:
         try:
+            if len(packets) == 0:
+                restart_murmurwall(led_matrices, led_strand)
             if related_terms_queue.qsize() <= 300 and not updating:
+                print '\nUpdating Words\n'
                 updating = True
-                thread = threading.Thread(target=update_queue, args=(related_terms_queue,))
+                thread = Thread(target=update_queue, args=(related_terms_queue,))
                 thread.start()
-            if time.time() - priority_time >= 50:
-                print 'HUH'
-                priority_time = time.time()
+            if time() - priority_time >= PRIORITY_LENGTH:
+                print '\nAdding Priority Word\n'
+                priority_time = time()
                 color = (chr(255), chr(255), chr(255))
                 packets.append(get_new_packet(BUZZ_WORDS[buzz_pos], 0.5, color, True))
                 buzz_pos += 1
                 buzz_pos %= len(BUZZ_WORDS)
 
-            if time.time() -  restart_time >= 3600:
-                restart_time = time.time()
-                print 'ICANT!'
-                led_matrices[MATRIX_POS].shut_off()
-                led_strand.shut_off()
-                time.sleep(2)
-                os.execv(sys.executable, [sys.executable] + sys.argv)
+            if time() -  restart_time >= RESTART_LENGTH:
+                emptying = True
 
-            animate(packets, led_strand, related_terms_queue, led_matrices)
-            current_time = time.time()
+            animate_mumurwall(packets, led_strand, related_terms_queue, led_matrices, emptying)
+
+            current_time = time()
             sleep_time = 1./FRAMES_PER_SECOND - (current_time - last_time)
             last_time = current_time
             if sleep_time >= 0:
-                time.sleep(sleep_time)
+                sleep(sleep_time)
+
         except (KeyboardInterrupt, SystemExit):
-            print ''
-            print 'Goodbye!'
-            led_matrices[MATRIX_POS].shut_off()
-            led_strand.shut_off()
-            raise
+            shutdown_murmurwall(led_matrices, led_strand)
         except IOError:
-            print 'Shit Error Restarting'
-            time.sleep(30)
-            related_terms_queue = Queue.Queue()
-            update_queue(related_terms_queue)
+            print '\nIOError, Restarting MurmurWall\n'
+            sleep(30)
+            related_terms_queue = update_queue()
             packets = []
-            for _ in itertools.repeat(None, NUM_PACKETS):     
+            for _ in repeat(None, NUM_PACKETS):     
                 text = related_terms_queue.get()
                 packets.append(get_new_packet(text, uniform(MIN_SPEED, MAX_SPEED), None))
             led_port, matrix_port = get_ports()
             led_matrices = {MATRIX_POS: LedMatrix(matrix_port, MATRIX_POS)}
             led_strand = LedStrand(led_port, TOTAL_PIXELS)
             sleep_time = 0
-            last_time = time.time()
+            last_time = time()
             updating = False
-            priority_time = time.time()
+            priority_time = time()
             buzz_pos = 0
 
 if __name__ == "__main__":
-    print 'running main animation...'
+    print '\nStarting Script\n'
     main()

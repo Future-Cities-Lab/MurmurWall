@@ -1,7 +1,7 @@
 import serial
-import platform
-import time
-import itertools
+from platform import system
+from itertools import repeat
+from time import sleep
 
 class LedMatrix(object):
     """
@@ -27,10 +27,10 @@ class LedMatrix(object):
         self.packets.append(packet)        
         for letter in packet.text:
             to_send.append(letter)
-        for _ in itertools.repeat(None, 141 - len(packet.text)):
+        for _ in repeat(None, 141 - len(packet.text)):
             to_send.append('\n')
         self.port_address.write('*')
-        if platform.system() == "Darwin":
+        if system() == "Darwin":
             self.port_address.write(to_send)
         else:
             self.port_address.write(str(bytearray(to_send)))
@@ -40,18 +40,14 @@ class LedMatrix(object):
         Returns if hardware has finished displaying its current text
         """
         if self.port_address.inWaiting() > 0:
-            print 'Got something, reading more'
             first_byte = self.port_address.read(1)
-            print 'Time to get it all'
             if first_byte == '*':
-                print 'Got it all'
                 out = self.port_address.read(100)
                 return out.replace('\n', '')
             else:
                 return 'messed up'
         else:
             return ''
-
 
     def is_showing_packets(self):
         """
@@ -63,7 +59,6 @@ class LedMatrix(object):
         """
         returns if hardware is showing any text
         """
-        print 'sending'
         self.port_address.write('&')
-        time.sleep(1)
+        sleep(1)
         self.port_address.close()

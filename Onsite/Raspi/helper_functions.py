@@ -1,7 +1,12 @@
-import glob
-import platform
-import time
+"""
+Module provides functions for managing the ports
+"""
+
 import serial
+from glob import glob
+from platform import system
+from time import sleep
+
 
 BAUD_RATE = 115200
 TIMEOUT = None
@@ -10,88 +15,66 @@ def get_available_ports():
     """
     Returns serial ports available to system
     """
-    if platform.system() == "Darwin":
-        return glob.glob('/dev/tty.*')
+    if system() == "Darwin":
+        port_address = '/dev/tty.*'
     else:
-        return glob.glob('/dev/tty[A-Za-z]*')
+        port_address = '/dev/tty[A-Za-z]*'
+    return glob(port_address) 
+
+def check_port_response(port_to_check):
+    """
+    send a msg to different ports to correctly indentify them
+    """
+    print port_to_check.inWaiting()
+    port_to_check.flushInput()
+    print port_to_check.inWaiting()
+    port_to_check.write('#')
+    while port_to_check.inWaiting() == 0:
+        port_to_check.flushInput()
+        sleep(1)
+        port_to_check.write('#')
+        sleep(1)
+        print port_to_check.inWaiting()
+    response = port_to_check.read(1)
+    port_to_check.flushInput()
+    return response
 
 def get_ports():
     """
     Returns the correct ports to be used by the hardware
     """
     current_ports = get_available_ports()
-    print 'Available Ports are : \n'
-    print current_ports
-    print ''
-
-    if platform.system() == "Darwin":
-        for port in current_ports:
-            if 'Bluetooth' not in port:
-                print port
-                pot_port = serial.Serial(port, BAUD_RATE, timeout=TIMEOUT)
-                time.sleep(1)
-                pot_port.write('#')
-                time.sleep(1)
-                response = pot_port.read(1)
-                print response
-                if response is 'a':
-                    matrix_port = pot_port
-                elif response is 'b':
-                    led_port = pot_port
-        matrix_port.flushInput()
-        led_port.flushInput()
-    else:
-        for port in current_ports:
-            if 'ACM' in port:
-                print port
-                pot_port = serial.Serial(port, BAUD_RATE, timeout=TIMEOUT)
-                print pot_port.inWaiting()
-                pot_port.flushInput()
-                print pot_port.inWaiting()
-                while pot_port.inWaiting() == 0:
-                     pot_port.flushInput()
-                     time.sleep(1)
-                     pot_port.write('#')
-                     time.sleep(1)
-                     print pot_port.inWaiting()
-                response = pot_port.read(1)
-                pot_port.flushInput()
-                print response
-                if response is 'a':
-                    matrix_port = pot_port
-                elif response is 'b':
-                    led_port = pot_port
+    print 'Available Ports are : \n%s\n' % (current_ports,)
     
-    print '\nFound LED Port, it is : \n'
-    print led_port
-    print ''
+    potential_ports = []
+    for port in current_ports:
+        if system() == "Darwin" and 'Bluetooth' not in port or system() != "Darwin" and 'ACM' in port:
+            potential_ports.append(port) 
+    for pot_port in potential_ports:
+        print pot_port
+        port_to_check = serial.Serial(pot_port, BAUD_RATE, timeout=TIMEOUT)
+        response = check_port_response(port_to_check)
+        if response is 'c':
+            matrix_port_2 = port_to_check
+        if response is 'b':
+            matrix_port = port_to_check
+        elif response is 'a':
+            led_port = port_to_check
+    
+    print '\nLED Port : \n%s\n' % (led_port,)
 
-    print '\nnFound Matrix Port, it is : \n'
-    print matrix_port
-    print ''
+    print '\nMatrix Port : \n%s\n' % (matrix_port,)
+
+    print '\nMatrix Port 2 : \n%s\n' % (matrix_port_2,)
 
     return led_port, matrix_port
 
-def my_range(start, stop, step):
-    """
-    returns iterator that moves by a given step
-    """
-    while start < stop:
-        yield start
-        start += step
+def main():
+    """ 
+    Used to test this module
 
-def map_values(value, i_start, i_stop, o_start, o_stop): 
     """
-    Input: Stream of values, start and stop. Start and stop of output values
-    Ouput: A mapping of the input to the output values
-    """
-    return o_start + (o_stop - o_start) * ((value - i_start) / (i_stop - i_start))
+    print get_ports()
 
-def lerp(color2, color1, amt):
-    """
-    c1,c2 - Colors to interpolate between
-    amt - amount of interpolation
-    Returns: interpotalted color
-    """
-    return round(color1 + (color2-color1)*amt)
-        
+if __name__ == "__main__":
+    main()
