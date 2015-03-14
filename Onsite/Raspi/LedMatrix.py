@@ -12,16 +12,17 @@ class LedMatrix(object):
         packet - the packet this LEDMatrix is current displaying
         position - the LED of the strand that is the center of this matrix
     """
-    def __init__(self, port_address, position):
+    def __init__(self, port_address, position, next_position):
         self.port_address = port_address
         self.position = position
+        self.next_position = next_position
         self.packets = []
 
     def update_hardware(self, color, text_speed, packet):
         """
         Updates the Matrix with the new word to display
         """
-        print 'Sending : ' + packet.text
+        print 'Sending : %s to : %i' % (packet.text, self.position,)
         red, green, blue = color
         to_send = [red, green, blue, chr(text_speed)]
         self.packets.append(packet)        
