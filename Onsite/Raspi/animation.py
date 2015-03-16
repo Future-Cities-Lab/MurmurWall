@@ -110,9 +110,10 @@ def update_matrices(led_matrices):
     checks if matrices are finished displaying a word
     if so, they send the packet along
     """
+    print 'checking matrices'
     for led_matrix in led_matrices.values():
         word = led_matrix.check_status()
-        #print word
+        print word
         if word is not '' and 'messed up':
             print word
             for packet in led_matrix.packets:
