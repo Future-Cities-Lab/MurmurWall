@@ -20,9 +20,9 @@ from data_manager import get_latest_data
 from color_functions import map_values, color_strand_for_packet, color_pod_for_packet
 
 
-RESTART_LENGTH = 600
+RESTART_LENGTH = 300
 
-PRIORITY_LENGTH = 120
+PRIORITY_LENGTH = 200
 
 FRAMES_PER_SECOND = 30.0
 SKIP_TICKS = 1000.0 / FRAMES_PER_SECOND
@@ -110,10 +110,10 @@ def update_matrices(led_matrices):
     checks if matrices are finished displaying a word
     if so, they send the packet along
     """
-    print 'checking matrices'
     for led_matrix in led_matrices.values():
+        print led_matrix.position
+        print len(led_matrix.packets)
         word = led_matrix.check_status()
-        print word
         if word is not '' and 'messed up':
             print word
             for packet in led_matrix.packets:
