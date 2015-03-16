@@ -253,7 +253,7 @@ def main():
                 updating = True
                 thread = Thread(target=update_queue, args=(related_terms_queue,))
                 thread.start()
-            if time() - priority_time >= PRIORITY_LENGTH:
+            if time() - priority_time >= PRIORITY_LENGTH and not emptying:
                 print '\nAdding Priority Word\n'
                 priority_time = time()
                 color = (chr(255), chr(255), chr(255))
@@ -264,6 +264,7 @@ def main():
             if time() -  restart_time >= RESTART_LENGTH:
                 emptying = True
 
+            print len(packets)
             animate_mumurwall(packets, led_strand, related_terms_queue, led_matrices, emptying)
 
             current_time = time()
