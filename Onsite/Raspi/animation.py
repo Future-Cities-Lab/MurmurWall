@@ -112,7 +112,7 @@ def update_matrices(led_matrices):
     """
     for led_matrix in led_matrices.values():
         word = led_matrix.check_status()
-        print word
+        #print word
         if word is not '' and 'messed up':
             print word
             for packet in led_matrix.packets:
