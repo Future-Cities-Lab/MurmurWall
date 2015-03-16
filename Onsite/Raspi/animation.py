@@ -20,9 +20,9 @@ from data_manager import get_latest_data
 from color_functions import map_values, color_strand_for_packet, color_pod_for_packet
 
 
-RESTART_LENGTH = 3600
+RESTART_LENGTH = 600
 
-PRIORITY_LENGTH = 50
+PRIORITY_LENGTH = 120
 
 FRAMES_PER_SECOND = 30.0
 SKIP_TICKS = 1000.0 / FRAMES_PER_SECOND
