@@ -112,7 +112,9 @@ def update_matrices(led_matrices):
     """
     for led_matrix in led_matrices.values():
         word = led_matrix.check_status()
+        print word
         if word is not '' and 'messed up':
+            print word
             for packet in led_matrix.packets:
                 if packet.text == word:
                     packet_to_update = packet
@@ -264,7 +266,6 @@ def main():
             if time() -  restart_time >= RESTART_LENGTH:
                 emptying = True
 
-            print len(packets)
             animate_mumurwall(packets, led_strand, related_terms_queue, led_matrices, emptying)
 
             current_time = time()
