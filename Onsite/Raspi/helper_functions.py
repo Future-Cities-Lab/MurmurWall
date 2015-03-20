@@ -1,81 +1,97 @@
-import glob
-import platform
-import time
+"""
+Module provides functions for managing the ports
+"""
+
 import serial
+from glob import glob
+from platform import system
+from time import sleep
+
 
 BAUD_RATE = 115200
-TIMEOUT = 1
+TIMEOUT = None
 
 def get_available_ports():
     """
     Returns serial ports available to system
     """
-    if platform.system() == "Darwin":
-        return glob.glob('/dev/tty.*')
+    if system() == "Darwin":
+        port_address = '/dev/tty.*'
     else:
-        return glob.glob('/dev/tty[A-Za-z]*')
+        port_address = '/dev/tty[A-Za-z]*'
+    return glob(port_address) 
+
+def check_port_response(port_to_check):
+    """
+    send a msg to different ports to correctly indentify them
+    """
+    print port_to_check.inWaiting()
+    port_to_check.flushInput()
+    print port_to_check.inWaiting()
+    port_to_check.write('#')
+    while port_to_check.inWaiting() == 0:
+        port_to_check.flushInput()
+        sleep(1)
+        port_to_check.write('#')
+        sleep(1)
+        print port_to_check.inWaiting()
+    response = port_to_check.read(1)
+    port_to_check.flushInput()
+    return response
 
 def get_ports():
     """
     Returns the correct ports to be used by the hardware
     """
-    # TODO: FIGURE OUT WHY THIS FAILS SOMETIMES......
     current_ports = get_available_ports()
-    print 'Available Ports are : \n'
-    print current_ports
-    print ''
+    print 'Available Ports are : \n%s\n' % (current_ports,)
     
-    for i in range(0, 2):
-        if platform.system() == "Darwin":
-            pos = 2+i
-        else:
-            pos = i
-        port = serial.Serial(current_ports[pos], BAUD_RATE, timeout=TIMEOUT)
-        time.sleep(1.516)
-        port.flushInput()
-        port.flushOutput()
-        port.write('#')
-        time.sleep(1.516)
-        out = ''
-        print "Reading MAC Address...."
-        while port.inWaiting() > 0:
-            out += port.read(1)
-            print out
-        if out == '04:E9:E5:00:EC:51':
-            led_port = port
-        elif out == '04:E9:E5:01:0C:E0':
-            matrix_port = port     
+    potential_ports = []
+    for port in current_ports:
+        if system() == "Darwin" and 'Bluetooth' not in port or system() != "Darwin" and 'ACM' in port:
+            potential_ports.append(port) 
+    for pot_port in potential_ports:
+        print pot_port
+        port_to_check = serial.Serial(pot_port, BAUD_RATE, timeout=TIMEOUT)
+        response = check_port_response(port_to_check)
+        print response
+        if response is 'g':
+            matrix_port_6 = port_to_check
+        elif response is 'f':
+            matrix_port_5 = port_to_check
+        elif response is 'e':
+            matrix_port_4 = port_to_check           
+        elif response is 'd':
+            matrix_port_3 = port_to_check
+        elif response is 'c':
+            matrix_port_2 = port_to_check
+        elif response is 'b':
+            matrix_port_1 = port_to_check
+        elif response is 'a':
+            led_port = port_to_check
     
-    print '\nFound LED Port, it is : \n'
-    print led_port
-    print ''
+    print '\nLED Port : \n%s\n' % (led_port,)
 
-    print '\nnFound Matrix Port, it is : \n'
-    print matrix_port
-    print ''
+    print '\nMatrix Port 1: \n%s\n' % (matrix_port_1,)
 
-    return led_port, matrix_port
+    print '\nMatrix Port 2 : \n%s\n' % (matrix_port_2,)
 
-def my_range(start, stop, step):
-    """
-    returns iterator that moves by a given step
-    """
-    while start < stop:
-        yield start
-        start += step
+    print '\nMatrix Port 3 : \n%s\n' % (matrix_port_3,)
 
-def map_values(value, i_start, i_stop, o_start, o_stop): 
-    """
-    Input: Stream of values, start and stop. Start and stop of output values
-    Ouput: A mapping of the input to the output values
-    """
-    return o_start + (o_stop - o_start) * ((value - i_start) / (i_stop - i_start))
+    print '\nMatrix Port 4 : \n%s\n' % (matrix_port_4,)
 
-def lerp(color2, color1, amt):
+    print '\nMatrix Port 5 : \n%s\n' % (matrix_port_5,)
+
+    print '\nMatrix Port 6 : \n%s\n' % (matrix_port_6,)
+
+    return led_port, matrix_port_1, matrix_port_2, matrix_port_3, matrix_port_4, matrix_port_5, matrix_port_6
+
+def main():
+    """ 
+    Used to test this module
+
     """
-    c1,c2 - Colors to interpolate between
-    amt - amount of interpolation
-    Returns: interpotalted color
-    """
-    return round(color1 + (color2-color1)*amt)
-        
+    print get_ports()
+
+if __name__ == "__main__":
+    main()

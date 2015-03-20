@@ -38,19 +38,28 @@ void setup() {
   }
 
 }
-
+/*
+wait for starting character:
+'#' = Send this devices MAC address
+'*' = Read in RGB data
+'%' = Shut off the system  
+*/
 void loop() { 
-  if (Serial.available() > 0) {
-    if (Serial.peek() == '#') {
-      Serial.read();
-      read_mac();
-      print_mac();
-    } else {
-      int got = Serial.readBytes(in_data, 3*TOTAL_LEDS);
+  int startChar = Serial.read();
+  if (startChar == '#') {
+       Serial.write('b');
+  } else if (startChar == '*') {
+    int count = Serial.readBytes((char*)in_data, sizeof(in_data));
+    if (count == sizeof(in_data)) {
       for (int i = 0; i < 3 * TOTAL_LEDS; i+=3) {
         leds[i/3].setRGB(in_data[i], in_data[i+1], in_data[i+2]);
       }
+      FastLED.show();
     }
+  } else if (startChar == '%') {
+    for (int i = 0; i < TOTAL_LEDS; i++) {
+      leds[i] = CRGB::Black;
+    }
+    FastLED.show();
   }
-  FastLED.show();
 }

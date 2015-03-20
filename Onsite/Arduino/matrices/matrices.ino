@@ -1,97 +1,149 @@
-/*
-Problems/TODO: 
-- Still no solution for > 10
-- Need to take in Color
-- Need to take in Speed
-*/
-
+#include <T3Mac.h>
 #include <SmartMatrix_32x32.h>
-#include "T3Mac.h"
+#include <vector>
+
+#define MATRIX_HEIGHT 32
+#define MATRIX_WIDTH 128
 
 #define TEXT_HEIGHT 11
 #define TEXT_WIDTH 9
 
+#define MIN_VELOCITY 1
+#define MAX_VELOCITY 3
+
+#define DELAY_TIME 70
+
 SmartMatrix matrix;
 
-const int defaultBrightness = 1000;  
-const rgb24 red = {0x20, 0, 0};
-const rgb24 black = {0, 0, 0};
-const int ledPin = 13;
+fontChoices fonts[] = {font8x13, font6x10, font5x7, font3x5};
+int font_widths[] = {9, 7, 6, 4};
 
-String inputString = "";
 
-int current_word_x_pos = 0;
+String input_string = "";
+const int total_data = 3 + 1 + 140 + 1;
+char in_data[total_data];
 
-boolean stringComplete = false;
+int prev = 0;
+int top_prev_length = 0;
+int bottom_prev_length = 0;
 
-int speed_delay = 40;
+struct Packet
+{
+    String text;
+    int x_position;
+    int y_position;
+    rgb24 color;
+    fontChoices font;
+    int width;
+};
 
-rgb24 currentColor = {0x20,0,0};
+void draw_packet(struct Packet *packet, int pos);
 
-// DEBUG
-boolean debug = false;
-String debug_string = "TESTING...";
+std::vector<struct Packet> packets;
+std::vector<int> to_erase;
+
+
+const int led_pin = 13;
 
 void setup() {
   Serial.begin(115200);
   Serial.flush();
-  pinMode(ledPin, OUTPUT);
-  
-  matrix.begin();
-  matrix.setBrightness(defaultBrightness);
-  matrix.setFont(font8x13);
-  
-  inputString.reserve(4000);
-  current_word_x_pos = -(debug_string.length()*TEXT_WIDTH);
 
+  pinMode(led_pin, OUTPUT);
+  matrix.begin();
+  matrix.setBrightness(255);
+  
+  input_string.reserve(4000);
 }
 
 void loop() {
-  matrix.fillScreen(black);
-  if (debug) {
-    if (current_word_x_pos == 128 + 1) {
-      current_word_x_pos = -(debug_string.length()*TEXT_WIDTH);
+  
+  matrix.fillScreen({0,0,0});
+  
+  int start_char = Serial.read();
+
+  if (start_char == '#') {
+    Serial.write('g');
+  } else if (start_char == '*') {
+    int count = Serial.readBytes((char*)in_data, sizeof(in_data));
+    if (count == sizeof(in_data)) {
+      load_new_packet();
     } else {
-      matrix.drawString(current_word_x_pos, TEXT_HEIGHT, {0xFF,0,0xFF}, debug_string.c_str());
-      current_word_x_pos++;
-      matrix.swapBuffers(true);
-      delay(speed_delay);
+      Serial.write("FAIL");
     }
-    
-  } else {
-    if (Serial.available() > 0) {
-      if (Serial.peek() == '#') {
-        Serial.read();
-        read_mac();
-        print_mac();
-      } else {
-        inputString = "";
-        currentColor.red = Serial.read(); 
-        currentColor.green = Serial.read(); 
-        currentColor.blue = Serial.read();
-        speed_delay = (int)Serial.read();
-        while (Serial.available() > 0) {
-          char inChar = (char)Serial.read(); 
-          inputString += inChar;
-          if (inChar == '\n') {
-            stringComplete = true;
-            current_word_x_pos = -(inputString.length()*TEXT_WIDTH);
-          } 
-        }
-      }
-    }
-   
-    if (stringComplete) {
-      if (current_word_x_pos == 128 + 1) {
-        current_word_x_pos = 0;
-        stringComplete = false;
-        Serial.write("Done");
-      } else {
-        matrix.drawString(current_word_x_pos, TEXT_HEIGHT, currentColor, inputString.c_str());
-        current_word_x_pos++;
-        matrix.swapBuffers(true);
-        delay(speed_delay);
-      }
-    }
+  } else if (start_char == '&') {
+    packets.clear();
+  } 
+  for (int i = 0; i < packets.size(); i++) {
+    draw_packet(&packets[i], i); 
   }
+  for (int i = 0; i < to_erase.size(); i++) {
+    Serial.write('*');
+    String to_send = packets[to_erase[i]].text;
+    int text_length = to_send.length();
+    for (int i = 0; i < 100 - text_length; i++) {
+      to_send += '\n';
+    }
+    Serial.write(to_send.c_str());
+    //Serial.flush();
+    packets.erase(packets.begin() + to_erase[i]);
+  }
+  to_erase.clear();
+  
+  matrix.swapBuffers(true);
+  delay(DELAY_TIME);
+  
+}
+
+void load_new_packet() {
+  input_string = "";
+  rgb24 word_color = {in_data[0], in_data[1], in_data[2]};
+  int speed_delay = (int)in_data[3];
+  int pos = 4;
+  while (in_data[pos] != '\n') {
+    input_string += in_data[pos];
+    pos++;
+  }
+  int font_pos = 0;
+  if (packets.size() >= 1) {
+    font_pos = map(packets.size(), 1, 5, 1, 3);
+  }
+  int start_height = TEXT_HEIGHT;
+  int height_offset = 10*prev;;
+  if (packets.size() == 0 || prev == 0) {
+    prev = 1;
+  } else if (prev == 1) {
+    prev = -1;  
+  } else if (prev == -1) {
+    prev = 0;
+  }
+  int start_x_pos = -(input_string.length()*font_widths[font_pos]);
+  packets.push_back({input_string, start_x_pos, start_height + height_offset, word_color, fonts[font_pos], font_widths[font_pos]});
+}
+
+void draw_packet(struct Packet *packet, int pos) {
+  String current_word = packet->text;
+  int num_chars = current_word.length();
+  int j = 0;
+  matrix.setFont(packet->font);
+  for (int i = packet->x_position; i < packet->x_position + (packet->width*num_chars); i += packet->width) {
+    matrix.drawChar(i, packet->y_position, packet->color, current_word.charAt(j));
+    j++;
+  }
+  if (packet->x_position < (MATRIX_WIDTH/2) - (num_chars/2)) {
+    int vel = 4 - map(packet->x_position, -(num_chars*packet->width), (MATRIX_WIDTH/2 - 1) -((num_chars*packet->width)/2), MIN_VELOCITY, MAX_VELOCITY);
+    if (vel == 0) {
+      vel++;
+    }
+    packet->x_position += vel;
+  } else {
+    int vel = map(packet->x_position, (MATRIX_WIDTH/2) -((num_chars*packet->width)/2), MATRIX_WIDTH, MIN_VELOCITY, MAX_VELOCITY);
+    if (vel == 0) {
+      vel++;
+    }
+    packet->x_position += vel;
+  }
+  if (packet->x_position >= MATRIX_WIDTH) {
+    to_erase.push_back(pos);
+  } 
 }

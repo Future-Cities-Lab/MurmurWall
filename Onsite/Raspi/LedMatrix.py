@@ -1,6 +1,7 @@
 import serial
-import platform
-import pprint
+from platform import system
+from itertools import repeat
+from time import sleep
 
 class LedMatrix(object):
     """
@@ -11,28 +12,30 @@ class LedMatrix(object):
         packet - the packet this LEDMatrix is current displaying
         position - the LED of the strand that is the center of this matrix
     """
-    def __init__(self, is_showing_packet, port_address, packet, position):
-        self.is_showing_packet = is_showing_packet
+    def __init__(self, port_address, position, next_position):
         self.port_address = port_address
-        self.packet = packet
         self.position = position
-        self.text_pos = 300.0
-        self.text_speed = 0.0
+        self.next_position = next_position
+        self.packets = []
 
-    def update_hardware(self, red, green, blue, text_speed):
+    def update_hardware(self, color, text_speed, packet):
         """
         Updates the Matrix with the new word to display
         """
-        if platform.system() == "Darwin":
-            print 'Sending : ' + self.packet.text
-            to_send = [red,green,blue,chr(text_speed)]
-            for letter in self.packet.text:
-                to_send.append(letter)
-            for i in range(0, 141 - len(self.packet.text)):
-                to_send.append('\n')
-            self.port_address.write('*')
+        print 'Sending : %s to : %i' % (packet.text, self.position,)
+        red, green, blue = color
+        to_send = [red, green, blue, chr(text_speed)]
+        self.packets.append(packet)        
+        for letter in packet.text:
+            to_send.append(letter)
+        for _ in repeat(None, 141 - len(packet.text)):
+            to_send.append('\n')
+        self.port_address.write('*')
+        if system() == "Darwin":
             self.port_address.write(to_send)
         else:
+<<<<<<< HEAD
+=======
             print 'Sending : ' + self.packet.text
             to_send = [red,green,blue,chr(text_speed)]
             for letter in self.packet.text:
@@ -40,24 +43,33 @@ class LedMatrix(object):
             for i in range(0, 141 - len(self.packet.text)):
                 to_send.append('\n')
             self.port_address.write('*')
+>>>>>>> master
             self.port_address.write(str(bytearray(to_send)))
 
-    def is_finished(self):
+    def check_status(self):
         """
         Returns if hardware has finished displaying its current text
         """
-        out = ''
-        while self.port_address.inWaiting() > 0:
-            out += self.port_address.read(1) 
-        return out == 'Done'
-
-    def text_position(self):
-        """
-        Returns if hardware has finished displaying its current text
-        """
-        out = self.port_address.read(1)
-        if out is not "":
-            self.last_text_pos = ord(out)
-            return ord(out)
+        if self.port_address.inWaiting() > 0:
+            first_byte = self.port_address.read(1)
+            if first_byte == '*':
+                out = self.port_address.read(100)
+                return out.replace('\n', '')
+            else:
+                return 'messed up'
         else:
-            return self.last_text_pos
+            return ''
+
+    def is_showing_packets(self):
+        """
+        returns if hardware is showing any text
+        """
+        return len(self.packets) > 0
+
+    def shut_off(self):
+        """
+        returns if hardware is showing any text
+        """
+        self.port_address.write('&')
+        sleep(1)
+        self.port_address.close()

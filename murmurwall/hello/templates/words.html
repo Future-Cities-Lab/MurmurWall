@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block sidebar %}
+<ul>
+	<li><a href="Words">Words</a></li>
+	<li><a href="Add">Add Word</a></li>
+<ul>
+{% endblock %}
+
+{% block content %}
+
+<h1>Priority Words:</h1>
+
+{% if pri.count > 0 %}
+
+
+<div>
+	<ul>
+		{% for pr in pri %}
+		<li>{{pr}}</li>
+		{% endfor %}
+	</ul>
+</div>
+
+{% else %}
+
+<p>There are no priority words</p>
+
+{% endif %}
+
+<p><br></p>
+
+<h1>Other Words:</h1>
+
+{% for key, value in words.items %}
+<div>
+	<h2>{{key}} :</h2>
+	<ul>
+	{% for key_2, value_2 in value.items %}
+		{% for key_3, value_3 in value_2.items %}
+		<li>{{key_3}}</li>
+		{% endfor %}
+	{% endfor %}
+	</ul>
+</div>
+
+{% endfor %}
+
+<p><br></p>
+
+{% endblock %}

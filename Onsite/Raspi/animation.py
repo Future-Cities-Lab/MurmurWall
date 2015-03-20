@@ -1,27 +1,41 @@
-import time
-import math
+"""
+Module for Running the MurmurWall
+"""
 
-from random import randrange, choice, uniform
+from sys import executable, argv, exit
+from os import execv
+from itertools import repeat
+from threading import Thread
+from Queue import Queue
+from time import time, sleep
+from random import randrange, uniform, shuffle
 
 from Packet import Packet
 from LedMatrix import LedMatrix
 from LedStrand import LedStrand
 
-from helper_functions import map_values, get_ports, lerp
-from data_manager import get_latest_words
+from helper_functions import get_ports
+from data_manager import get_latest_data
+
+from color_functions import map_values, color_strand_for_packet, color_pod_for_packet
+
+
+RESTART_LENGTH = 300
+
+PRIORITY_LENGTH = 200
 
 FRAMES_PER_SECOND = 30.0
 SKIP_TICKS = 1000.0 / FRAMES_PER_SECOND
-
-FADE_COLOR = 0.0
 
 NUM_PIXELS = 360
 TOTAL_PIXELS = NUM_PIXELS
 
 START_PIX = 0
-END_PIX = 299 
+END_PIX = 299
 
-MATRIX_POS = 149
+OUT_OF_BOUNDS = 400 
+
+MATRIX_POSITIONS = [29, 69, 109, 149, 189, 229]
 
 MAX_SPEED = 0.3
 MIN_SPEED = 0.05
@@ -29,44 +43,31 @@ MIN_SPEED = 0.05
 MAX_SPEED_LED = 40
 MIN_SPEED_LED = 50
 
-NUM_PACKETS = 4
+NUM_PACKETS = 8
 
-WAIT_TIME = 0.0276
+BUZZ_WORDS = ['YBCA', 'YERBA BUENA', 'SF MOMA', 
+              'MARKET ST. PROTOTYPING FESTIVAL', 
+              'MISSION ST.', 'MURMURWALL']
 
-POD_AMT = 0.4
-
-ORIG = [100.0, 25.0, 10.0, 0.0001]
-DIFF = [75.0, 15.0, 5.0, 2.0]
-
-def get_new_packet(word_list, speed):
+def get_new_packet(text, speed, color, is_special=False):
     """
     Creates a new data packet to be used in MurmurWall
     """
-    red = chr(randrange(0, 255))
-    green = chr(0)
-    blue = chr(255)
-    bright = 255
-    text = choice(word_list).upper().encode('ascii', 'ignore')
+    if color is None:    
+        red = chr(randrange(0, 255))
+        green = chr(0)
+        blue = chr(255)
+        color = (red, green, blue)
     length = len(text)
     if length % 2 == 0:
         length += 1
     cur_pos = START_PIX
-    tar_pos = MATRIX_POS
+    tar_pos = MATRIX_POSITIONS[0]
     prev_tar_pos = START_PIX
     displaying = False
-    is_passsing = False
-    passing_pos = 0
-    return Packet(length, speed, red, green, blue, bright, text, cur_pos, tar_pos, prev_tar_pos, displaying, 0.0, is_passsing, passing_pos)
-
-def get_next_available_matrix(led_matrices):
-    """
-    Returns the next available matrix in MurmurWall
-    """
-    # if led_matrices[MATRIX_POS].is_showing_packet:
-    #     return END_PIX
-    # else:
-    return END_PIX
-
+    return Packet(length, speed, color, 
+                  text, cur_pos, tar_pos, prev_tar_pos,
+                  displaying, is_special)
 
 def test_leds(led_strand):
     """
@@ -77,196 +78,240 @@ def test_leds(led_strand):
         led_strand.clear_state()
         led_strand.color_state[3*i] = chr(255)
         led_strand.update_hardware()
-        time.sleep(WAIT_TIME)
 
-def color_pod(led_strand, packet, led_matrices):
-    middle_pos = int(math.floor(led_matrices[MATRIX_POS].text_pos + 0.00001))
-    currnt_count = led_matrices[MATRIX_POS].text_pos - middle_pos
-    for i in range(0, 5):
-        pos = 0
-        if i % 2 == 0:
-            pos = middle_pos + (i*12)
+def send_packet_to_matrix(packet, led_matrices):
+    """
+    Send packet to matrix to be displayed
+    """
+    packet.text_being_displayed = True
+    packet.current_position = 300
+    #led_matrices[packet.target_position].packets.append(packet)
+    text_speed = int(map_values(packet.speed, MAX_SPEED, MIN_SPEED, MIN_SPEED_LED, MAX_SPEED_LED))
+    color = (packet.red, packet.green, packet.blue)
+    led_matrices[packet.target_position].update_hardware(color, text_speed, packet)
+
+def remove_packets(packets_to_remove, packets):
+    """
+    removes all packets marked to removal
+    """
+    for packet in packets_to_remove:
+        packets.remove(packet)  
+
+def add_new_packets(num_of_packets_to_append, packets, related_terms_queue):
+    """
+    adds a number of new packets into system
+    """
+    for _ in repeat(None, num_of_packets_to_append):
+        text = related_terms_queue.get()
+        packets.append(get_new_packet(text, uniform(MIN_SPEED, MAX_SPEED), None))
+
+def update_matrices(led_matrices):
+    """
+    checks if matrices are finished displaying a word
+    if so, they send the packet along
+    """
+    for led_matrix in led_matrices.values():
+        print led_matrix.position
+        print len(led_matrix.packets)
+        word = led_matrix.check_status()
+        if word is not '' and 'messed up':
+            print word
+            for packet in led_matrix.packets:
+                if packet.text == word:
+                    packet_to_update = packet
+            led_matrix.packets.remove(packet_to_update)
+            packet_to_update.text_being_displayed = False
+            packet_to_update.current_position = led_matrix.position + 1.000002
+            packet_to_update.prev_target_position = packet_to_update.target_position 
+            packet_to_update.target_position = led_matrix.next_position 
+
+def update_packets(packets, packets_to_remove, led_strand, led_matrices):
+    """
+    does a bunch of complicated shit to update the packets
+    """
+    num_of_packets_to_append = 0
+    for packet in packets:
+        if packet.is_out_of_bounds(OUT_OF_BOUNDS):
+            packets_to_remove.append(packet)
+            if not packet.is_special:
+                num_of_packets_to_append += 1
         else:
-            by_pos = 300 + ((i+1)*12)
-            pos = 2*(by_pos) - (middle_pos + ((i+1)*12) + 1)
-        pos_n_two = ORIG[2] - (DIFF[2] * currnt_count)
-        pos_n_one = ORIG[1] - (DIFF[1] * currnt_count)
-        pos_middle = ORIG[0] - (DIFF[0] * currnt_count)
-        pos_one = ORIG[1] + (DIFF[1] * currnt_count)
-        pos_two = ORIG[2] + (DIFF[2] * currnt_count)
-        pos_tree = ORIG[3] + (DIFF[3] * currnt_count)
-        pos_list = [pos_n_two, pos_n_one, pos_middle, pos_one, pos_two, pos_tree]
-        for j in range(-2, 4):
-            if i % 2 == 0:
-                if j > 0:
-                    pixel_pos = pos + j + 2
+            if not packet.text_being_displayed:
+                color_strand_for_packet(led_strand.color_state, packet.current_position,
+                                        packet.red, packet.green, packet.blue, 
+                                        packet.prev_target_position, packet.target_position)
+                packet.update_postion_strand()
+                if packet.has_reached_target():
+                    if packet.target_is_end(END_PIX):
+                        packets_to_remove.append(packet)
+                        if not packet.is_special:
+                            num_of_packets_to_append += 1
+                    else:
+                        send_packet_to_matrix(packet, led_matrices)
+            else:
+                if packet.current_position >= packet.target_position + 100.0:
+                    led_matrices[packet.target_position].packets.remove(packet)
+                    packet.text_being_displayed = False
+                    packet.current_position = packet.target_position + 1.000002
+                    packet.prev_target_position = packet.target_position 
+                    packet.target_position = led_matrices[packet.target_position].next_position 
                 else:
-                    pixel_pos = pos + j
-                if pixel_pos >= 300 + (i*12) and pixel_pos <= 300 + (i*12) + 11:
-                    alpha = map_values(pos_list[j+2], 0.0, 100.0, 0.0, 1.0)
-                    float_red = float(ord(packet.red))
-                    float_green = float(ord(packet.green))
-                    float_blue = float(ord(packet.blue))
-                    new_red = chr(int(lerp(float_red, FADE_COLOR, alpha)))
-                    new_green = chr(int(lerp(float_green, FADE_COLOR, alpha)))
-                    new_blue = chr(int(lerp(float_blue, FADE_COLOR, alpha)))
-                    led_strand.color_state[3*pixel_pos] = new_red
-                    led_strand.color_state[3*pixel_pos + 1] = new_green
-                    led_strand.color_state[3*pixel_pos + 2] = new_blue
-    led_matrices[MATRIX_POS].text_pos += led_matrices[MATRIX_POS].text_speed
-
+                    # color_pod_for_packet(led_strand.color_state, packet.current_position,
+                    #                      packet.red, packet.green, packet.blue)
+                    packet.update_postion_pod()
+    return num_of_packets_to_append
 
 def send_packet_to_end(packet):
     packet.prev_target_position = MATRIX_POS
     packet.target_position = END_PIX
     packet.current_position = MATRIX_POS + 1
 
-def color_strand_for_packet(led_strand, packet):
-
-    middle_pos = int(math.floor(packet.current_position + 0.00001))
-
-    currnt_count = packet.current_position - middle_pos
-
-    pos_n_two = ORIG[2] - (DIFF[2] * currnt_count)
-    pos_n_one = ORIG[1] - (DIFF[1] * currnt_count)    
-    pos_middle = ORIG[0] - (DIFF[0] * currnt_count)
-    pos_one = ORIG[1] + (DIFF[1] * currnt_count)
-    pos_two = ORIG[2] + (DIFF[2] * currnt_count)
-    pos_tree = ORIG[3] + (DIFF[3] * currnt_count)
-
-    pos_list = [pos_n_two, pos_n_one, pos_middle, pos_one, pos_two, pos_tree]
-
-    for i in range(-2, 4):
-        if i > 0:
-            pixel_pos = middle_pos + i + 1
-        else:
-            pixel_pos = middle_pos + i
-        if pixel_pos > packet.prev_target_position and pixel_pos < packet.target_position:
-            alpha = map_values(pos_list[i+2], 0.0, 100.0, 0.0, 1.0)
-            float_red = float(ord(packet.red))
-            float_green = float(ord(packet.green))
-            float_blue = float(ord(packet.blue))
-            new_red = chr(int(lerp(float_red, FADE_COLOR, alpha)))
-            new_green = chr(int(lerp(float_green, FADE_COLOR, alpha)))
-            new_blue = chr(int(lerp(float_blue, FADE_COLOR, alpha)))
-            led_strand.color_state[3*pixel_pos] = new_red
-            led_strand.color_state[3*pixel_pos + 1] = new_green
-            led_strand.color_state[3*pixel_pos + 2] = new_blue
-
-    led_strand.color_state[3*(middle_pos+1)] = packet.red
-    led_strand.color_state[3*(middle_pos+1) + 1] = packet.green
-    led_strand.color_state[3*(middle_pos+1) + 2] = packet.blue
-
-def update_matrix(led_matrices, led_matrix):
-    led_matrix.is_showing_packet = False
-    led_matrix.text_pos = 300.0
-    led_matrix.text_speed = 0.0
-    led_matrix.packet.text_being_displayed = False
-    led_matrix.packet.current_position = led_matrix.position + 1
-    led_matrix.packet.prev_target_position = MATRIX_POS 
-    led_matrix.packet.target_position = get_next_available_matrix(led_matrices) 
-    led_matrix.packet = None
-
-def send_ant_to_matrix(packet, led_matrices):
-    packet.text_being_displayed = True
-    packet.current_position = led_matrices[packet.target_position].position
-    led_matrices[packet.target_position].is_showing_packet = True
-    led_matrices[packet.target_position].packet = packet
-    led_matrices[packet.target_position].text_speed = map_values(float(len(packet.text)), 0.0, 17.0, 0.015, 0.017)
-    text_speed = int(map_values(packet.speed, MAX_SPEED, MIN_SPEED, MIN_SPEED_LED, MAX_SPEED_LED))
-    led_matrices[packet.target_position].update_hardware(packet.red, packet.green, packet.blue, text_speed)
-
-def packet_passing(packet, led_strand):
-    for i in range(0, 5):
-        pos = 300 + (i*12) + packet.passing_pos
-        led_strand.color_state[3*pos] = packet.red
-        led_strand.color_state[3*pos + 1] = packet.green
-        led_strand.color_state[3*pos + 2] = packet.blue
-    packet.passing_pos += 1
-
-def animate(packets, led_strand, word_list, led_matrices):
+def animate_mumurwall(packets, led_strand, related_terms_queue, led_matrices, emptying):
     """
     The animation begins by drawing the previous state, and then updating.
-    i.e, it draws each atom at the position determined by the previous iteration
+    i.e, it draws each packet at the position determined by the previous iteration
     and then procedes to determine its next position
-    """
-    to_remove = []
-    to_append = 0
+    """        
     led_strand.clear_state()
-    for packet in packets:  
-        if not packet.text_being_displayed and not packet.is_passsing:
-            color_strand_for_packet(led_strand, packet)
-            packet.current_position += packet.speed
-            if packet.current_position >= packet.target_position:
-                if packet.target_position == END_PIX:
-                    to_remove.append(packet)
-                    to_append += 1
-                elif not led_matrices[packet.target_position].is_showing_packet:
-                    send_ant_to_matrix(packet, led_matrices)
-                else:
-                    packet.is_passsing = True
-        elif packet.is_passsing:
-            if packet.passing_pos == 12:
-                packet.is_passsing = False
-                packet.passing_pos = 0
-                send_packet_to_end(packet)
-            else:
-                packet_passing(packet, led_strand)
-        else:
-            color_pod(led_strand, packet, led_matrices)
+
+    packets_to_remove = []
+
+    num_of_packets_to_append = update_packets(packets, packets_to_remove, led_strand, led_matrices)
 
     led_strand.update_hardware()        
     
-    for led_matrix in led_matrices.values():
-        if led_matrix.is_showing_packet and led_matrix.is_finished():
-            update_matrix(led_matrices, led_matrix)
+    update_matrices(led_matrices)
     
-    for packet in to_remove:
-        packets.remove(packet)
+    remove_packets(packets_to_remove, packets)
 
-    for i in range(0, to_append):
-        packets.append(get_new_packet(word_list, uniform(MIN_SPEED, MAX_SPEED)))
+    if not emptying:
+        add_new_packets(num_of_packets_to_append, packets, related_terms_queue)
 
-    #time.sleep(WAIT_TIME)
+def update_queue():
+    """
+    updates the words being displayed in the queue
+    """
+    related_terms_queue = Queue()
+    trend_buckets = get_latest_data()
+    related_terms_list = []
+    for trend in trend_buckets:
+        for related_term in trend_buckets[trend]["Top searches for"]:
+            term = related_term.upper().encode('ascii', 'ignore')
+            if term not in related_terms_list:
+                related_terms_list.append(term)
+    shuffle(related_terms_list)
+    for i in range(0, len(related_terms_list)):
+        related_terms_queue.put(related_terms_list[i])
+    global updating
+    updating = True
+    print '\nRelated_Terms size = %i\n' % (related_terms_queue.qsize(),)
+    return related_terms_queue
+
+def restart_murmurwall(led_matrices, led_strand):
+    """
+    restarts the system
+    """
+    print '\nRestarting MurmurWall\n'    
+    for led_matrix in led_matrices.values():
+        led_matrix.shut_off()
+    led_strand.shut_off()
+    sleep(2)
+    execv(executable, [executable] + argv)
+
+def shutdown_murmurwall(led_matrices, led_strand):
+    """
+    shutsdown the system
+    """
+    for led_matrix in led_matrices.values():
+        led_matrix.shut_off()
+    led_strand.shut_off()
+    sleep(2)
+    exit('\nShutting Down\n')
+
 
 def main():
     """
     main thread for MurmurWall
     """
-    word_list = get_latest_words()
-
+    related_terms_queue = update_queue()
     packets = []
-
-    for i in range(1, NUM_PACKETS+1):
-        packets.append(get_new_packet(word_list, uniform(MIN_SPEED, MAX_SPEED)))
-
-    led_port, matrix_port = get_ports()
-
-    led_matrices = {MATRIX_POS: LedMatrix(False, matrix_port, None, MATRIX_POS)}
-
-    led_strand = LedStrand(led_port, TOTAL_PIXELS)
+    for _ in repeat(None, NUM_PACKETS):    
+        text = related_terms_queue.get()
+        packets.append(get_new_packet(text, uniform(MIN_SPEED, MAX_SPEED), None))
     
+    led_port, matrix_port_1, matrix_port_2, matrix_port_3, matrix_port_4, matrix_port_5, matrix_port_6 = get_ports()
+    
+    led_matrices = {MATRIX_POSITIONS[0]: LedMatrix(matrix_port_1, MATRIX_POSITIONS[0], MATRIX_POSITIONS[1]),
+                    MATRIX_POSITIONS[1]: LedMatrix(matrix_port_2, MATRIX_POSITIONS[1], MATRIX_POSITIONS[2]),
+                    MATRIX_POSITIONS[2]: LedMatrix(matrix_port_3, MATRIX_POSITIONS[2], MATRIX_POSITIONS[3]),
+                    MATRIX_POSITIONS[3]: LedMatrix(matrix_port_4, MATRIX_POSITIONS[3], MATRIX_POSITIONS[4]),
+                    MATRIX_POSITIONS[4]: LedMatrix(matrix_port_5, MATRIX_POSITIONS[4], MATRIX_POSITIONS[5]),
+                    MATRIX_POSITIONS[5]: LedMatrix(matrix_port_6, MATRIX_POSITIONS[5], END_PIX)}
+                    
+    led_strand = LedStrand(led_port, TOTAL_PIXELS)
     sleep_time = 0
+    updating = False
+    emptying = False
+    last_time = time()
+    priority_time = time()
+    buzz_pos = 0
+    restart_time = time()
 
-    last_time = time.time()
-
+    print '\nStarting MurmurWall\n'
     while True:
         try:
-            animate(packets, led_strand, word_list, led_matrices)
-            current_time = time.time()
+            if len(packets) == 0:
+                restart_murmurwall(led_matrices, led_strand)
+            if related_terms_queue.qsize() <= 300 and not updating:
+                print '\nUpdating Words\n'
+                updating = True
+                thread = Thread(target=update_queue, args=(related_terms_queue,))
+                thread.start()
+            if time() - priority_time >= PRIORITY_LENGTH and not emptying:
+                print '\nAdding Priority Word\n'
+                priority_time = time()
+                color = (chr(255), chr(255), chr(255))
+                packets.append(get_new_packet(BUZZ_WORDS[buzz_pos], 0.5, color, True))
+                buzz_pos += 1
+                buzz_pos %= len(BUZZ_WORDS)
+
+            if time() -  restart_time >= RESTART_LENGTH:
+                emptying = True
+
+            animate_mumurwall(packets, led_strand, related_terms_queue, led_matrices, emptying)
+
+            current_time = time()
             sleep_time = 1./FRAMES_PER_SECOND - (current_time - last_time)
             last_time = current_time
             if sleep_time >= 0:
-                time.sleep(sleep_time)
-        except (KeyboardInterrupt, SystemExit):
-            print ''
-            print 'Goodbye!'
-            led_strand.port_address.close()
-            led_matrices[MATRIX_POS].port_address.close()
-            raise
+                sleep(sleep_time)
 
-    #test_leds(led_strand)
+        except (KeyboardInterrupt, SystemExit):
+            shutdown_murmurwall(led_matrices, led_strand)
+        except IOError:
+            print '\nIOError, Restarting MurmurWall\n'
+            sleep(30)
+            related_terms_queue = update_queue()
+            packets = []
+            for _ in repeat(None, NUM_PACKETS):     
+                text = related_terms_queue.get()
+                packets.append(get_new_packet(text, uniform(MIN_SPEED, MAX_SPEED), None))
+            led_port, matrix_port_1, matrix_port_2, matrix_port_3, matrix_port_4, matrix_port_5, matrix_port_6 = get_ports()
+    
+            led_matrices = {MATRIX_POSITIONS[0]: LedMatrix(matrix_port_1, MATRIX_POSITIONS[0], MATRIX_POSITIONS[1]),
+                            MATRIX_POSITIONS[1]: LedMatrix(matrix_port_2, MATRIX_POSITIONS[1], MATRIX_POSITIONS[2]),
+                            MATRIX_POSITIONS[2]: LedMatrix(matrix_port_3, MATRIX_POSITIONS[2], MATRIX_POSITIONS[3]),
+                            MATRIX_POSITIONS[3]: LedMatrix(matrix_port_4, MATRIX_POSITIONS[3], MATRIX_POSITIONS[4]),
+                            MATRIX_POSITIONS[4]: LedMatrix(matrix_port_5, MATRIX_POSITIONS[4], MATRIX_POSITIONS[5]),
+                            MATRIX_POSITIONS[5]: LedMatrix(matrix_port_6, MATRIX_POSITIONS[5], END_PIX)}
+
+            led_strand = LedStrand(led_port, TOTAL_PIXELS)
+            sleep_time = 0
+            last_time = time()
+            updating = False
+            priority_time = time()
+            buzz_pos = 0
 
 if __name__ == "__main__":
-    print 'running main animation...'
+    print '\nStarting Script\n'
     main()

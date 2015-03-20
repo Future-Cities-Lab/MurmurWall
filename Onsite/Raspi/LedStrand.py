@@ -1,8 +1,8 @@
 # TODO: Make this a singleton
 
 import serial
-import platform
-import pprint
+from platform import system
+from time import sleep
 
 class LedStrand(object):
     """
@@ -20,14 +20,10 @@ class LedStrand(object):
         """
         Updates the LEDs with the next color state
         """
-
-        #pprint.PrettyPrinter(indent=4).pprint([ord(x) for x in self.color_state])
-        if platform.system() == "Darwin":
-            # flush input?
-            self.port_address.write('*')
+        self.port_address.write('*')
+        if system() == "Darwin":
             self.port_address.write(self.color_state)
         else:
-            self.port_address.write('*')
             self.port_address.write(str(bytearray(self.color_state)))
 
     def check_response(self):
@@ -47,3 +43,11 @@ class LedStrand(object):
         clears the color state (sets all RGB values to black)
         """
         self.color_state = [chr(0)] * 3*self.num_pixels
+
+    def shut_off(self):
+        """
+        sends a message to arduino to shut off the current animation
+        """
+        self.port_address.write('%')
+        sleep(1)
+        self.port_address.close()
