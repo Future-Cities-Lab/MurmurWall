@@ -161,6 +161,11 @@ def update_packets(packets, packets_to_remove, led_strand, led_matrices):
                     packet.update_postion_pod()
     return num_of_packets_to_append
 
+def send_packet_to_end(packet):
+    packet.prev_target_position = MATRIX_POS
+    packet.target_position = END_PIX
+    packet.current_position = MATRIX_POS + 1
+
 def animate_mumurwall(packets, led_strand, related_terms_queue, led_matrices, emptying):
     """
     The animation begins by drawing the previous state, and then updating.
