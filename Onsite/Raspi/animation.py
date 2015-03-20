@@ -20,7 +20,7 @@ from data_manager import get_latest_data
 from color_functions import map_values, color_strand_for_packet, color_pod_for_packet
 
 
-RESTART_LENGTH = 300
+RESTART_LENGTH = 1800
 
 PRIORITY_LENGTH = 200
 

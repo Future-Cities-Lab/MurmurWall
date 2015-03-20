@@ -1,6 +1,6 @@
 # MurmurWall
-YBCA Plaza Installation 
 
-To run backend thread, migrate to Backend/ and run command 'python3.4 murmur_wall.py'.
+To run offsite data manager, migrate to Offsite/, run command 'python3.4 server.py'.
 
-Uncomment line of code outlined to run the thread every fifteen minutes.
+To run main animation, cd to Onsite/Raspi/, run command 'setsid python animation.py < /dev/zero &> log.txt &'.
+

@@ -108,11 +108,13 @@ def get_google_trends_responses(trends,new_trends):
     for trend in to_remove:
         new_trends.pop(trend, None)
 
-    # for trend in new_trends:
-    #     for related_terms in new_trends[trend]["Top searches for"]:
-    #         print(related_terms)
-    #         if len(related_terms) > 10:
-    #             related_terms = dict(related_terms.items()[:10])
+    for trend in new_trends:
+        related_terms = new_trends[trend]["Top searches for"]
+        print(related_terms)
+        print(type(related_terms))
+        if len(related_terms) > 10:
+            related_terms = related_terms[:10]
+        new_trends[trend]["Top searches for"] = related_terms
 
 
     with open('Backup/backup.json', 'w') as backup_json_file:    

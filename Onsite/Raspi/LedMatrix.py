@@ -34,16 +34,6 @@ class LedMatrix(object):
         if system() == "Darwin":
             self.port_address.write(to_send)
         else:
-<<<<<<< HEAD
-=======
-            print 'Sending : ' + self.packet.text
-            to_send = [red,green,blue,chr(text_speed)]
-            for letter in self.packet.text:
-                to_send.append(letter)
-            for i in range(0, 141 - len(self.packet.text)):
-                to_send.append('\n')
-            self.port_address.write('*')
->>>>>>> master
             self.port_address.write(str(bytearray(to_send)))
 
     def check_status(self):
