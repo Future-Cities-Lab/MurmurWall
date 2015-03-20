@@ -8,21 +8,13 @@ import requests
 from django.utils import simplejson
 from django.core.context_processors import csrf
 
-pri_words = []
 
 def index(request):
     current_data = requests.get("https://api.myjson.com/bins/2csub").json()
-    # related_terms_list = []
-    # for trend in current_data:
-    #     for related_term in current_data[trend]["Top searches for"]:
-    #         term = related_term.upper().encode('ascii', 'ignore')
-    #         if term not in related_terms_list:
-    #             related_terms_list.append(term)
-
-    if len(pri_words) is 0:
-        priority_data = requests.get("https://api.myjson.com/bins/3ddib").json()
-        for word in priority_data:
-            pri_words.append(word.upper().encode('ascii', 'ignore'))
+    pri_words = []
+    priority_data = requests.get("https://api.myjson.com/bins/3ddib").json()
+    for word in priority_data:
+        pri_words.append(word.upper().encode('ascii', 'ignore'))
     args = {}
     args.update(csrf(request))
     args['pri'] = pri_words
@@ -42,6 +34,10 @@ def create(request):
     if request.POST:
         form = WordForm(request.POST)
         if form.is_valid():
+            pri_words = []
+            priority_data = requests.get("https://api.myjson.com/bins/3ddib").json()
+            for word in priority_data:
+                pri_words.append(word.upper().encode('ascii', 'ignore'))
             pri_words.insert(0, form.cleaned_data['word'].upper())
             headers = {'Content-type': 'application/json'}
             response = requests.put("https://api.myjson.com/bins/3ddib", data=simplejson.dumps(pri_words), headers=headers)
