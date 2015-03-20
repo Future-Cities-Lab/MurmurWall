@@ -85,7 +85,7 @@ def send_packet_to_matrix(packet, led_matrices):
     """
     packet.text_being_displayed = True
     packet.current_position = 300
-    led_matrices[packet.target_position].packets.append(packet)
+    #led_matrices[packet.target_position].packets.append(packet)
     text_speed = int(map_values(packet.speed, MAX_SPEED, MIN_SPEED, MIN_SPEED_LED, MAX_SPEED_LED))
     color = (packet.red, packet.green, packet.blue)
     led_matrices[packet.target_position].update_hardware(color, text_speed, packet)
@@ -149,10 +149,16 @@ def update_packets(packets, packets_to_remove, led_strand, led_matrices):
                     else:
                         send_packet_to_matrix(packet, led_matrices)
             else:
-                random = 'yeah'
-                # color_pod_for_packet(led_strand.color_state, packet.current_position,
-                #                      packet.red, packet.green, packet.blue)
-                # packet.update_postion_pod()
+                if packet.current_position >= packet.target_position + 100.0:
+                    led_matrices[packet.target_position].packets.remove(packet)
+                    packet.text_being_displayed = False
+                    packet.current_position = packet.target_position + 1.000002
+                    packet.prev_target_position = packet.target_position 
+                    packet.target_position = led_matrices[packet.target_position].next_position 
+                else:
+                    # color_pod_for_packet(led_strand.color_state, packet.current_position,
+                    #                      packet.red, packet.green, packet.blue)
+                    packet.update_postion_pod()
     return num_of_packets_to_append
 
 def animate_mumurwall(packets, led_strand, related_terms_queue, led_matrices, emptying):
