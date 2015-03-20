@@ -65,7 +65,7 @@ Week,march madness
 2005-02-20 - 2005-02-26,4
 2005-02-27 - 2005-03-05,7
 2005-03-06 - 2005-03-12,11
-2005-03-13 - 2005-03-19,51
+2005-03-13 - 2005-03-19,50
 2005-03-20 - 2005-03-26,18
 2005-03-27 - 2005-04-02,8
 2005-04-03 - 2005-04-09,2
@@ -117,7 +117,7 @@ Week,march madness
 2006-02-19 - 2006-02-25,4
 2006-02-26 - 2006-03-04,7
 2006-03-05 - 2006-03-11,11
-2006-03-12 - 2006-03-18,65
+2006-03-12 - 2006-03-18,64
 2006-03-19 - 2006-03-25,22
 2006-03-26 - 2006-04-01,8
 2006-04-02 - 2006-04-08,4
@@ -169,7 +169,7 @@ Week,march madness
 2007-02-18 - 2007-02-24,5
 2007-02-25 - 2007-03-03,8
 2007-03-04 - 2007-03-10,13
-2007-03-11 - 2007-03-17,67
+2007-03-11 - 2007-03-17,66
 2007-03-18 - 2007-03-24,22
 2007-03-25 - 2007-03-31,9
 2007-04-01 - 2007-04-07,4
@@ -222,7 +222,7 @@ Week,march madness
 2008-02-24 - 2008-03-01,5
 2008-03-02 - 2008-03-08,8
 2008-03-09 - 2008-03-15,11
-2008-03-16 - 2008-03-22,53
+2008-03-16 - 2008-03-22,54
 2008-03-23 - 2008-03-29,18
 2008-03-30 - 2008-04-05,7
 2008-04-06 - 2008-04-12,4
@@ -326,7 +326,7 @@ Week,march madness
 2010-02-21 - 2010-02-27,3
 2010-02-28 - 2010-03-06,7
 2010-03-07 - 2010-03-13,10
-2010-03-14 - 2010-03-20,58
+2010-03-14 - 2010-03-20,59
 2010-03-21 - 2010-03-27,24
 2010-03-28 - 2010-04-03,9
 2010-04-04 - 2010-04-10,5
@@ -376,7 +376,7 @@ Week,march madness
 2011-02-06 - 2011-02-12,2
 2011-02-13 - 2011-02-19,3
 2011-02-20 - 2011-02-26,4
-2011-02-27 - 2011-03-05,7
+2011-02-27 - 2011-03-05,8
 2011-03-06 - 2011-03-12,12
 2011-03-13 - 2011-03-19,65
 2011-03-20 - 2011-03-26,31
@@ -430,7 +430,7 @@ Week,march madness
 2012-02-19 - 2012-02-25,3
 2012-02-26 - 2012-03-03,7
 2012-03-04 - 2012-03-10,13
-2012-03-11 - 2012-03-17,70
+2012-03-11 - 2012-03-17,69
 2012-03-18 - 2012-03-24,26
 2012-03-25 - 2012-03-31,11
 2012-04-01 - 2012-04-07,7
@@ -536,7 +536,7 @@ Week,march madness
 2014-03-02 - 2014-03-08,10
 2014-03-09 - 2014-03-15,14
 2014-03-16 - 2014-03-22,100
-2014-03-23 - 2014-03-29,49
+2014-03-23 - 2014-03-29,48
 2014-03-30 - 2014-04-05,21
 2014-04-06 - 2014-04-12,12
 2014-04-13 - 2014-04-19,1
@@ -595,7 +595,7 @@ Region,march madness
 United States,100
 Canada,46
 Philippines,5
-South Korea,4
+South Korea,3
 Ireland,3
 Australia,3
 United Kingdom,2
@@ -611,20 +611,20 @@ India,1
 Top cities for march madness
 City,march madness
 Omaha (United States),100
-Columbus (United States),93
-Cincinnati (United States),79
-Pittsburgh (United States),74
-Chicago (United States),72
+Columbus (United States),95
+Cincinnati (United States),82
+Pittsburgh (United States),77
+Chicago (United States),73
+Philadelphia (United States),68
 Denver (United States),68
-Philadelphia (United States),67
 Indianapolis (United States),67
-Nashville (United States),64
-Washington (United States),63
-Boston (United States),61
-Minneapolis (United States),59
-Seattle (United States),56
-San Diego (United States),56
-St. Louis (United States),56
+Nashville (United States),65
+Washington (United States),64
+Minneapolis (United States),60
+Boston (United States),60
+Seattle (United States),58
+San Diego (United States),58
+St. Louis (United States),57
 
 
 

@@ -111,9 +111,9 @@ def get_google_trends_responses(trends,new_trends):
     for trend in new_trends:
         related_terms = new_trends[trend]["Top searches for"]
         print(related_terms)
-        print(type(related_terms))
-        if len(related_terms) > 10:
-            related_terms = related_terms[:10]
+        print(type(list(related_terms.items())))
+        if len(related_terms.items()) > 10:
+            related_terms = dict(list(related_terms.items())[:10])
         new_trends[trend]["Top searches for"] = related_terms
 
 

@@ -84,7 +84,7 @@ def send_packet_to_matrix(packet, led_matrices):
     Send packet to matrix to be displayed
     """
     packet.text_being_displayed = True
-    packet.current_position = 300
+    packet.current_position = packet.target_position
     #led_matrices[packet.target_position].packets.append(packet)
     text_speed = int(map_values(packet.speed, MAX_SPEED, MIN_SPEED, MIN_SPEED_LED, MAX_SPEED_LED))
     color = (packet.red, packet.green, packet.blue)
@@ -110,12 +110,16 @@ def update_matrices(led_matrices):
     checks if matrices are finished displaying a word
     if so, they send the packet along
     """
+    #print "Matrices :"
     for led_matrix in led_matrices.values():
-        print led_matrix.position
-        print len(led_matrix.packets)
+        #print led_matrix.position
+        #print len(led_matrix.packets)
+        #for packet in led_matrix.packets:
+            #print packet.current_position
+        #print ""
         word = led_matrix.check_status()
         if word is not '' and 'messed up':
-            print word
+            #print word
             for packet in led_matrix.packets:
                 if packet.text == word:
                     packet_to_update = packet
@@ -161,11 +165,6 @@ def update_packets(packets, packets_to_remove, led_strand, led_matrices):
                     packet.update_postion_pod()
     return num_of_packets_to_append
 
-def send_packet_to_end(packet):
-    packet.prev_target_position = MATRIX_POS
-    packet.target_position = END_PIX
-    packet.current_position = MATRIX_POS + 1
-
 def animate_mumurwall(packets, led_strand, related_terms_queue, led_matrices, emptying):
     """
     The animation begins by drawing the previous state, and then updating.
@@ -179,7 +178,8 @@ def animate_mumurwall(packets, led_strand, related_terms_queue, led_matrices, em
     num_of_packets_to_append = update_packets(packets, packets_to_remove, led_strand, led_matrices)
 
     led_strand.update_hardware()        
-    
+
+    #print "Length of packets : %i" % (len(packets),)
     update_matrices(led_matrices)
     
     remove_packets(packets_to_remove, packets)
