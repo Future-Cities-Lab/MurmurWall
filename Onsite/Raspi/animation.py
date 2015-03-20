@@ -265,7 +265,7 @@ def main():
             if related_terms_queue.qsize() <= 300 and not updating:
                 print '\nUpdating Words\n'
                 updating = True
-                thread = Thread(target=update_queue, args=(related_terms_queue,))
+                thread = Thread(target=update_queue)
                 thread.start()
             if time() - priority_time >= PRIORITY_LENGTH and not emptying:
                 print '\nAdding Priority Word\n'
