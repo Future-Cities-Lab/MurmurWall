@@ -1,32 +1,81 @@
+/*
+Copyright (c) 2015, Collin Schupman (Future Citites Lab)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+of the Software, and to permit persons to whom the Software is furnished to do
+so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL 
+THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+IN THE SOFTWARE.
+*/
+
 #include <T3Mac.h>
 #include <SmartMatrix_32x32.h>
 #include <vector>
 
-#define MATRIX_HEIGHT 32
-#define MATRIX_WIDTH 128
+// The height of each LED matrix
+const int MATRIX_HEIGHT = 32;
 
-#define TEXT_HEIGHT 11
-#define TEXT_WIDTH 9
+// The width of each LED matrix
+const int MATRIX_WIDTH = 128;
 
-#define MIN_VELOCITY 1
-#define MAX_VELOCITY 3
+// Text height (pixels) 
+const int TEXT_HEIGHT = 11;
 
-#define DELAY_TIME 70
+// Text width (pixels)
+const int  TEXT_WIDTH = 9;
 
+const int MIN_VELOCITY = 1;
+const int  MAX_VELOCITY = 3;
+
+const int DELAY_TIME = 70;
+
+// The width of each LED matrix
 SmartMatrix matrix;
+const int led_pin = 13;
 
 fontChoices fonts[] = {font8x13, font6x10, font5x7, font3x5};
 int font_widths[] = {9, 7, 6, 4};
 
-
+// ?
 String input_string = "";
+
+/*
+The total byte data:
+3 - Color bytes r,g,b
+1 - 
+140 - Characters of the word
+1 - \n 
+*/
 const int total_data = 3 + 1 + 140 + 1;
+
+// A buffer to hold incoming byte stream
 char in_data[total_data];
 
 int prev = 0;
 int top_prev_length = 0;
 int bottom_prev_length = 0;
 
+/*
+A struct representing one Packet in Murmurwall
+text - A string of text to be displayed
+x_position -
+y_position -
+color -
+font -
+width - 
+*/
 struct Packet
 {
     String text;
@@ -37,14 +86,20 @@ struct Packet
     int width;
 };
 
-void draw_packet(struct Packet *packet, int pos);
-
+// A vector holding each packet being displayed
 std::vector<struct Packet> packets;
+
+// A vector holding each word marked for removal
 std::vector<int> to_erase;
 
 
-const int led_pin = 13;
+void draw_packet(struct Packet *packet, int pos);
 
+
+/*
+Standard Arduino setup function.
+Initiaizes serial port, data pin, matrix and input buffer
+*/
 void setup() {
   Serial.begin(115200);
   Serial.flush();
@@ -56,6 +111,10 @@ void setup() {
   input_string.reserve(4000);
 }
 
+/*
+Standard Arduino setup function.
+Initiaizes serial port, data pin, matrix and input buffer
+*/
 void loop() {
   
   matrix.fillScreen({0,0,0});
@@ -85,7 +144,6 @@ void loop() {
       to_send += '\n';
     }
     Serial.write(to_send.c_str());
-    //Serial.flush();
     packets.erase(packets.begin() + to_erase[i]);
   }
   to_erase.clear();
