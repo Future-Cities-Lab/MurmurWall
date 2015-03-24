@@ -16,7 +16,6 @@ CRGB leds[TOTAL_LEDS];
 
 char in_data[3*TOTAL_LEDS];
 
-
 char in_byte;
 
 void setup() { 
