@@ -22,23 +22,32 @@ IN THE SOFTWARE.
 
 class Packet(object):
     """
-    A class used to represent a packet used in MurmurWall 
+    A class designed to create instances representing one Packet in the MurmurWall system
     
     Attributes:
-        length - number of LEDs this packet will cover
-        speed - number of LEDs this packet will move each turn
-        color - RGB tuple representing the color of this packet
-        brightness - brightness of the center pixel of this packet
-        current_position - current LED the middle pixel is at in the strand
-        target_position - which LED the packet is heading towards
-        text_being_displayed - a state representing if this packet is being
-                               shown on an LED screen
+        length - Integer: the number of LEDs this packet will cover
+        speed - Integer: how fast the text will move
+        color - RGB tuple: color value of this packet
+        text - String: the text that will be displayed on the screens
+        current_position - Integer: the current pixel this Packet is at
+        target_position - Integer: the next pixel this Packet is heading to
+        text_being_displayed - Boolean: is this text being displayed right now?
+        pod_speed  - Float: how fast this Packet moves in a pod
+        is_special - Boolean: is this Packet is a 'buzz word'
     """
     def __init__(self, speed, color, text,
                  current_position, target_position,
                  prev_target_position, text_being_displayed, is_special=False):
         """
-        Inits a Packet instance.
+        Args (see Attributes for description):
+            speed 
+            color
+            text
+            current_position 
+            target_position
+            text_being_displayed
+            is_special
+
         """
         self.length = len(text)
         self.speed = speed
@@ -53,13 +62,13 @@ class Packet(object):
 
     def update_postion_strand(self):
         """
-        Updates this packets current position based on its regular velocity
+        Updates this packet's 'current_position' from its 'speed'
         """
         self.current_position += self.speed
 
     def update_postion_pod(self):
         """
-        Updates this packet's current position based on its pod velocity
+        Updates this packet's 'current_position' from its 'pod_speed'
         """
         self.current_position += self.pod_speed
 
@@ -67,27 +76,26 @@ class Packet(object):
         """
 
         Args:
-            An integer representing when the pixel has gone out of bounds
+            out_of_bounds - Integer: a pixel position outside MurmurWall
 
         Return:
-            A boolean representing if this packet is out of bounds
+            Boolean: is this packet out of bounds?
         """
         return self.current_position > out_of_bounds
 
     def has_reached_target(self):
         """
         Return:
-            A boolean representing if this packet has reached its current target
+            Boolean: has this packet reached its 'target_position'?
         """
         return self.current_position >= self.target_position
 
     def target_is_end(self, end):
         """
         Args:
-            An integer representing the final pixel in the LED strand
+            end - Integer: the final pixel in MurmurWall
 
         Return:
-            A boolean representing if this packet's target is the end
-            of the LED strand
+            Boolean: is this packet's 'target_position' at the end of MurmurWall?
         """
         return self.target_position == end

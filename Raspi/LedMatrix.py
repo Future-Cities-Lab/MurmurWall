@@ -27,25 +27,27 @@ from time import sleep
 
 class LedMatrix(object):
     """
-    A class designed to represent a single LED matrix in the MurmurWall System
+    A class designed to create instances representing one LED matrix in the MurmurWall system
     
     Attributes:
-        is_showing_packet - state representing if the LEDMatrix is currently displaying a packet
-        port_number - the port number this LEDMatrix is communicating from
-        packet - the packet this LEDMatrix is current displaying
-        position - the LED of the strand that is the center of this matrix
+
+        is_showing_packet - A Boolean representing if the LEDMatrix is currently displaying any packets
+        port_number - A Serial object to communicate with the hardware throuh
+        packets - A List of Packet objects this LEDMatrix is current displaying
+        position - An Integer representing this LEDMatrix's position in MurmurWall
+        next_position - An Integer representing a refrence to this Matrices neighbor
+        
     """
 
     def __init__(self, port_address, position, next_position):
         """
-        Inits an LedMatrix instance with with a Serial, color state and number of pixels
+        Inits an LedMatrix instance 
 
-        Args:
-
-            position - An integer representing the pixel the matrix is located at
-            next_position - An integer representing the next pixel postition to send each
-                            packet to when finished displaying.
-            port_address - A Serial object used for communication
+        Args (see Attributes for description):
+            is_showing_packet - A Boolean representing if the LEDMatrix is currently displaying any packets
+            port_number - A Serial object to communicate with the hardware throuh
+            position - An Integer representing this LEDMatrix's position in MurmurWall
+            next_position - An Integer representing a refrence to this Matrices neighbor
         """
         self.port_address = port_address
         self.position = position
@@ -54,15 +56,14 @@ class LedMatrix(object):
 
     def update_hardware(self, color, text_speed, packet):
         """
-        Updates the Matrix with the new word to display
+        Updates the Matrix with a new Packet to display
 
-        Begins by writting a '*' to the port to indicate to the hardware that it is going 
-        to recieve new data
+        Begins by writting a '*' to the hardware, readying it to recieve new data
 
         Packages the data as a byte array:
             '[red|green|blue|letter_1|....|letter_n|\n|....|\n]'
 
-        Writes the byte array to the port.
+        Writes the byte array to the port
 
         Args:
             color - An (r,g,b) Tuple representing the color to display the packet with
@@ -85,14 +86,14 @@ class LedMatrix(object):
 
     def check_status(self):
         """
-        Checks the status of matrix to see if it is finished displaying any text
+        Checks the status of matrix to see if it has finished displaying any Packets
 
-        If we revive a '*', we are being told by the hardware it is finished with something.
+        If a '*' has been recieved, then the hardware has finished with some Packet.
 
-        We subsequently read in the next 100 bytes to get the finished Packet.
+        Subsequently reads in the next 100 bytes to get text of the finished Packet.
 
         Returns:
-            A string of the finished text
+            A String of the text of the finished Packet
         """
         if self.port_address.inWaiting() > 0:
             first_byte = self.port_address.read(1)
@@ -106,18 +107,17 @@ class LedMatrix(object):
 
     def is_showing_packets(self):
         """
-        Checks to see if the matrix is showing any text
+        Checks to see if the matrix is showing any Packets
 
         Returns:
-            A boolean representing is the matrix is showing any text
+            A Boolean representing is the matrix is showing any Packets
         """
         return len(self.packets) > 0
 
     def shut_off(self):
         """
-        Sends a signal to the matrix for it wipe out its current data
-        Subsequently, closes the port connection.
-
+        Sends a '&'' to the hardware, telling it to empty all of its data
+        Subsequently closes the port connection.
         """
         self.port_address.write('&')
         sleep(1)

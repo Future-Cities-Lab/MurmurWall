@@ -31,7 +31,7 @@ from itertools import repeat
 from threading import Thread
 from Queue import Queue
 from time import time, sleep
-from random import uniform, shuffle
+from random import uniform, shuffle, randint
 
 from Packet import Packet
 from LedMatrix import LedMatrix
@@ -59,11 +59,11 @@ TOTAL_PIXELS = NUM_PIXELS
 
 # L
 START_PIX = 0
-END_PIX = 299
-OUT_OF_BOUNDS = 400 
+END_PIX = 49
+OUT_OF_BOUNDS = 100 
 
 # Where the LED matrices are located on the pixel strip
-MATRIX_POSITIONS = [29, 69, 109, 149, 189, 229]
+MATRIX_POSITIONS = [0, 8, 16, 24, 32, 40]
 
 # Maximum speed packets will run on the LED strand
 MAX_SPEED = 0.3
@@ -85,7 +85,7 @@ def test_leds(led_strand):
     Runs a single color through the entire LED strand to test the system
 
     Args: 
-        led_strand = LED strand state to run the color through
+        led_strand = List: LED strand state to run the color through
 
     """
     for i in range(0, TOTAL_PIXELS):
@@ -98,8 +98,8 @@ def send_packet_to_matrix(packet, led_matrix):
     Sends the packet to an LED matrix to be displayed
 
     Args:
-        packet - The packet to send to the LED matrix
-        led_matrix - The LEDMatrix this packet is displaying on
+        packet - Packet: packet to send to the matrix
+        led_matrix - LedMatrix: the matrix to send this packet to
 
     """
     packet.text_being_displayed = True
@@ -114,8 +114,8 @@ def remove_packets(packets_to_remove, packets):
     Removes all marked packets from MurmurWall
 
     Args:
-        packets_to_remove - A list of packets to remove
-        packets - List of all packets in MurmurWall
+        packets_to_remove - List: all packets to remove
+        packets - List: all packets in MurmurWall
     """
     for packet in packets_to_remove:
         packets.remove(packet)  
@@ -125,13 +125,14 @@ def add_new_packets(num_of_packets_to_append, packets, related_terms_queue):
     Adds a given number of new packets into MurmurWall
 
     Args:
-        num_of_packets_to_append - Number of new packets to add into MurmurWall
-        packets - MurmurWall's list of packets currently in the system
-        related_terms_queue - Queue of words to pull from
+        num_of_packets_to_append - Integer: how many new packets to add into MurmurWall
+        packets - List: all active packets in the MurmurWall
+        related_terms_queue - Queue: words to make packets from
     """
     for _ in repeat(None, num_of_packets_to_append):
         text = related_terms_queue.get()
-        new_packet = Packet(uniform(MIN_SPEED, MAX_SPEED), None, text,
+        color = (chr(randint(0, 155)), chr(0), chr(255))
+        new_packet = Packet(uniform(MIN_SPEED, MAX_SPEED), color, text,
                             START_PIX, MATRIX_POSITIONS[0],
                             START_PIX, False, True)
         packets.append(new_packet)
@@ -143,7 +144,7 @@ def update_matrices(led_matrices):
     displaying a packet. If so, puts the given packet backing into MurmurWall
 
     Args:
-        led_matrices - A dictionary of all the LED Matrices in the system
+        led_matrices - Dictionary: all matrices in MurmurWall
     """
     for led_matrix in led_matrices.values():
         word = led_matrix.check_status()
@@ -151,6 +152,8 @@ def update_matrices(led_matrices):
             for packet in led_matrix.packets:
                 if packet.text == word:
                     packet_to_update = packet
+            print 'moving along to :'
+            print led_matrix.next_position
             led_matrix.packets.remove(packet_to_update)
             packet_to_update.text_being_displayed = False
             packet_to_update.current_position = led_matrix.position + 1.000002
@@ -175,13 +178,12 @@ def update_packets(packets, packets_to_remove, led_strand, led_matrices):
     associated pod and updates it's position on the pod. 
 
     Args:
-        packets - The list of all packets currently in MurmurWall
-        packets_to_remove - A list of all packets marked for removal
-        led_strand - The LED Strand state
-        led_matrices - A dictionary of all the LED Matrices in MurmurWall
-
+        packets - List: all active packets in MurmurWall
+        packets_to_remove - List: all packets marked for removal
+        led_strand - LedStrand: the led strand
+        led_matrices - Dictionary: all matrices in MurmurWall
     Returns:
-        num_of_packets_to_append - Number of new packets to add into MurmurWall
+        num_of_packets_to_append - Integer: the number of new packets to add into MurmurWall
     """
     num_of_packets_to_append = 0
     for packet in packets:
@@ -201,6 +203,7 @@ def update_packets(packets, packets_to_remove, led_strand, led_matrices):
                 packet.update_postion_strand()
                 if packet.has_reached_target():
                     if packet.target_is_end(END_PIX):
+                        print 'hit end'
                         packets_to_remove.append(packet)
                         if not packet.is_special:
                             num_of_packets_to_append += 1
@@ -225,11 +228,11 @@ def animate_mumurwall(packets, led_strand, related_terms_queue, led_matrices, em
     for a response, removes and adds new packets into the system.
 
     Args:
-       packets - A list of all active packets in MurmurWall
-       led_strand - A list describing the next LED color state
-       related_terms_queue - A queue of all words to add to MurmurWall
-       led_matrices - A dictionary of all the LED matrices in MurmurWall
-       emptying - a boolean describing if the system is emptying itself 
+       packets - List: all active packets in MurmurWall
+       led_strand - List: the current color state
+       related_terms_queue - Queue: all words to add to MurmurWall
+       led_matrices - Dictionary: all the LED matrices in MurmurWall
+       emptying - Boolean: is the system is emptying itself?
 
     """        
     led_strand.clear_state()
@@ -255,7 +258,7 @@ def update_queue():
     words to be added to MurmurWall
 
     Returns:
-        related_terms_queue - A queue of all the words to add to MurmurWall
+        related_terms_queue - Queue: all the words to add to MurmurWall
 
     """
     related_terms_queue = Queue()
@@ -276,11 +279,11 @@ def update_queue():
 
 def restart_murmurwall(led_matrices, led_strand):
     """
-    Restarts the MurmurWall system
+    Restarts MurmurWall
 
     Args:
-        led_matrices - A dictionary of all LED Matrices to shut off
-        led_strand - the LED strand state to shut off
+        led_matrices - Dictionary: all the LED matrices in MurmurWall
+        led_strand - LedStrand: the led strand
     """
     print '\nRestarting MurmurWall\n'    
     for led_matrix in led_matrices.values():
@@ -292,11 +295,11 @@ def restart_murmurwall(led_matrices, led_strand):
 # TODO: can't always clean up?
 def shutdown_murmurwall(led_matrices, led_strand):
     """
-    Shutsdown the MurmurWall system
+    Shutsdown MurmurWall 
 
     Args:
-        led_matrices - A dictionary of all LED Matrices to shut off
-        led_strand - the LED strand state to shut off
+        led_matrices - Dictionary: all the LED matrices in MurmurWall
+        led_strand - LedStrand: the led strand
     """
     for led_matrix in led_matrices.values():
         led_matrix.shut_off()
@@ -307,16 +310,21 @@ def shutdown_murmurwall(led_matrices, led_strand):
 # TODO: Clean up
 def main():
     """
-    Initializes and begins the MurmurWall system
+    Initializes and starts MurmurWall 
 
-    Begins by getting the latest words to populate the system with, and subsequently
-    creating packets to add into the system.
+    Downloads the latest words to make Packets with, 
 
     Initializes all the ports, the LED Matrices and the LED Strand state.
 
-    Runs main animation, begins emptying system ever RESTART_LENGTH seconds,
-    restarts system when packets run out, adds a buzz word in every PRIORITY_LENGTH seconds,
-    rests to maintain FRAMES_PER_SECOND.
+    Runs main animation
+    
+    Empties MurmurWall every RESTART_LENGTH
+
+    Restarts when packets run out
+
+    Adds in a buzz word in every PRIORITY_LENGTH
+
+    Rests to maintain FRAMES_PER_SECOND
 
     Raises:
         KeyboardInterrupt: detects when user manual exits system. Shutsdown the system

@@ -20,28 +20,28 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE.
 """
 
-# TODO: Make this a singleton
-
 import serial
 from platform import system
 from time import sleep
 
 class LedStrand(object):
     """
-    A class representing the LED strand used in the MurmurWall System
+    A class representing an LED strand used in the MurmurWall System
     
     Attributes:
-        color_state - state representing the next color state to send to the LED hardware
-        port_number - the port number the LED hardware communicates over
+            color_state = an array of bytes (RGB) to send to the hardware
+            num_pixels - An integer representing how many pixels are in the LED strand
+            port_address - A Serial object used for communication
     """
     def __init__(self, port_address, num_pixels):
         """
         Inits and instance of LedStrand with a port address, color state and number of pixels
 
-        Args:
+        Args (see Attributes for description):
 
             num_pixels - An integer representing how many pixels are in the LED strand
             port_address - A Serial object used for communication
+
         """
         self.num_pixels = num_pixels
         self.color_state = [chr(0)] * (3*self.num_pixels)
@@ -49,12 +49,8 @@ class LedStrand(object):
 
     def update_hardware(self):
         """
-        Updates the LED hardware with the next color state
-
-        Sends a '*' message to the hardware indicating it needs to revive
-        the new color state.
-
-        Subsequently, writes the color state as a byte array to the hardware
+        Updates the hardware with the current 'color_state'
+        Sends an '*' to the hardware as part of a serial protocol
         """
         self.port_address.write('*')
         if system() == "Darwin":
@@ -64,15 +60,14 @@ class LedStrand(object):
 
     def clear_state(self):
         """
-        Resets the LED state to black
+        Sets every pixel in 'color_state' to black
         """
         self.color_state = [chr(0)] * 3*self.num_pixels
 
     def shut_off(self):
         """
-        Sends a '%' to the LED hardware, telling it to wipe out its current data
+        Sends an '%' to the hardware, telling it to wipe out its current data
         Subsequently, closes the port connection.
-
         """
         self.port_address.write('%')
         sleep(1)

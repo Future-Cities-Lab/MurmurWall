@@ -25,21 +25,21 @@ IN THE SOFTWARE.
 #include <vector>
 
 // The height of each LED matrix
-const int MATRIX_HEIGHT = 32;
+#define MATRIX_HEIGHT 32
 
 // The width of each LED matrix
-const int MATRIX_WIDTH = 128;
+#define MATRIX_WIDTH 128
 
 // Text height (pixels) 
-const int TEXT_HEIGHT = 11;
+#define TEXT_HEIGHT 11
 
 // Text width (pixels)
-const int  TEXT_WIDTH = 9;
+#define TEXT_WIDTH 9
 
-const int MIN_VELOCITY = 1;
-const int  MAX_VELOCITY = 3;
+#define MIN_VELOCITY 1
+#define MAX_VELOCITY 3
 
-const int DELAY_TIME = 70;
+#define DELAY_TIME 70
 
 // The width of each LED matrix
 SmartMatrix matrix;
@@ -122,7 +122,7 @@ void loop() {
   int start_char = Serial.read();
 
   if (start_char == '#') {
-    Serial.write('g');
+    Serial.write('d');
   } else if (start_char == '*') {
     int count = Serial.readBytes((char*)in_data, sizeof(in_data));
     if (count == sizeof(in_data)) {
