@@ -38,10 +38,11 @@ def color_strand_for_packet(list color_state, double current_position, bytes red
     cdef double current_count
 
     middle_pixel = <int>(current_position + 0.00001)
+    middle_pixel_one = 3*(middle_pixel+1)
 
-    color_state[3*(middle_pixel+1)] = red
-    color_state[3*(middle_pixel+1) + 1] = green
-    color_state[3*(middle_pixel+1) + 2] = blue
+    color_state[middle_pixel_one] = red
+    color_state[middle_pixel_one + 1] = green
+    color_state[middle_pixel_one + 2] = blue
 
     current_count = current_position - middle_pixel
     curve = []
@@ -52,7 +53,7 @@ def color_strand_for_packet(list color_state, double current_position, bytes red
 
     cdef int pixel_pos
     cdef double alpha
-    cdef int new_red, new_green, new_blue
+    cdef int new_red, new_blue
     for i in range(-2, 4):
         if i > 0:
             pixel_pos = middle_pixel + i + 1
@@ -61,10 +62,9 @@ def color_strand_for_packet(list color_state, double current_position, bytes red
         if pixel_pos > prev_target_position and pixel_pos < target_position:
             alpha = map_values(curve[i+2], 0.0, 100.0, 0.0, 1.0)
             new_red = lerp(float(ord(red)), 0.0, alpha)
-            new_green = lerp(float(ord(green)), 0.0, alpha)
             new_blue = lerp(float(ord(blue)), 0.0, alpha)
             color_state[3*pixel_pos] = chr(new_red)
-            color_state[3*pixel_pos + 1] = chr(new_green)
+            color_state[3*pixel_pos + 1] = chr(0)
             color_state[3*pixel_pos + 2] = chr(new_blue)
 
 def color_pod_for_packet(list color_state, double current_position, bytes red, bytes green, bytes blue):

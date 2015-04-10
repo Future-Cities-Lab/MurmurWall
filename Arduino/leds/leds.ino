@@ -23,7 +23,7 @@ IN THE SOFTWARE.
 #include "FastLED.h"
 #include "T3Mac.h"
 
-const int NUM_LEDS = 49;
+const int NUM_LEDS = 114;
 //const int NUM_LEDS_MIDDLE = 60;
 
 const int DATA_PIN = 21;

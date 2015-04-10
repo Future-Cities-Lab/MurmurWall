@@ -38,7 +38,7 @@ from LedMatrix import LedMatrix
 from LedStrand import LedStrand
 
 from port_manager import get_ports
-from data_manager import get_latest_data
+from data_manager import get_latest_data, get_buzz_word, get_currated_words
 
 from color_functions import map_values, color_strand_for_packet
 from color_functions import color_pod_for_packet
@@ -54,16 +54,15 @@ FRAMES_PER_SECOND = 30.0
 SKIP_TICKS = 1000.0 / FRAMES_PER_SECOND
 
 # How many pixels are in MurmurWall
-NUM_PIXELS = 360
-TOTAL_PIXELS = NUM_PIXELS
+TOTAL_PIXELS = 114
 
 # L
 START_PIX = 0
-END_PIX = 49
+END_PIX = TOTAL_PIXELS - 1
 OUT_OF_BOUNDS = 100 
 
 # Where the LED matrices are located on the pixel strip
-MATRIX_POSITIONS = [0, 8, 16, 24, 32, 40]
+MATRIX_POSITIONS = [10, 25, 40, 55, 70, 85]
 
 # Maximum speed packets will run on the LED strand
 MAX_SPEED = 0.3
@@ -76,9 +75,9 @@ MIN_SPEED_LED = 50
 # Maximum number of packets in MurmurWall
 NUM_PACKETS = 8
 
-BUZZ_WORDS = ['YBCA', 'YERBA BUENA', 'SF MOMA', 
-              'MARKET ST. PROTOTYPING FESTIVAL', 
-              'MISSION ST.', 'MURMURWALL']
+# BUZZ_WORDS = ['YBCA', 'YERBA BUENA', 'SF MOMA', 
+#               'MARKET ST. PROTOTYPING FESTIVAL', 
+#               'MISSION ST.', 'MURMURWALL']
 
 def test_leds(led_strand):
     """
@@ -89,9 +88,8 @@ def test_leds(led_strand):
 
     """
     for i in range(0, TOTAL_PIXELS):
-        led_strand.clear_state()
         led_strand.color_state[3*i] = chr(255)
-        led_strand.update_hardware()
+    led_strand.update_hardware()
 
 def send_packet_to_matrix(packet, led_matrix):
     """
@@ -134,7 +132,7 @@ def add_new_packets(num_of_packets_to_append, packets, related_terms_queue):
         color = (chr(randint(0, 155)), chr(0), chr(255))
         new_packet = Packet(uniform(MIN_SPEED, MAX_SPEED), color, text,
                             START_PIX, MATRIX_POSITIONS[0],
-                            START_PIX, False, True)
+                            START_PIX, False)
         packets.append(new_packet)
 
 # TODO: Make this safer, divide functionality up
@@ -149,11 +147,16 @@ def update_matrices(led_matrices):
     for led_matrix in led_matrices.values():
         word = led_matrix.check_status()
         if word is not '' and 'messed up':
+            print word
+            print type(word)
+            print repr(word)
             for packet in led_matrix.packets:
-                if packet.text == word:
+                print "Packet text is : " + packet.text
+                print type(packet.text)
+                print repr(packet.text)
+                # TODO: Temp fix
+                if packet.text.rstrip() == word.rstrip():
                     packet_to_update = packet
-            print 'moving along to :'
-            print led_matrix.next_position
             led_matrix.packets.remove(packet_to_update)
             packet_to_update.text_being_displayed = False
             packet_to_update.current_position = led_matrix.position + 1.000002
@@ -203,7 +206,6 @@ def update_packets(packets, packets_to_remove, led_strand, led_matrices):
                 packet.update_postion_strand()
                 if packet.has_reached_target():
                     if packet.target_is_end(END_PIX):
-                        print 'hit end'
                         packets_to_remove.append(packet)
                         if not packet.is_special:
                             num_of_packets_to_append += 1
@@ -333,8 +335,9 @@ def main():
 
     """
     related_terms_queue = update_queue()
+    
     packets = []
-    add_new_packets(NUM_PACKETS, packets, related_terms_queue)
+    add_new_packets(1, packets, related_terms_queue)
     led_port, matrix_port_1, matrix_port_2, matrix_port_3, matrix_port_4, matrix_port_5, matrix_port_6 = get_ports()
     led_matrices = {MATRIX_POSITIONS[0]: 
                     LedMatrix(matrix_port_1, MATRIX_POSITIONS[0], MATRIX_POSITIONS[1]),
@@ -350,16 +353,40 @@ def main():
                     LedMatrix(matrix_port_6, MATRIX_POSITIONS[5], END_PIX)}
                     
     led_strand = LedStrand(led_port, TOTAL_PIXELS)
+    # while True:
+    #     test_leds(led_strand)
     sleep_time = 0
     updating = False
     emptying = False
+    starting = True
     last_time = time()
     priority_time = time()
     buzz_pos = 0
     restart_time = time()
+    starting_time = time()
+    buzz_time = time()
+
+    buzz_words = get_currated_words()
+
+    print buzz_words
 
     while True:
         try:
+            if time() - buzz_time >= 5:
+                print 'Checking buzz'
+                buzz_word = get_buzz_word()
+                if buzz_word is not 'fail':
+                    color = (chr(255), chr(255), chr(255))
+                    buzz_packet = Packet(0.5, color, buzz_word,
+                                         START_PIX, MATRIX_POSITIONS[0],
+                                         START_PIX, False, True)
+                    packets.append(buzz_packet)
+                buzz_time = time()
+            if starting and time() - starting_time >= 5:
+                starting_time = time()
+                add_new_packets(1, packets, related_terms_queue)
+                if len(packets) == NUM_PACKETS:
+                    starting = False
             if len(packets) == 0:
                 restart_murmurwall(led_matrices, led_strand)
             if related_terms_queue.qsize() <= 300 and not updating:
@@ -371,12 +398,12 @@ def main():
                 print '\nAdding Buzz Word\n'
                 priority_time = time()
                 color = (chr(255), chr(255), chr(255))
-                buzz_packet = Packet(0.5, color, BUZZ_WORDS[buzz_pos],
+                buzz_packet = Packet(0.5, color, buzz_words[buzz_pos],
                                      START_PIX, MATRIX_POSITIONS[0],
                                      START_PIX, False, True)
                 packets.append(buzz_packet)
                 buzz_pos += 1
-                buzz_pos %= len(BUZZ_WORDS)
+                buzz_pos %= len(buzz_words)
 
             if time() -  restart_time >= RESTART_LENGTH:
                 emptying = True

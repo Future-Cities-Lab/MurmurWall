@@ -24,6 +24,7 @@ import serial
 from platform import system
 from itertools import repeat
 from time import sleep
+from color_functions import lerp, map_values
 
 class LedMatrix(object):
     """
@@ -72,6 +73,12 @@ class LedMatrix(object):
         """
         print 'Sending : %s to : %i' % (packet.text, self.position,)
         red, green, blue = color
+        amt = map_values(len(self.packets), 0, 8, 0.01, 1)
+        amt = 1.0 - amt
+        red = chr(int(lerp(ord(red), 0, amt)))
+        green = chr(int(lerp(ord(green), 0, amt)))
+        blue = chr(int(lerp(ord(blue), 0, amt)))
+
         to_send = [red, green, blue, chr(text_speed)]
         self.packets.append(packet)        
         for letter in packet.text:

@@ -122,7 +122,7 @@ void loop() {
   int start_char = Serial.read();
 
   if (start_char == '#') {
-    Serial.write('d');
+    Serial.write('f');
   } else if (start_char == '*') {
     int count = Serial.readBytes((char*)in_data, sizeof(in_data));
     if (count == sizeof(in_data)) {
