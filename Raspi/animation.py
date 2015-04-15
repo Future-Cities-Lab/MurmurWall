@@ -368,7 +368,7 @@ def main():
 
     buzz_words = get_currated_words()
 
-    print buzz_words
+    print buzz_words    
 
     while True:
         try:
