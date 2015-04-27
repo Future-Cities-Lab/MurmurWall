@@ -28,7 +28,7 @@ import sys
 
 from os import execv
 from itertools import repeat
-from threading import Thread
+from threading import Thread, Timer
 from Queue import Queue
 from time import time, sleep
 from random import uniform, shuffle, randint
@@ -279,7 +279,7 @@ def update_queue():
     print '\nRelated_Terms size = %i\n' % (related_terms_queue.qsize(),)
     return related_terms_queue
 
-def restart_murmurwall(led_matrices, led_strand):
+def restart_murmurwall(led_matrices, led_strand, t):
     """
     Restarts MurmurWall
 
@@ -287,7 +287,8 @@ def restart_murmurwall(led_matrices, led_strand):
         led_matrices - Dictionary: all the LED matrices in MurmurWall
         led_strand - LedStrand: the led strand
     """
-    print '\nRestarting MurmurWall\n'    
+    print '\nRestarting MurmurWall\n'
+    t.cancel()
     for led_matrix in led_matrices.values():
         led_matrix.shut_off()
     led_strand.shut_off()
@@ -295,7 +296,7 @@ def restart_murmurwall(led_matrices, led_strand):
     execv(sys.executable, [sys.executable] + sys.argv)
 
 # TODO: can't always clean up?
-def shutdown_murmurwall(led_matrices, led_strand):
+def shutdown_murmurwall(led_matrices, led_strand, t):
     """
     Shutsdown MurmurWall 
 
@@ -303,11 +304,23 @@ def shutdown_murmurwall(led_matrices, led_strand):
         led_matrices - Dictionary: all the LED matrices in MurmurWall
         led_strand - LedStrand: the led strand
     """
+    t.cancel()
     for led_matrix in led_matrices.values():
         led_matrix.shut_off()
     led_strand.shut_off()
     sleep(2)
     sys.exit('\nShutting Down\n')
+
+def check_buzz(super_buzz_words):
+    print 'Checking buzz'
+    t = Timer(5.0, check_buzz, args=(super_buzz_words,))
+    t.dameon = True
+    t.start()
+    buzz_word = get_buzz_word()
+    if buzz_word is not 'fail':
+        super_buzz_words.put(buzz_word)
+    return t
+    
 
 # TODO: Clean up
 def main():
@@ -368,27 +381,26 @@ def main():
 
     buzz_words = get_currated_words()
 
-    print buzz_words    
+    super_buzz_word = Queue()
+    t = check_buzz(super_buzz_word)
+
+    print buzz_words
 
     while True:
         try:
-            if time() - buzz_time >= 5:
-                print 'Checking buzz'
-                buzz_word = get_buzz_word()
-                if buzz_word is not 'fail':
-                    color = (chr(255), chr(255), chr(255))
-                    buzz_packet = Packet(0.5, color, buzz_word,
-                                         START_PIX, MATRIX_POSITIONS[0],
-                                         START_PIX, False, True)
-                    packets.append(buzz_packet)
-                buzz_time = time()
+            if not super_buzz_word.empty():
+                color = (chr(255), chr(255), chr(255))
+                buzz_packet = Packet(0.5, color, super_buzz_word.get(),
+                                     START_PIX, MATRIX_POSITIONS[0],
+                                     START_PIX, False, True)
+                packets.append(buzz_packet)
             if starting and time() - starting_time >= 5:
                 starting_time = time()
                 add_new_packets(1, packets, related_terms_queue)
                 if len(packets) == NUM_PACKETS:
                     starting = False
             if len(packets) == 0:
-                restart_murmurwall(led_matrices, led_strand)
+                restart_murmurwall(led_matrices, led_strand, t)
             if related_terms_queue.qsize() <= 300 and not updating:
                 print '\nUpdating Words\n'
                 updating = True
@@ -418,11 +430,11 @@ def main():
                 sleep(sleep_time)
 
         except (KeyboardInterrupt, SystemExit):
-            shutdown_murmurwall(led_matrices, led_strand)
+            shutdown_murmurwall(led_matrices, led_strand, t)
         except IOError:
             print '\nIOError, Restarting MurmurWall\n'
             sleep(30)
-            restart_murmurwall(led_matrices, led_strand)
+            restart_murmurwall(led_matrices, led_strand, t)
 
 if __name__ == "__main__":
     print '\nStarting MurmurWall\n'
