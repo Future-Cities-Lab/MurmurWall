@@ -54,15 +54,15 @@ FRAMES_PER_SECOND = 30.0
 SKIP_TICKS = 1000.0 / FRAMES_PER_SECOND
 
 # How many pixels are in MurmurWall
-TOTAL_PIXELS = 114
+TOTAL_PIXELS = 1403
 
 # L
 START_PIX = 0
 END_PIX = TOTAL_PIXELS - 1
-OUT_OF_BOUNDS = 100 
+OUT_OF_BOUNDS = 1603
 
 # Where the LED matrices are located on the pixel strip
-MATRIX_POSITIONS = [10, 25, 40, 55, 70, 85]
+MATRIX_POSITIONS = [451, 452, 610, 825, 978, 979]
 
 # Maximum speed packets will run on the LED strand
 MAX_SPEED = 0.3
