@@ -64,6 +64,15 @@ def get_ports():
     print 'Available Ports are : \n%s\n' % (current_ports,)
     
     potential_ports = []
+    matrix_port_6 = None
+    matrix_port_5 = None
+    matrix_port_4 = None
+    matrix_port_3 = None
+    matrix_port_2 = None
+    matrix_port_1 = None
+    led_port_2 = None
+    led_port_1 = None
+
     for port in current_ports:
         if system() == "Darwin" and 'Bluetooth' not in port or system() != "Darwin" and 'ACM' in port:
             potential_ports.append(port) 
@@ -72,22 +81,26 @@ def get_ports():
         port_to_check = serial.Serial(pot_port, BAUD_RATE, timeout=TIMEOUT)
         response = check_port_response(port_to_check)
         print response
-        if response is 'g':
+        if response is 'h':
             matrix_port_6 = port_to_check
-        elif response is 'f':
+        if response is 'g':
             matrix_port_5 = port_to_check
+        elif response is 'f':
+            matrix_port_4 = port_to_check
         elif response is 'e':
-            matrix_port_4 = port_to_check           
+            matrix_port_3 = port_to_check           
         elif response is 'd':
-            matrix_port_3 = port_to_check
-        elif response is 'c':
             matrix_port_2 = port_to_check
-        elif response is 'b':
+        elif response is 'c':
             matrix_port_1 = port_to_check
+        elif response is 'b':
+            led_port_2 = port_to_check
         elif response is 'a':
-            led_port = port_to_check
+            led_port_1 = port_to_check
     
-    print '\nLED Port : \n%s\n' % (led_port,)
+    print '\nLED Port 1: \n%s\n' % (led_port_1,)
+
+    print '\nLED Port 2: \n%s\n' % (led_port_2,)
 
     print '\nMatrix Port 1: \n%s\n' % (matrix_port_1,)
 
@@ -101,7 +114,7 @@ def get_ports():
 
     print '\nMatrix Port 6 : \n%s\n' % (matrix_port_6,)
 
-    return led_port, matrix_port_1, matrix_port_2, matrix_port_3, matrix_port_4, matrix_port_5, matrix_port_6
+    return led_port_1, led_port_2, matrix_port_1, matrix_port_2, matrix_port_3, matrix_port_4, matrix_port_5, matrix_port_6
 
 def main():
     """ 
