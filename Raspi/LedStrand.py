@@ -33,7 +33,7 @@ class LedStrand(object):
             num_pixels - An integer representing how many pixels are in the LED strand
             port_address - A Serial object used for communication
     """
-    def __init__(self, port_address, num_pixels):
+    def __init__(self, port_address, num_pixels, background_color):
         """
         Inits and instance of LedStrand with a port address, color state and number of pixels
 
@@ -45,6 +45,11 @@ class LedStrand(object):
         """
         self.num_pixels = num_pixels
         self.color_state = [chr(0)] * (3*self.num_pixels)
+        self.background_r, self.background_g, self.background_b = background_color
+        for i in range(0, self.num_pixels):
+            self.color_state[3*i] = self.background_r
+            self.color_state[(3*i)+1] =  self.background_g
+            self.color_state[(3*i)+2] =  self.background_b
         self.port_address = port_address
 
     def update_hardware(self):
@@ -62,8 +67,11 @@ class LedStrand(object):
         """
         Sets every pixel in 'color_state' to black
         """
-        self.color_state = [chr(0)] * 3*self.num_pixels
-
+        for i in range(0, self.num_pixels):
+            self.color_state[3*i] =  self.background_r
+            self.color_state[(3*i)+1] =  self.background_g
+            self.color_state[(3*i)+2] =  self.background_b
+            
     def shut_off(self):
         """
         Sends an '%' to the hardware, telling it to wipe out its current data

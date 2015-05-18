@@ -44,6 +44,8 @@ def check_port_response(port_to_check):
     """
     print port_to_check.inWaiting()
     port_to_check.flushInput()
+    port_to_check.flushOutput()
+
     print port_to_check.inWaiting()
     port_to_check.write('#')
     while port_to_check.inWaiting() == 0:

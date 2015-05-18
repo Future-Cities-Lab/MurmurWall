@@ -1,0 +1,308 @@
+
+Starting MurmurWall
+
+00:07:48
+
+Requesting new data.....
+
+
+Success (200) in downloading data
+
+
+Backing up data
+
+
+Related_Terms size = 189
+
+Available Ports are : 
+['/dev/ttyACM3', '/dev/ttyACM7', '/dev/ttyACM2', '/dev/ttyACM1', '/dev/ttyACM5', '/dev/ttyACM6', '/dev/ttyACM0', '/dev/ttyprintk', '/dev/ttyAMA0']
+
+/dev/ttyACM3
+0
+0
+2
+g
+/dev/ttyACM7
+0
+0
+2
+b
+/dev/ttyACM2
+0
+0
+2
+f
+/dev/ttyACM1
+0
+0
+2
+e
+/dev/ttyACM5
+0
+0
+2
+d
+/dev/ttyACM6
+0
+0
+2
+c
+/dev/ttyACM0
+0
+0
+2
+a
+
+LED Port 1: 
+Serial<id=0xb65f10d0, open=True>(port='/dev/ttyACM0', baudrate=115200, bytesize=8, parity='N', stopbits=1, timeout=None, xonxoff=False, rtscts=False, dsrdtr=False)
+
+
+LED Port 2: 
+Serial<id=0xb65f1050, open=True>(port='/dev/ttyACM7', baudrate=115200, bytesize=8, parity='N', stopbits=1, timeout=None, xonxoff=False, rtscts=False, dsrdtr=False)
+
+
+Matrix Port 1: 
+Serial<id=0xb65f10b0, open=True>(port='/dev/ttyACM6', baudrate=115200, bytesize=8, parity='N', stopbits=1, timeout=None, xonxoff=False, rtscts=False, dsrdtr=False)
+
+
+Matrix Port 2 : 
+Serial<id=0xb65f1090, open=True>(port='/dev/ttyACM5', baudrate=115200, bytesize=8, parity='N', stopbits=1, timeout=None, xonxoff=False, rtscts=False, dsrdtr=False)
+
+
+Matrix Port 3 : 
+Serial<id=0xb65f1070, open=True>(port='/dev/ttyACM1', baudrate=115200, bytesize=8, parity='N', stopbits=1, timeout=None, xonxoff=False, rtscts=False, dsrdtr=False)
+
+
+Matrix Port 4 : 
+Serial<id=0xb65f1130, open=True>(port='/dev/ttyACM2', baudrate=115200, bytesize=8, parity='N', stopbits=1, timeout=None, xonxoff=False, rtscts=False, dsrdtr=False)
+
+
+Matrix Port 5 : 
+Serial<id=0xb65f1030, open=True>(port='/dev/ttyACM3', baudrate=115200, bytesize=8, parity='N', stopbits=1, timeout=None, xonxoff=False, rtscts=False, dsrdtr=False)
+
+
+Matrix Port 6 : 
+None
+
+0
+Traceback (most recent call last):
+  File "/home/pi/MurmurWallFinal/MurmurWall/Raspi/animation.py", line 536, in <module>
+    main()
+  File "/home/pi/MurmurWallFinal/MurmurWall/Raspi/animation.py", line 518, in main
+    animate_mumurwall(packets, led_strand_left, led_strand_right, related_terms_queue, led_matrices, emptying)
+  File "/home/pi/MurmurWallFinal/MurmurWall/Raspi/animation.py", line 316, in animate_mumurwall
+    update_matrices(led_matrices)
+  File "/home/pi/MurmurWallFinal/MurmurWall/Raspi/animation.py", line 215, in update_matrices
+    word = led_matrix.check_status()
+  File "/home/pi/MurmurWallFinal/MurmurWall/Raspi/LedMatrix.py", line 105, in check_status
+    if self.port_address.inWaiting() > 0:
+AttributeError: 'NoneType' object has no attribute 'inWaiting'
+
+Starting MurmurWall
+
+17/05/2015
+00:09:24
+
+Requesting new data.....
+
+
+Success (200) in downloading data
+
+
+Backing up data
+
+
+Related_Terms size = 189
+
+Available Ports are : 
+['/dev/ttyACM3', '/dev/ttyACM7', '/dev/ttyACM2', '/dev/ttyACM1', '/dev/ttyACM5', '/dev/ttyACM6', '/dev/ttyACM0', '/dev/ttyprintk', '/dev/ttyAMA0']
+
+/dev/ttyACM3
+0
+0
+2
+g
+/dev/ttyACM7
+0
+0
+2
+b
+/dev/ttyACM2
+0
+0
+2
+f
+/dev/ttyACM1
+0
+0
+2
+e
+/dev/ttyACM5
+0
+0
+2
+d
+/dev/ttyACM6
+0
+0
+2
+c
+/dev/ttyACM0
+0
+0
+2
+a
+
+LED Port 1: 
+Serial<id=0xb66db0f0, open=True>(port='/dev/ttyACM0', baudrate=115200, bytesize=8, parity='N', stopbits=1, timeout=None, xonxoff=False, rtscts=False, dsrdtr=False)
+
+
+LED Port 2: 
+Serial<id=0xb66db070, open=True>(port='/dev/ttyACM7', baudrate=115200, bytesize=8, parity='N', stopbits=1, timeout=None, xonxoff=False, rtscts=False, dsrdtr=False)
+
+
+Matrix Port 1: 
+Serial<id=0xb66db0d0, open=True>(port='/dev/ttyACM6', baudrate=115200, bytesize=8, parity='N', stopbits=1, timeout=None, xonxoff=False, rtscts=False, dsrdtr=False)
+
+
+Matrix Port 2 : 
+Serial<id=0xb66db0b0, open=True>(port='/dev/ttyACM5', baudrate=115200, bytesize=8, parity='N', stopbits=1, timeout=None, xonxoff=False, rtscts=False, dsrdtr=False)
+
+
+Matrix Port 3 : 
+Serial<id=0xb66db090, open=True>(port='/dev/ttyACM1', baudrate=115200, bytesize=8, parity='N', stopbits=1, timeout=None, xonxoff=False, rtscts=False, dsrdtr=False)
+
+
+Matrix Port 4 : 
+Serial<id=0xb66db150, open=True>(port='/dev/ttyACM2', baudrate=115200, bytesize=8, parity='N', stopbits=1, timeout=None, xonxoff=False, rtscts=False, dsrdtr=False)
+
+
+Matrix Port 5 : 
+Serial<id=0xb66db050, open=True>(port='/dev/ttyACM3', baudrate=115200, bytesize=8, parity='N', stopbits=1, timeout=None, xonxoff=False, rtscts=False, dsrdtr=False)
+
+
+Matrix Port 6 : 
+None
+
+0
+Traceback (most recent call last):
+  File "/home/pi/MurmurWallFinal/MurmurWall/Raspi/animation.py", line 536, in <module>
+    main()
+  File "/home/pi/MurmurWallFinal/MurmurWall/Raspi/animation.py", line 518, in main
+    animate_mumurwall(packets, led_strand_left, led_strand_right, related_terms_queue, led_matrices, emptying)
+  File "/home/pi/MurmurWallFinal/MurmurWall/Raspi/animation.py", line 316, in animate_mumurwall
+    update_matrices(led_matrices)
+  File "/home/pi/MurmurWallFinal/MurmurWall/Raspi/animation.py", line 215, in update_matrices
+    word = led_matrix.check_status()
+  File "/home/pi/MurmurWallFinal/MurmurWall/Raspi/LedMatrix.py", line 105, in check_status
+    if self.port_address.inWaiting() > 0:
+AttributeError: 'NoneType' object has no attribute 'inWaiting'
+
+Starting MurmurWall
+
+17/05/2015
+00:10:02
+
+Requesting new data.....
+
+
+Success (200) in downloading data
+
+
+Backing up data
+
+
+Related_Terms size = 189
+
+Available Ports are : 
+['/dev/ttyACM3', '/dev/ttyACM7', '/dev/ttyACM2', '/dev/ttyACM1', '/dev/ttyACM5', '/dev/ttyACM6', '/dev/ttyACM0', '/dev/ttyprintk', '/dev/ttyAMA0']
+
+/dev/ttyACM3
+0
+0
+2
+g
+/dev/ttyACM7
+0
+0
+2
+b
+/dev/ttyACM2
+0
+0
+2
+f
+/dev/ttyACM1
+0
+0
+2
+e
+/dev/ttyACM5
+0
+0
+2
+d
+/dev/ttyACM6
+0
+0
+2
+c
+/dev/ttyACM0
+0
+0
+2
+a
+
+LED Port 1: 
+Serial<id=0xb66db0f0, open=True>(port='/dev/ttyACM0', baudrate=115200, bytesize=8, parity='N', stopbits=1, timeout=None, xonxoff=False, rtscts=False, dsrdtr=False)
+
+
+LED Port 2: 
+Serial<id=0xb66db070, open=True>(port='/dev/ttyACM7', baudrate=115200, bytesize=8, parity='N', stopbits=1, timeout=None, xonxoff=False, rtscts=False, dsrdtr=False)
+
+
+Matrix Port 1: 
+Serial<id=0xb66db0d0, open=True>(port='/dev/ttyACM6', baudrate=115200, bytesize=8, parity='N', stopbits=1, timeout=None, xonxoff=False, rtscts=False, dsrdtr=False)
+
+
+Matrix Port 2 : 
+Serial<id=0xb66db0b0, open=True>(port='/dev/ttyACM5', baudrate=115200, bytesize=8, parity='N', stopbits=1, timeout=None, xonxoff=False, rtscts=False, dsrdtr=False)
+
+
+Matrix Port 3 : 
+Serial<id=0xb66db090, open=True>(port='/dev/ttyACM1', baudrate=115200, bytesize=8, parity='N', stopbits=1, timeout=None, xonxoff=False, rtscts=False, dsrdtr=False)
+
+
+Matrix Port 4 : 
+Serial<id=0xb66db150, open=True>(port='/dev/ttyACM2', baudrate=115200, bytesize=8, parity='N', stopbits=1, timeout=None, xonxoff=False, rtscts=False, dsrdtr=False)
+
+
+Matrix Port 5 : 
+Serial<id=0xb66db050, open=True>(port='/dev/ttyACM3', baudrate=115200, bytesize=8, parity='N', stopbits=1, timeout=None, xonxoff=False, rtscts=False, dsrdtr=False)
+
+
+Matrix Port 6 : 
+None
+
+0
+Traceback (most recent call last):
+  File "/home/pi/MurmurWallFinal/MurmurWall/Raspi/animation.py", line 536, in <module>
+    main()
+  File "/home/pi/MurmurWallFinal/MurmurWall/Raspi/animation.py", line 518, in main
+    animate_mumurwall(packets, led_strand_left, led_strand_right, related_terms_queue, led_matrices, emptying)
+  File "/home/pi/MurmurWallFinal/MurmurWall/Raspi/animation.py", line 316, in animate_mumurwall
+    update_matrices(led_matrices)
+  File "/home/pi/MurmurWallFinal/MurmurWall/Raspi/animation.py", line 215, in update_matrices
+    word = led_matrix.check_status()
+  File "/home/pi/MurmurWallFinal/MurmurWall/Raspi/LedMatrix.py", line 105, in check_status
+    if self.port_address.inWaiting() > 0:
+AttributeError: 'NoneType' object has no attribute 'inWaiting'
+
+Starting MurmurWall
+
+Traceback (most recent call last):
+  File "/home/pi/MurmurWallFinal/MurmurWall/Raspi/animation.py", line 549, in <module>
+    main()
+  File "/home/pi/MurmurWallFinal/MurmurWall/Raspi/animation.py", line 428, in main
+    GPIO.setup(RELAY_PIN_1, GPIO.OUT)
+RuntimeError: No access to /dev/mem.  Try running as root!
