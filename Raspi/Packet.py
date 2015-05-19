@@ -37,7 +37,7 @@ class Packet(object):
     """
     def __init__(self, speed, color, text,
                  current_position, target_position,
-                 prev_target_position, text_being_displayed, is_special=False):
+                 prev_target_position, text_being_displayed,is_special=False):
         """
         Args (see Attributes for description):
             speed 

@@ -22,43 +22,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE.
 """
 
-'''
-
-LEDs always slightly lit ~10%? Maybe a color like cyan?
-      
-    In LedConstructor - set background color.
-
-# of Ants (maximum and minimum)
-
-Buzz words/ Curated Words
-
-Lighten the color of the text on screen to increase legibility
-
-Smooth Ant movement
-
-Fix color issue of Buzz ant
-
-Pod LED behavior while displaying text (fill up then dissipate)
-
-Limit amount of text sent to a pod at once
-
-Secondary Fail safe that reboots Pi if process isn't running
-
-Ant variable speed and Length
-
-Disperse Ants to cover more of wall at one time
-
-End behaviors pulsing or beacon that generates and absorbs ants lights fade up then release ant, lights fade out after ant reaches end
-
-Trigger sensor that causes an ant to be released
-
-Port system to Pi 2
-
-
-
-
-
-'''
 
 import sys
 import RPi.GPIO as GPIO
@@ -82,7 +45,7 @@ from color_functions import map_values, color_strand_for_packet
 from color_functions import color_pod_for_packet
 
 # How often to restart MurmurWall (seconds)
-RESTART_LENGTH = 3600
+RESTART_LENGTH = 10800
 
 # How often to add in a priority word (seconds)
 PRIORITY_LENGTH = 200
@@ -109,19 +72,28 @@ OUT_OF_BOUNDS = END_PIX + 500
 MATRIX_POSITIONS = [912, 1157, 1373, 1644, 1853, 2092]
 
 # Maximum speed packets will run on the LED strand
-MAX_SPEED = 4.0
+MAX_SPEED = 3.0
 MIN_SPEED = 1.0
+
+STARTING_TIME = 8
 
 # Maximum speed packets will move on the LED matrices
 MAX_SPEED_LED = 40
 MIN_SPEED_LED = 50
 
 # Maximum number of packets in MurmurWall
-NUM_PACKETS = 12
+NUM_PACKETS = 18
 
 BACKGROUND_R = chr(0)
-BACKGROUND_G = chr(25)
-BACKGROUND_B = chr(25)
+BACKGROUND_G = chr(0)
+BACKGROUND_B = chr(0)
+
+ANT_LENGTH_MAX = 10
+ANT_LENGTH_MIN = 5
+
+POD_COLORS = {MATRIX_POSITIONS[0]:0, MATRIX_POSITIONS[1]:0, MATRIX_POSITIONS[2]:0, MATRIX_POSITIONS[3]:0, MATRIX_POSITIONS[4]:0, MATRIX_POSITIONS[5]:0}
+
+POD_SPEED = 5
 
 RELAY_PIN_1 = 18
 RELAY_PIN_2 = 23
@@ -228,7 +200,7 @@ def add_new_packets(num_of_packets_to_append, packets, related_terms_queue):
     """
     for _ in repeat(None, num_of_packets_to_append):
         text = related_terms_queue.get()
-        color = (chr(randint(0, 155)), chr(0), chr(255))
+        color = (chr(255), chr(randint(0, 255)), chr(255))
         new_packet = Packet(uniform(MIN_SPEED, MAX_SPEED), color, text,
                             START_PIX, MATRIX_POSITIONS[0],
                             START_PIX, False)
@@ -248,12 +220,11 @@ def update_matrices(led_matrices):
             print word
             for packet in led_matrix.packets:
                 print "Packet text is : " + packet.text
-                # TODO: Temp fix
                 if packet.text.rstrip() == word.rstrip():
                     packet_to_update = packet
             led_matrix.packets.remove(packet_to_update)
             packet_to_update.text_being_displayed = False
-            packet_to_update.current_position = led_matrix.position + 1.000002
+            packet_to_update.current_position = led_matrix.position + 56.000002
             packet_to_update.prev_target_position = packet_to_update.target_position 
             packet_to_update.target_position = led_matrix.next_position 
 
@@ -289,8 +260,12 @@ def update_packets(packets, packets_to_remove, led_strand_left, led_strand_right
                 num_of_packets_to_append += 1
         else:
             if not packet.text_being_displayed:
-                print packet.current_position
-                for i in range(int(packet.current_position)-2, int(packet.current_position)+3):
+                extra_len = packet.length
+                if extra_len >= 7:
+                    extra_len = 7
+                if extra_len < 2:
+                    extra_len = 2
+                for i in range(int(packet.current_position)-extra_len, int(packet.current_position)+extra_len+1):
                     if i >= START_PIX and i <= END_PIX:
                         if i >= NUM_PIXELS_LEFT:
                             j = i - NUM_PIXELS_LEFT
@@ -341,6 +316,20 @@ def animate_mumurwall(packets, led_strand_left, led_strand_right, related_terms_
     packets_to_remove = []
 
     num_of_packets_to_append = update_packets(packets, packets_to_remove, led_strand_left, led_strand_right, led_matrices)
+
+    #update pods........
+    for matrix_pos in MATRIX_POSITIONS:
+	for i in range(matrix_pos, matrix_pos+57):
+		led_strand_left.color_state[3*i] = chr(POD_COLORS[matrix_pos])
+                led_strand_left.color_state[3*i + 1] = chr(POD_COLORS[matrix_pos])
+		led_strand_left.color_state[3*i + 2] = chr(POD_COLORS[matrix_pos])
+	if led_matrices[matrix_pos].is_showing_packets() and POD_COLORS[matrix_pos] < 50 - POD_SPEED:
+		POD_COLORS[matrix_pos] += POD_SPEED
+	elif not led_matrices[matrix_pos].is_showing_packets() and POD_COLORS[matrix_pos] > POD_SPEED:
+		POD_COLORS[matrix_pos] -= POD_SPEED
+
+
+
     led_strand_left.update_hardware()        
     led_strand_right.update_hardware()
     
@@ -529,7 +518,7 @@ def main():
                                       START_PIX, False, True)
                  packets.append(buzz_packet)
             """
-            if starting and time() - starting_time >= 5:
+            if starting and time() - starting_time >= STARTING_TIME:
                 starting_time = time()
                 add_new_packets(1, packets, related_terms_queue)
                 if len(packets) == NUM_PACKETS:
