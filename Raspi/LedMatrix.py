@@ -26,7 +26,7 @@ from itertools import repeat
 from time import sleep
 from color_functions import lerp, map_values
 
-LED_MATRIX_COLOR_DIFF = 30
+LED_MATRIX_COLOR_DIFF = 0
 
 class LedMatrix(object):
     """

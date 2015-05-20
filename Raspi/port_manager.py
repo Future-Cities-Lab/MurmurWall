@@ -26,7 +26,7 @@ from platform import system
 from time import sleep
 
 BAUD_RATE = 115200
-TIMEOUT = None
+TIMEOUT = 10
 
 def get_available_ports():
     """
@@ -80,7 +80,7 @@ def get_ports():
             potential_ports.append(port) 
     for pot_port in potential_ports:
         print pot_port
-        port_to_check = serial.Serial(pot_port, BAUD_RATE, timeout=TIMEOUT)
+        port_to_check = serial.Serial(pot_port, BAUD_RATE, timeout=TIMEOUT,writeTimeout=TIMEOUT)
         response = check_port_response(port_to_check)
         print response
         if response is 'h':

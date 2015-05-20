@@ -32,7 +32,7 @@ def set_backup_data(current_json):
     if system() == "Darwin":
         backup_location = 'Backup/backup.json'
     else:
-        backup_location = '/home/pi/FutureCities/MurmurWall/Onsite/Raspi/Backup/backup.json'
+        backup_location = '/home/pi/MurmurWall/Raspi/Backup/backup.json'
     with open(backup_location, 'w') as backup_json:
         dump(current_json, backup_json)
 
@@ -45,7 +45,7 @@ def get_backup_data():
     if system() == "Darwin":
         backup_file = 'Backup/backup.json'
     else:
-        backup_file = '/home/pi/FutureCities/MurmurWall/Onsite/Raspi/Backup/backup.json'  
+        backup_file = '/home/pi/MurmurWall/Raspi/Backup/backup.json'  
     with open(backup_file) as backup_json_file:    
         current_json = load(backup_json_file)
     return current_json

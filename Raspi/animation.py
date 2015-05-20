@@ -45,14 +45,10 @@ from color_functions import map_values, color_strand_for_packet
 from color_functions import color_pod_for_packet
 
 # How often to restart MurmurWall (seconds)
-RESTART_LENGTH = 10800
+RESTART_LENGTH = 3600
 
 # How often to add in a priority word (seconds)
 PRIORITY_LENGTH = 200
-
-# How many frames/second will MurmurWall run at
-FRAMES_PER_SECOND = 30.0
-SKIP_TICKS = 1000.0 / FRAMES_PER_SECOND
 
 # How many pixels are in MurmurWall
 NUM_PIXELS_LEFT = 2933
@@ -82,7 +78,7 @@ MAX_SPEED_LED = 40
 MIN_SPEED_LED = 50
 
 # Maximum number of packets in MurmurWall
-NUM_PACKETS = 18
+NUM_PACKETS = 40
 
 BACKGROUND_R = chr(0)
 BACKGROUND_G = chr(0)
@@ -95,10 +91,18 @@ POD_COLORS = {MATRIX_POSITIONS[0]:0, MATRIX_POSITIONS[1]:0, MATRIX_POSITIONS[2]:
 
 POD_SPEED = 5
 
+MAX_POD_COLOR = 40
+
 RELAY_PIN_1 = 18
 RELAY_PIN_2 = 23
 RELAY_PIN_3 = 24
 RELAY_PIN_4 = 25
+
+CURATED_WORDS = ["YBCA", "MURMUR WALL", "FUTURE CITIES LAB"]
+CURATED_LENGTH = 60
+CURATED_COLOR = (chr(255), chr(0), chr(255))
+
+EMPTYING_LENGTH = 480
 
 def test_leds(led_strand_left, led_strand_right, current_pos):
     """
@@ -200,7 +204,8 @@ def add_new_packets(num_of_packets_to_append, packets, related_terms_queue):
     """
     for _ in repeat(None, num_of_packets_to_append):
         text = related_terms_queue.get()
-        color = (chr(255), chr(randint(0, 255)), chr(255))
+        red_blue = chr(randint(50,255))
+        color = (red_blue, red_blue, red_blue)
         new_packet = Packet(uniform(MIN_SPEED, MAX_SPEED), color, text,
                             START_PIX, MATRIX_POSITIONS[0],
                             START_PIX, False)
@@ -217,17 +222,20 @@ def update_matrices(led_matrices):
     for led_matrix in led_matrices.values():
         word = led_matrix.check_status()
         if word is not '' and 'messed up':
-            print word
+            packet_to_update = None
             for packet in led_matrix.packets:
                 print "Packet text is : " + packet.text
                 if packet.text.rstrip() == word.rstrip():
                     packet_to_update = packet
-            led_matrix.packets.remove(packet_to_update)
-            packet_to_update.text_being_displayed = False
-            packet_to_update.current_position = led_matrix.position + 56.000002
-            packet_to_update.prev_target_position = packet_to_update.target_position 
-            packet_to_update.target_position = led_matrix.next_position 
-
+            if packet_to_update:
+                led_matrix.packets.remove(packet_to_update)
+                packet_to_update.text_being_displayed = False
+                packet_to_update.current_position = led_matrix.position + 56.000002
+                packet_to_update.prev_target_position = packet_to_update.target_position 
+                packet_to_update.target_position = led_matrix.next_position 
+            else:
+                print "shit the bed"
+                
 def update_packets(packets, packets_to_remove, led_strand_left, led_strand_right, led_matrices):
     """
     Updates the state of each packet in the MurmurWall system.
@@ -265,17 +273,19 @@ def update_packets(packets, packets_to_remove, led_strand_left, led_strand_right
                     extra_len = 7
                 if extra_len < 2:
                     extra_len = 2
+                count = extra_len*2 + 1
                 for i in range(int(packet.current_position)-extra_len, int(packet.current_position)+extra_len+1):
                     if i >= START_PIX and i <= END_PIX:
                         if i >= NUM_PIXELS_LEFT:
                             j = i - NUM_PIXELS_LEFT
-                            led_strand_right.color_state[3*j] = packet.red
-                            led_strand_right.color_state[(3*j) + 1] = packet.green
-                            led_strand_right.color_state[(3*j) + 2] = packet.blue
+                            led_strand_right.color_state[3*j] = chr(ord(packet.red)/count)
+                            led_strand_right.color_state[(3*j) + 1] = chr(ord(packet.green)/count)
+                            led_strand_right.color_state[(3*j) + 2] = chr(ord(packet.blue)/count)
                         else:
-                            led_strand_left.color_state[3*i] = packet.red
-                            led_strand_left.color_state[(3*i) + 1] = packet.green
-                            led_strand_left.color_state[(3*i) + 2] = packet.blue   
+                            led_strand_left.color_state[3*i] = chr(ord(packet.red)/count)
+                            led_strand_left.color_state[(3*i) + 1] = chr(ord(packet.green)/count)
+                            led_strand_left.color_state[(3*i) + 2] = chr(ord(packet.blue)/count)
+                        count -= 1
                 packet.update_postion_strand()
                 if packet.has_reached_target():
                     if packet.target_is_end(END_PIX):
@@ -319,11 +329,11 @@ def animate_mumurwall(packets, led_strand_left, led_strand_right, related_terms_
 
     #update pods........
     for matrix_pos in MATRIX_POSITIONS:
-	for i in range(matrix_pos, matrix_pos+57):
+	for i in range(matrix_pos, matrix_pos+56):
 		led_strand_left.color_state[3*i] = chr(POD_COLORS[matrix_pos])
                 led_strand_left.color_state[3*i + 1] = chr(POD_COLORS[matrix_pos])
 		led_strand_left.color_state[3*i + 2] = chr(POD_COLORS[matrix_pos])
-	if led_matrices[matrix_pos].is_showing_packets() and POD_COLORS[matrix_pos] < 50 - POD_SPEED:
+	if led_matrices[matrix_pos].is_showing_packets() and POD_COLORS[matrix_pos] < MAX_POD_COLOR - POD_SPEED:
 		POD_COLORS[matrix_pos] += POD_SPEED
 	elif not led_matrices[matrix_pos].is_showing_packets() and POD_COLORS[matrix_pos] > POD_SPEED:
 		POD_COLORS[matrix_pos] -= POD_SPEED
@@ -351,7 +361,9 @@ def update_queue():
 
     """
     related_terms_queue = Queue()
+    print 'Getting data'
     trend_buckets = get_latest_data()
+    print 'Done getting data'
     related_terms_list = []
     for trend in trend_buckets:
         for related_term in trend_buckets[trend]["Top searches for"]:
@@ -457,11 +469,13 @@ def main():
         sleep(2)
         print date.strftime("%d/%m/%Y")
         print date.strftime("%H:%M:%S")
-    
+
+        print 'Getting words'
         related_terms_queue = update_queue()
     
         packets = []
-    
+
+        print 'Adding packets'
         add_new_packets(1, packets, related_terms_queue)
 
         led_port_1 = None
@@ -475,7 +489,8 @@ def main():
         led_matrices = None
         led_strand_left = None
         led_strand_right = None
-        
+
+        print 'Getting ports'
         led_port_1, led_port_2, matrix_port_1, matrix_port_2, matrix_port_3, matrix_port_4, matrix_port_5, matrix_port_6 = get_ports()            
         
         led_matrices = {MATRIX_POSITIONS[0]: 
@@ -499,16 +514,24 @@ def main():
             restart_murmurwall(led_matrices, led_strand_left, led_strand_right)
             
         sleep_time = 0
+
         updating = False
         emptying = False
         starting = True
+
         last_time = time()
-        priority_time = time()
-        buzz_pos = 0
+        
+        prev_curated_time = time()
+        curated_pos = 0
+
         restart_time = time()
+
         starting_time = time()
+
         buzz_time = time()
 
+        emptying_time = 0
+        
         while True:
             """
             if not super_buzz_word.empty():
@@ -523,7 +546,7 @@ def main():
                 add_new_packets(1, packets, related_terms_queue)
                 if len(packets) == NUM_PACKETS:
                     starting = False
-            if len(packets) == 0:
+            if len(packets) == 0 or emptying and (time() - emptying_time >= EMPTYING_LENGTH):
                 print "Done emptying, restarting"
                 #shutdown_murmurwall(led_matrices, led_strand_left, led_strand_right)
                 restart_murmurwall(led_matrices, led_strand_left, led_strand_right)
@@ -534,29 +557,25 @@ def main():
                  thread = Thread(target=update_queue)
                  thread.start()
             """
-            
-            """
-            if time() - priority_time >= PRIORITY_LENGTH and not emptying:
-                 print '\nAdding Buzz Word\n'
-                 priority_time = time()
-                 color = (chr(255), chr(255), chr(255))
-                 buzz_packet = Packet(0.5, color, buzz_words[buzz_pos],
-                                     START_PIX, MATRIX_POSITIONS[0],
-                                      START_PIX, False, True)
-                 packets.append(buzz_packet)
-                 buzz_pos += 1
-                 buzz_pos %= len(buzz_words)
-            """
+            if time() -  prev_curated_time >= CURATED_LENGTH and not emptying:
+                prev_curated_time = time()
+                curated_packet = Packet(4.0, CURATED_COLOR, CURATED_WORDS[curated_pos],
+                                        START_PIX, MATRIX_POSITIONS[0],
+                                        START_PIX, False, True)
+                packets.append(curated_packet)
+                curated_pos += 1
+                curated_pos %= len(CURATED_WORDS)
             if time() -  restart_time >= RESTART_LENGTH:
-                 emptying = True
+                emptying = True
+                emptying_time = time()
 
             animate_mumurwall(packets, led_strand_left, led_strand_right, related_terms_queue, led_matrices, emptying)
 
-            current_time = time()
-            sleep_time = 1./FRAMES_PER_SECOND - (current_time - last_time)
-            last_time = current_time
-            if sleep_time >= 0:
-                sleep(sleep_time)
+            #current_time = time()
+            #sleep_time = 1./FRAMES_PER_SECOND - (current_time - last_time)
+            #last_time = current_time
+            #if sleep_time >= 0:
+            sleep(0.10)
 
     except (KeyboardInterrupt, SystemExit):
         shutdown_murmurwall(led_matrices, led_strand_left, led_strand_right)
