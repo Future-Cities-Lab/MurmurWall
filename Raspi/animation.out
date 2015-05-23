@@ -1,0 +1,160 @@
+
+Starting MurmurWall
+
+20/05/2015
+19:20:04
+Getting words
+Getting data
+
+Requesting new data.....
+
+
+Success (200) in downloading data
+
+
+Backing up data
+
+Done getting data
+
+Related_Terms size = 216
+
+Adding packets
+Getting ports
+Available Ports are : 
+['/dev/ttyACM7', '/dev/ttyACM6', '/dev/ttyACM5', '/dev/ttyACM4', '/dev/ttyACM3', '/dev/ttyACM2', '/dev/ttyACM1', '/dev/ttyACM0', '/dev/ttyprintk', '/dev/ttyAMA0']
+
+/dev/ttyACM7
+202
+0
+2
+c
+/dev/ttyACM6
+404
+0
+2
+d
+/dev/ttyACM5
+202
+0
+2
+g
+/dev/ttyACM4
+0
+0
+2
+a
+/dev/ttyACM3
+101
+0
+2
+f
+/dev/ttyACM2
+404
+0
+2
+h
+/dev/ttyACM1
+202
+0
+2
+e
+/dev/ttyACM0
+0
+0
+2
+b
+
+LED Port 1: 
+Serial<id=0xe16730, open=True>(port='/dev/ttyACM4', baudrate=115200, bytesize=8, parity='N', stopbits=1, timeout=10, xonxoff=False, rtscts=False, dsrdtr=False)
+
+
+LED Port 2: 
+Serial<id=0xe167b0, open=True>(port='/dev/ttyACM0', baudrate=115200, bytesize=8, parity='N', stopbits=1, timeout=10, xonxoff=False, rtscts=False, dsrdtr=False)
+
+
+Matrix Port 1: 
+Serial<id=0xe166b0, open=True>(port='/dev/ttyACM7', baudrate=115200, bytesize=8, parity='N', stopbits=1, timeout=10, xonxoff=False, rtscts=False, dsrdtr=False)
+
+
+Matrix Port 2 : 
+Serial<id=0xe16710, open=True>(port='/dev/ttyACM6', baudrate=115200, bytesize=8, parity='N', stopbits=1, timeout=10, xonxoff=False, rtscts=False, dsrdtr=False)
+
+
+Matrix Port 3 : 
+Serial<id=0xe16790, open=True>(port='/dev/ttyACM1', baudrate=115200, bytesize=8, parity='N', stopbits=1, timeout=10, xonxoff=False, rtscts=False, dsrdtr=False)
+
+
+Matrix Port 4 : 
+Serial<id=0xe16750, open=True>(port='/dev/ttyACM3', baudrate=115200, bytesize=8, parity='N', stopbits=1, timeout=10, xonxoff=False, rtscts=False, dsrdtr=False)
+
+
+Matrix Port 5 : 
+Serial<id=0xe167f0, open=True>(port='/dev/ttyACM5', baudrate=115200, bytesize=8, parity='N', stopbits=1, timeout=10, xonxoff=False, rtscts=False, dsrdtr=False)
+
+
+Matrix Port 6 : 
+Serial<id=0xe16770, open=True>(port='/dev/ttyACM2', baudrate=115200, bytesize=8, parity='N', stopbits=1, timeout=10, xonxoff=False, rtscts=False, dsrdtr=False)
+
+Sending : LA CLIPPERS to : 912
+Packet text is : LA CLIPPERS
+Sending : 2014 DRAFT LOTTERY to : 912
+Sending : CIVIL RIGHTS MOVEMENT to : 912
+Sending : LA CLIPPERS to : 1157
+Packet text is : LA CLIPPERS
+Packet text is : 2014 DRAFT LOTTERY
+Packet text is : CIVIL RIGHTS MOVEMENT
+Packet text is : 2014 DRAFT LOTTERY
+Sending : LA CLIPPERS to : 1373
+Sending : CIVIL RIGHTS MOVEMENT to : 1157
+Sending : 2014 DRAFT LOTTERY to : 1157
+Sending : YBCA to : 912
+Sending : SMALL BUMP LYRICS to : 912
+Sending : LETTERMAN to : 912
+Packet text is : LA CLIPPERS
+Packet text is : YBCA
+Packet text is : SMALL BUMP LYRICS
+Packet text is : LETTERMAN
+Sending : NBA DRAFT ODDS to : 912
+Sending : DATING to : 912
+Packet text is : SMALL BUMP LYRICS
+Packet text is : LETTERMAN
+Packet text is : NBA DRAFT ODDS
+Packet text is : DATING
+Packet text is : CIVIL RIGHTS MOVEMENT
+Packet text is : 2014 DRAFT LOTTERY
+Sending : YBCA to : 1157
+Packet text is : CIVIL RIGHTS MOVEMENT
+Packet text is : YBCA
+Packet text is : SMALL BUMP LYRICS
+Packet text is : NBA DRAFT ODDS
+Packet text is : DATING
+Sending : LA CLIPPERS to : 1644
+Packet text is : NBA DRAFT ODDS
+Packet text is : DATING
+Packet text is : NBA DRAFT ODDS
+Sending : CIVIL RIGHTS MOVEMENT to : 1373
+Packet text is : YBCA
+Sending : 2014 DRAFT LOTTERY to : 1373
+Sending : SMALL BUMP LYRICS to : 1157
+Sending : LETTERMAN to : 1157
+Packet text is : LA CLIPPERS
+Sending : YBCA to : 1373
+Sending : NBA DRAFT ODDS to : 1157
+Sending : DATING to : 1157
+Sending : LA CLIPPERS to : 1853
+Packet text is : CIVIL RIGHTS MOVEMENT
+Packet text is : 2014 DRAFT LOTTERY
+Packet text is : YBCA
+Sending : PHOTO to : 912
+Packet text is : SMALL BUMP LYRICS
+Packet text is : LETTERMAN
+Packet text is : NBA DRAFT ODDS
+Packet text is : DATING
+Packet text is : CIVIL RIGHTS MOVEMENT
+Packet text is : 2014 DRAFT LOTTERY
+Packet text is : SMALL BUMP LYRICS
+Packet text is : NBA DRAFT ODDS
+Packet text is : DATING
+Packet text is : CIVIL RIGHTS MOVEMENT
+Packet text is : SMALL BUMP LYRICS
+Packet text is : NBA DRAFT ODDS

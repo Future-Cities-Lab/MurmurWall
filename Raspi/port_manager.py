@@ -26,7 +26,7 @@ from platform import system
 from time import sleep
 
 BAUD_RATE = 115200
-TIMEOUT = 10
+TIMEOUT = 0
 
 def get_available_ports():
     """

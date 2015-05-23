@@ -33,19 +33,18 @@ from time import time, sleep
 from random import uniform, shuffle, randint
 import time as date
 import subprocess
+import requests
 
 from Packet import Packet
 from LedMatrix import LedMatrix
 from LedStrand import LedStrand
+from RepeatedTimer import RepeatedTimer
 
 from port_manager import get_ports
-from data_manager import get_latest_data, get_buzz_word, get_currated_words
-
-from color_functions import map_values, color_strand_for_packet
-from color_functions import color_pod_for_packet
+from data_manager import get_latest_data, get_whispers, get_currated_words
 
 # How often to restart MurmurWall (seconds)
-RESTART_LENGTH = 3600
+RESTART_LENGTH = 4200
 
 # How often to add in a priority word (seconds)
 PRIORITY_LENGTH = 200
@@ -71,7 +70,7 @@ MATRIX_POSITIONS = [912, 1157, 1373, 1644, 1853, 2092]
 MAX_SPEED = 3.0
 MIN_SPEED = 1.0
 
-STARTING_TIME = 8
+STARTING_TIME = randint(5,10)
 
 # Maximum speed packets will move on the LED matrices
 MAX_SPEED_LED = 40
@@ -98,70 +97,12 @@ RELAY_PIN_2 = 23
 RELAY_PIN_3 = 24
 RELAY_PIN_4 = 25
 
-CURATED_WORDS = ["YBCA", "MURMUR WALL", "FUTURE CITIES LAB"]
+CURATED_WORDS = ["FUTURE CITIES LAB", "YBCA", "MURMUR WALL", "JASON JOHNSON", "NATALY GATTEGNO", "RIPON DELEON", "COLLIN SCHUPMAN", "JEFF MAESHIRO", "JI AHN", "ELAINE SUH", "GREG HURCOMB", "EVAN MORING", "ZACH FISH", "BEN WARD", "NAINOA CRAVALHO", "MACHINIC", "PETER PRATO", "SFAC", "LIGHTSWARM"]
+
 CURATED_LENGTH = 60
-CURATED_COLOR = (chr(255), chr(0), chr(255))
+CURATED_COLOR = (chr(255), chr(255), chr(255))
 
 EMPTYING_LENGTH = 480
-
-def test_leds(led_strand_left, led_strand_right, current_pos):
-    """
-    Runs a single color through the entire LED strand to test the system
-
-    Args: 
-        led_strand = List: LED strand state to run the color through
-
-    """
-    led_strand_left.clear_state()
-    #led_strand_right.clear_state()
-    
-    for pos in MATRIX_POSITIONS:
-        led_strand_left.color_state[3*pos] = chr(255)
-        
-    led_strand_left.color_state[3*1853] = chr(255)
-
-
-    '''
-    if current_pos >= NUM_PIXELS_LEFT:
-        new_current = current_pos-NUM_PIXELS_LEFT
-        for i in range(new_current-15, new_current+16):
-            if i >= 0 and i < NUM_PIXELS_RIGHT:
-                print "writing to right at pos %i" % (i,)
-                led_strand_right.color_state[3*i] = chr(255)
-    else:
-        for i in range(current_pos-15, current_pos+16):
-            if i >= 0 and i < NUM_PIXELS_LEFT:
-                print "writing to left at pos %i" % (i,)
-                led_strand_left.color_state[3*i] = chr(255)
-    '''
-
-    led_strand_left.update_hardware()
-    #led_strand_right.update_hardware()
-
-def test_leds_right(led_strand_right, current_pos):
-    """
-    Runs a single color through the entire LED strand to test the system
-
-    Args: 
-        led_strand = List: LED strand state to run the color through
-
-    """
-    led_strand_right.clear_state()
-
-    print "Data ant at pos %i" % (current_pos,)
-
-    for i in range(current_pos-15, current_pos+16):
-        if i >= 0 and i < NUM_PIXELS_LEFT:
-            print i
-            led_strand_right.color_state[3*i] = chr(255)
-
-    #led_strand_right.color_state[3*current_pos] = chr(255)
-
-
-    current_pos += 1
-    current_pos %= NUM_PIXELS_RIGHT
-
-    led_strand_right.update_hardware()
 
 def send_packet_to_matrix(packet, led_matrix):
     """
@@ -204,8 +145,9 @@ def add_new_packets(num_of_packets_to_append, packets, related_terms_queue):
     """
     for _ in repeat(None, num_of_packets_to_append):
         text = related_terms_queue.get()
+        related_terms_queue.put(text)
         red_blue = chr(randint(50,255))
-        color = (red_blue, red_blue, red_blue)
+        color = (red_blue, chr(0), red_blue)
         new_packet = Packet(uniform(MIN_SPEED, MAX_SPEED), color, text,
                             START_PIX, MATRIX_POSITIONS[0],
                             START_PIX, False)
@@ -378,7 +320,7 @@ def update_queue():
     print '\nRelated_Terms size = %i\n' % (related_terms_queue.qsize(),)
     return related_terms_queue
 
-def restart_murmurwall(led_matrices, led_strand_left, led_strand_right):
+def restart_murmurwall(led_matrices, led_strand_left, led_strand_right, rt):
     """
     Restarts MurmurWall
 
@@ -387,7 +329,7 @@ def restart_murmurwall(led_matrices, led_strand_left, led_strand_right):
         led_strand - LedStrand: the led strand
     """
     print '\nRestarting MurmurWall\n'
-    #t.cancel()
+    rt.stop() 
     sleep(2)
     GPIO.output(RELAY_PIN_1, GPIO.HIGH)
     GPIO.output(RELAY_PIN_2, GPIO.HIGH)
@@ -398,7 +340,7 @@ def restart_murmurwall(led_matrices, led_strand_left, led_strand_right):
     #execv(sys.executable, [sys.executable] + sys.argv)
 
 # TODO: can't always clean up?
-def shutdown_murmurwall(led_matrices, led_strand_left, led_strand_right):
+def shutdown_murmurwall(led_matrices, led_strand_left, led_strand_right, rt):
     """
     Shutsdown MurmurWall 
 
@@ -406,7 +348,7 @@ def shutdown_murmurwall(led_matrices, led_strand_left, led_strand_right):
         led_matrices - Dictionary: all the LED matrices in MurmurWall
         led_strand - LedStrand: the led strand
     """
-    #t.cancel()
+    rt.stop()
     sleep(2)
     GPIO.output(RELAY_PIN_1, GPIO.HIGH)
     GPIO.output(RELAY_PIN_2, GPIO.HIGH)
@@ -416,15 +358,14 @@ def shutdown_murmurwall(led_matrices, led_strand_left, led_strand_right):
     subprocess.call("sudo reboot", shell=True)
     #sys.exit('\nShutting Down\n')
 
-def check_buzz(super_buzz_words):
-    print 'Checking buzz'
-    t = Timer(5.0, check_buzz, args=(super_buzz_words,))
-    t.dameon = True
-    t.start()
-    buzz_word = get_buzz_word()
-    if buzz_word is not 'fail':
-        super_buzz_words.put(buzz_word)
-    return t
+def check_whispers(whispers_queue):
+    
+    new_whispers = get_whispers()
+    if len(new_whispers) > 0:
+        for whisper in new_whispers:
+            if not whisper == '' and not whisper == "":
+                whispers_queue.put(whisper)
+            
     
 
 # TODO: Clean up
@@ -452,6 +393,20 @@ def main():
         IOError: an error in the serial communication. Restarts the system.
 
     """
+    requests.packages.urllib3.disable_warnings()
+    
+    led_port_1 = None
+    led_port_2 = None
+    matrix_port_1 = None
+    matrix_port_2 = None
+    matrix_port_3 = None
+    matrix_port_4 = None
+    matrix_port_5 = None
+    matrix_port_6 = None
+    led_matrices = None
+    led_strand_left = None
+    led_strand_right = None
+
     GPIO.setmode(GPIO.BCM)
 
     GPIO.setup(RELAY_PIN_1, GPIO.OUT)
@@ -463,32 +418,28 @@ def main():
     GPIO.output(RELAY_PIN_2, GPIO.LOW)
     GPIO.output(RELAY_PIN_3, GPIO.LOW)
     GPIO.output(RELAY_PIN_4, GPIO.LOW)
+
     sleep(2)
+    
     try:
 
         sleep(2)
+        
         print date.strftime("%d/%m/%Y")
         print date.strftime("%H:%M:%S")
 
         print 'Getting words'
         related_terms_queue = update_queue()
-    
+
+        # QUEUE
+        whispers_queue = Queue()
+        rt = RepeatedTimer(5, check_whispers, whispers_queue)
+
+
         packets = []
 
         print 'Adding packets'
         add_new_packets(1, packets, related_terms_queue)
-
-        led_port_1 = None
-        led_port_2 = None
-        matrix_port_1 = None
-        matrix_port_2 = None
-        matrix_port_3 = None
-        matrix_port_4 = None
-        matrix_port_5 = None
-        matrix_port_6 = None
-        led_matrices = None
-        led_strand_left = None
-        led_strand_right = None
 
         print 'Getting ports'
         led_port_1, led_port_2, matrix_port_1, matrix_port_2, matrix_port_3, matrix_port_4, matrix_port_5, matrix_port_6 = get_ports()            
@@ -511,7 +462,7 @@ def main():
         led_strand_right = LedStrand(led_port_2, NUM_PIXELS_RIGHT, (BACKGROUND_R, BACKGROUND_G, BACKGROUND_B))
 
         if led_port_1 is None or led_port_2 is None or matrix_port_1 is None or matrix_port_2 is None or matrix_port_3 is None or matrix_port_4 is None or matrix_port_5 is None or matrix_port_6 is None:
-            restart_murmurwall(led_matrices, led_strand_left, led_strand_right)
+            restart_murmurwall(led_matrices, led_strand_left, led_strand_right, rt)
             
         sleep_time = 0
 
@@ -533,14 +484,13 @@ def main():
         emptying_time = 0
         
         while True:
-            """
-            if not super_buzz_word.empty():
-                 color = (chr(255), chr(255), chr(255))
-                 buzz_packet = Packet(0.5, color, super_buzz_word.get(),
-                                     START_PIX, MATRIX_POSITIONS[0],
-                                      START_PIX, False, True)
-                 packets.append(buzz_packet)
-            """
+            # STARTING? EMPTYING? MULTIPLE?
+            if not whispers_queue.empty():
+                 color = (chr(0), chr(255), chr(255))
+                 whispers_packet = Packet(4.0, color, whispers_queue.get(),
+                                          START_PIX, MATRIX_POSITIONS[0],
+                                          START_PIX, False, True)
+                 packets.append(whispers_packet)
             if starting and time() - starting_time >= STARTING_TIME:
                 starting_time = time()
                 add_new_packets(1, packets, related_terms_queue)
@@ -548,8 +498,7 @@ def main():
                     starting = False
             if len(packets) == 0 or emptying and (time() - emptying_time >= EMPTYING_LENGTH):
                 print "Done emptying, restarting"
-                #shutdown_murmurwall(led_matrices, led_strand_left, led_strand_right)
-                restart_murmurwall(led_matrices, led_strand_left, led_strand_right)
+                restart_murmurwall(led_matrices, led_strand_left, led_strand_right, rt)
             """
             if related_terms_queue.qsize() <= 300 and not updating:
                  print '\nUpdating Words\n'
@@ -570,19 +519,13 @@ def main():
                 emptying_time = time()
 
             animate_mumurwall(packets, led_strand_left, led_strand_right, related_terms_queue, led_matrices, emptying)
-
-            #current_time = time()
-            #sleep_time = 1./FRAMES_PER_SECOND - (current_time - last_time)
-            #last_time = current_time
-            #if sleep_time >= 0:
             sleep(0.10)
 
     except (KeyboardInterrupt, SystemExit):
-        shutdown_murmurwall(led_matrices, led_strand_left, led_strand_right)
+        shutdown_murmurwall(led_matrices, led_strand_left, led_strand_right, rt)
     except IOError:
         print '\nIOError, Shutting down  MurmurWall\n'
-        #shutdown_murmurwall(led_matrices, led_strand_left, led_strand_right)
-        restart_murmurwall(led_matrices, led_strand_left, led_strand_right)
+        restart_murmurwall(led_matrices, led_strand_left, led_strand_right, rt)
             
     
 if __name__ == "__main__":

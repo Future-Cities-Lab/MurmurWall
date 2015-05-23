@@ -69,24 +69,20 @@ def get_latest_data():
         current_json = get_backup_data()
     return current_json
 
-def get_buzz_word():
-    """ 
-    Get BUZZ_WORDS
-    """
+def get_whispers():
     try:
+        new_whispers = []
         response = get("https://api.myjson.com/bins/46ec7")
         if response.status_code is 200:
-            word = response.json()[0].encode('ascii', 'ignore')
-            if word is '':
-                word = 'fail'
-            else:
-                headers = {'Content-type': 'application/json'}
-                put("https://api.myjson.com/bins/46ec7", data=dumps([""]), headers=headers)
-            return word
-        else: 
-            return 'fail'
+            data = get("https://api.myjson.com/bins/46ec7").json()
+            for word in data:
+                if word is not "" and word is not '':
+                    new_whispers.append(word.encode('ascii', 'ignore'))
+            headers = {'Content-type': 'application/json'}
+            put("https://api.myjson.com/bins/46ec7", data=dumps([""]), headers=headers)
+        return new_whispers
     except ConnectionError:
-        return 'fail'
+        return []
 
 def get_currated_words():
     """ 

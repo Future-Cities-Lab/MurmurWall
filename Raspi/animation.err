@@ -1,0 +1,18 @@
+animation.py:457: RuntimeWarning: This channel is already in use, continuing anyway.  Use GPIO.setwarnings(False) to disable warnings.
+  GPIO.setup(RELAY_PIN_1, GPIO.OUT)
+animation.py:458: RuntimeWarning: This channel is already in use, continuing anyway.  Use GPIO.setwarnings(False) to disable warnings.
+  GPIO.setup(RELAY_PIN_2, GPIO.OUT)
+animation.py:459: RuntimeWarning: This channel is already in use, continuing anyway.  Use GPIO.setwarnings(False) to disable warnings.
+  GPIO.setup(RELAY_PIN_3, GPIO.OUT)
+animation.py:460: RuntimeWarning: This channel is already in use, continuing anyway.  Use GPIO.setwarnings(False) to disable warnings.
+  GPIO.setup(RELAY_PIN_4, GPIO.OUT)
+/usr/local/lib/python2.7/dist-packages/requests/packages/urllib3/util/ssl_.py:90: InsecurePlatformWarning: A true SSLContext object is not available. This prevents urllib3 from configuring SSL appropriately and may cause certain SSL connections to fail. For more information, see https://urllib3.readthedocs.org/en/latest/security.html#insecureplatformwarning.
+  InsecurePlatformWarning
+Traceback (most recent call last):
+  File "animation.py", line 590, in <module>
+    main()
+  File "animation.py", line 581, in main
+    shutdown_murmurwall(led_matrices, led_strand_left, led_strand_right)
+  File "animation.py", line 410, in shutdown_murmurwall
+    sleep(2)
+KeyboardInterrupt

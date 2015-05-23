@@ -97,6 +97,7 @@ class LedMatrix(object):
         else:
             self.port_address.write(str(bytearray(to_send)))
 
+
     def check_status(self):
         """
         Checks the status of matrix to see if it has finished displaying any Packets
