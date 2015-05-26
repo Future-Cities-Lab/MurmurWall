@@ -44,7 +44,7 @@ from port_manager import get_ports
 from data_manager import get_latest_data, get_whispers, get_currated_words
 
 # How often to restart MurmurWall (seconds)
-RESTART_LENGTH = 4200
+RESTART_LENGTH = 3200
 
 # How often to add in a priority word (seconds)
 PRIORITY_LENGTH = 200
@@ -70,7 +70,7 @@ MATRIX_POSITIONS = [912, 1157, 1373, 1644, 1853, 2092]
 MAX_SPEED = 3.0
 MIN_SPEED = 1.0
 
-STARTING_TIME = randint(5,10)
+STARTING_TIME = randint(5, 10)
 
 # Maximum speed packets will move on the LED matrices
 MAX_SPEED_LED = 40
@@ -484,28 +484,22 @@ def main():
         emptying_time = 0
         
         while True:
-            # STARTING? EMPTYING? MULTIPLE?
+
             if not whispers_queue.empty():
-                 color = (chr(0), chr(255), chr(255))
-                 whispers_packet = Packet(4.0, color, whispers_queue.get(),
-                                          START_PIX, MATRIX_POSITIONS[0],
-                                          START_PIX, False, True)
-                 packets.append(whispers_packet)
+                color = (chr(0), chr(255), chr(255))
+                whispers_packet = Packet(4.0, color, whispers_queue.get(), START_PIX, MATRIX_POSITIONS[0], START_PIX, False, True)
+                packets.append(whispers_packet)
             if starting and time() - starting_time >= STARTING_TIME:
                 starting_time = time()
                 add_new_packets(1, packets, related_terms_queue)
                 if len(packets) == NUM_PACKETS:
                     starting = False
-            if len(packets) == 0 or emptying and (time() - emptying_time >= EMPTYING_LENGTH):
+            if len(packets) == 0:
                 print "Done emptying, restarting"
                 restart_murmurwall(led_matrices, led_strand_left, led_strand_right, rt)
-            """
-            if related_terms_queue.qsize() <= 300 and not updating:
-                 print '\nUpdating Words\n'
-                 updating = True
-                 thread = Thread(target=update_queue)
-                 thread.start()
-            """
+            if emptying and time() - emptying_time >= EMPTYING_LENGTH:
+                print "Done emptying, restarting"
+                restart_murmurwall(led_matrices, led_strand_left, led_strand_right, rt)
             if time() -  prev_curated_time >= CURATED_LENGTH and not emptying:
                 prev_curated_time = time()
                 curated_packet = Packet(4.0, CURATED_COLOR, CURATED_WORDS[curated_pos],
@@ -514,7 +508,7 @@ def main():
                 packets.append(curated_packet)
                 curated_pos += 1
                 curated_pos %= len(CURATED_WORDS)
-            if time() -  restart_time >= RESTART_LENGTH:
+            if not emptying and time() -  restart_time >= RESTART_LENGTH:
                 emptying = True
                 emptying_time = time()
 
