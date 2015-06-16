@@ -496,7 +496,7 @@ def main():
                 packets.append(whispers_packet)
             if starting and time() - starting_time >= STARTING_TIME:
                 starting_time = time()
-                add_new_packets(1, packets, related_terms_queue)
+                add_new_packets(1, packets, related_terms_queue, True)
                 if len(packets) == NUM_PACKETS:
                     starting = False
             if len(packets) == 0:
