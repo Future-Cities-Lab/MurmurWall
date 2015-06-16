@@ -295,7 +295,7 @@ def animate_mumurwall(packets, led_strand_left, led_strand_right, related_terms_
     remove_packets(packets_to_remove, packets)
 
     if not emptying:
-        add_new_packets(num_of_packets_to_append, packets, related_terms_queue)
+        add_new_packets(num_of_packets_to_append, packets, related_terms_queue, False)
 
 # TODO: get rid of global variables, rethink DSs
 def update_queue():
@@ -398,7 +398,7 @@ def main():
         IOError: an error in the serial communication. Restarts the system.
 
     """
-    #requests.packages.urllib3.disable_warnings()
+    requests.packages.urllib3.disable_warnings()
     
     led_port_1 = None
     led_port_2 = None
