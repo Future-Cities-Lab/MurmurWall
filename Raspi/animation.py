@@ -446,7 +446,7 @@ def main():
         packets = []
 
         print 'Adding packets'
-        add_new_packets(1, packets, related_terms_queue)
+        add_new_packets(1, packets, related_terms_queue, True)
 
         print 'Getting ports'
         led_port_1, led_port_2, matrix_port_1, matrix_port_2, matrix_port_3, matrix_port_4, matrix_port_5, matrix_port_6 = get_ports()            
