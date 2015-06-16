@@ -24,7 +24,7 @@ IN THE SOFTWARE.
 
 
 import sys
-#import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
 from os import execv
 from itertools import repeat
 from threading import Thread, Timer
@@ -412,7 +412,6 @@ def main():
     led_strand_left = None
     led_strand_right = None
 
-    '''
     GPIO.setmode(GPIO.BCM)
 
     GPIO.setup(RELAY_PIN_1, GPIO.OUT)
@@ -424,7 +423,6 @@ def main():
     GPIO.output(RELAY_PIN_2, GPIO.LOW)
     GPIO.output(RELAY_PIN_3, GPIO.LOW)
     GPIO.output(RELAY_PIN_4, GPIO.LOW)
-    '''
 
     sleep(2)
     
