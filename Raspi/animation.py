@@ -44,7 +44,7 @@ from port_manager import get_ports
 from data_manager import get_latest_data, get_whispers, get_currated_words
 
 # How often to restart MurmurWall (seconds)
-RESTART_LENGTH = 100
+RESTART_LENGTH = 3600
 
 # How often to add in a priority word (seconds)
 PRIORITY_LENGTH = 200
@@ -102,7 +102,7 @@ CURATED_WORDS = ["FUTURE CITIES LAB", "YBCA", "MURMUR WALL", "JASON JOHNSON", "N
 CURATED_LENGTH = 60
 CURATED_COLOR = (chr(255), chr(255), chr(255))
 
-EMPTYING_LENGTH = 480
+EMPTYING_LENGTH = 60
 
 def send_packet_to_matrix(packet, led_matrix):
     """
