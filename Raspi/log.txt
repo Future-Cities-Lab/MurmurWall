@@ -44,3 +44,243 @@ RuntimeError: No access to /dev/mem.  Try running as root!
   GPIO.setup(RELAY_PIN_4, GPIO.OUT)
 /usr/local/lib/python2.7/dist-packages/requests/packages/urllib3/util/ssl_.py:90: InsecurePlatformWarning: A true SSLContext object is not available. This prevents urllib3 from configuring SSL appropriately and may cause certain SSL connections to fail. For more information, see https://urllib3.readthedocs.org/en/latest/security.html#insecureplatformwarning.
   InsecurePlatformWarning
+
+Starting MurmurWall
+
+04/12/2015
+21:44:47
+Getting words
+Getting data
+
+Requesting new data.....
+
+
+Success (200) in downloading data
+
+
+Backing up data
+
+Done getting data
+
+Related_Terms size = 162
+
+Adding packets
+Getting ports
+Available Ports are : 
+['/dev/ttyprintk', '/dev/ttyAMA0']
+
+
+LED Port 1: 
+None
+
+
+LED Port 2: 
+None
+
+
+Matrix Port 1: 
+None
+
+
+Matrix Port 2 : 
+None
+
+
+Matrix Port 3 : 
+None
+
+
+Matrix Port 4 : 
+None
+
+
+Matrix Port 5 : 
+None
+
+
+Matrix Port 6 : 
+None
+
+
+Restarting MurmurWall
+
+
+Packets
+1
+Whispers
+0
+CuratedWords
+8
+
+Related Terms
+162
+Traceback (most recent call last):
+  File "/home/pi/MurmurWall/Raspi/animation.py", line 547, in <module>
+    main()
+  File "/home/pi/MurmurWall/Raspi/animation.py", line 535, in main
+    animate_mumurwall(packets, led_strand_left, led_strand_right, related_terms_queue, led_matrices, emptying)
+  File "/home/pi/MurmurWall/Raspi/animation.py", line 290, in animate_mumurwall
+    led_strand_left.update_hardware()        
+  File "/home/pi/MurmurWall/Raspi/LedStrand.py", line 60, in update_hardware
+    self.port_address.write('*')
+AttributeError: 'NoneType' object has no attribute 'write'
+
+Starting MurmurWall
+
+04/12/2015
+22:07:58
+Getting words
+Getting data
+
+Requesting new data.....
+
+
+Success (200) in downloading data
+
+
+Backing up data
+
+Done getting data
+
+Related_Terms size = 162
+
+Adding packets
+Getting ports
+Available Ports are : 
+['/dev/ttyprintk', '/dev/ttyAMA0']
+
+
+LED Port 1: 
+None
+
+
+LED Port 2: 
+None
+
+
+Matrix Port 1: 
+None
+
+
+Matrix Port 2 : 
+None
+
+
+Matrix Port 3 : 
+None
+
+
+Matrix Port 4 : 
+None
+
+
+Matrix Port 5 : 
+None
+
+
+Matrix Port 6 : 
+None
+
+
+Restarting MurmurWall
+
+
+Packets
+1
+Whispers
+0
+CuratedWords
+8
+
+Related Terms
+162
+Traceback (most recent call last):
+  File "/home/pi/MurmurWall/Raspi/animation.py", line 547, in <module>
+    main()
+  File "/home/pi/MurmurWall/Raspi/animation.py", line 535, in main
+    animate_mumurwall(packets, led_strand_left, led_strand_right, related_terms_queue, led_matrices, emptying)
+  File "/home/pi/MurmurWall/Raspi/animation.py", line 290, in animate_mumurwall
+    led_strand_left.update_hardware()        
+  File "/home/pi/MurmurWall/Raspi/LedStrand.py", line 60, in update_hardware
+    self.port_address.write('*')
+AttributeError: 'NoneType' object has no attribute 'write'
+
+Starting MurmurWall
+
+04/12/2015
+22:11:13
+Getting words
+Getting data
+
+Requesting new data.....
+
+
+Success (200) in downloading data
+
+
+Backing up data
+
+Done getting data
+
+Related_Terms size = 162
+
+Adding packets
+Getting ports
+Available Ports are : 
+['/dev/ttyprintk', '/dev/ttyAMA0']
+
+
+LED Port 1: 
+None
+
+
+LED Port 2: 
+None
+
+
+Matrix Port 1: 
+None
+
+
+Matrix Port 2 : 
+None
+
+
+Matrix Port 3 : 
+None
+
+
+Matrix Port 4 : 
+None
+
+
+Matrix Port 5 : 
+None
+
+
+Matrix Port 6 : 
+None
+
+
+Restarting MurmurWall
+
+
+Packets
+1
+Whispers
+0
+CuratedWords
+8
+
+Related Terms
+162
+Traceback (most recent call last):
+  File "/home/pi/MurmurWall/Raspi/animation.py", line 547, in <module>
+    main()
+  File "/home/pi/MurmurWall/Raspi/animation.py", line 535, in main
+    animate_mumurwall(packets, led_strand_left, led_strand_right, related_terms_queue, led_matrices, emptying)
+  File "/home/pi/MurmurWall/Raspi/animation.py", line 290, in animate_mumurwall
+    led_strand_left.update_hardware()        
+  File "/home/pi/MurmurWall/Raspi/LedStrand.py", line 60, in update_hardware
+    self.port_address.write('*')
+AttributeError: 'NoneType' object has no attribute 'write'

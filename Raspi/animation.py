@@ -97,10 +97,10 @@ RELAY_PIN_2 = 23
 RELAY_PIN_3 = 24
 RELAY_PIN_4 = 25
 
-CURATED_WORDS = ["FUTURE CITIES LAB", "YBCA", "MURMUR WALL", "JASON JOHNSON", "NATALY GATTEGNO", "RIPON DELEON", "COLLIN SCHUPMAN", "JEFF MAESHIRO", "JI AHN", "ELAINE SUH", "GREG HURCOMB", "EVAN MORING", "ZACH FISH", "BEN WARD", "NAINOA CRAVALHO", "MACHINIC", "PETER PRATO", "SFAC", "LIGHTSWARM"]
+#CURATED_WORDS = ["FUTURE CITIES LAB", "YBCA", "MURMUR WALL", "JASON JOHNSON", "NATALY GATTEGNO", "RIPON DELEON", "COLLIN SCHUPMAN", "JEFF MAESHIRO", "JI AHN", "ELAINE SUH", "GREG HURCOMB", "EVAN MORING", "ZACH FISH", "BEN WARD", "NAINOA CRAVALHO", "MACHINIC", "PETER PRATO", "SFAC", "LIGHTSWARM"]
 
 CURATED_LENGTH = 60
-CURATED_COLOR = (chr(255), chr(255), chr(255))
+CURATED_COLOR = (chr(255), chr(200), chr(0))
 
 EMPTYING_LENGTH = 60
 
@@ -147,7 +147,7 @@ def add_new_packets(num_of_packets_to_append, packets, related_terms_queue, star
         text = related_terms_queue.get()
         related_terms_queue.put(text)
         red_blue = chr(randint(50,255))
-        color = (red_blue, chr(0), red_blue)
+        color = (chr(0), red_blue, chr(255))
         speed = uniform(MIN_SPEED, MAX_SPEED)
         start_speed = speed
         if starting:
@@ -369,6 +369,7 @@ def check_whispers(whispers_queue):
     if len(new_whispers) > 0:
         for whisper in new_whispers:
             if not whisper == '' and not whisper == "":
+                print whisper
                 whispers_queue.put(whisper)
             
     
@@ -487,12 +488,23 @@ def main():
         buzz_time = time()
 
         emptying_time = 0
+
+        CURATED_WORDS = get_currated_words()
         
         while True:
-
-            if not whispers_queue.empty() and not emptying and not starting:
-                color = (chr(0), chr(255), chr(255))
-                whispers_packet = Packet(4.0, 4.0, color, whispers_queue.get(), START_PIX, MATRIX_POSITIONS[0], START_PIX, False, True)
+	    print ""
+	    print "Packets" 
+            print len(packets)
+            print "Whispers"
+	    print whispers_queue.qsize()
+	    print "CuratedWords"
+            print len(CURATED_WORDS)
+            print ""
+	    print "Related Terms"
+	    print related_terms_queue.qsize()
+            if not whispers_queue.empty() and not emptying:
+                #color = (chr(255), chr(255), chr(255))
+                whispers_packet = Packet(4.0, 4.0,(chr(255),chr(255),chr(255)), whispers_queue.get(), START_PIX, MATRIX_POSITIONS[0], START_PIX, False, True)
                 packets.append(whispers_packet)
             if starting and time() - starting_time >= STARTING_TIME:
                 starting_time = time()
@@ -506,7 +518,7 @@ def main():
             if emptying and time() - emptying_time >= EMPTYING_LENGTH:
                 print "Done emptying, restarting"
                 restart_murmurwall(led_matrices, led_strand_left, led_strand_right, rt)
-            if time() -  prev_curated_time >= CURATED_LENGTH and not emptying and not starting:
+            if time() -  prev_curated_time >= CURATED_LENGTH and not emptying:
                 prev_curated_time = time()
                 curated_packet = Packet(4.0, 4.0, CURATED_COLOR, CURATED_WORDS[curated_pos],
                                         START_PIX, MATRIX_POSITIONS[0],
