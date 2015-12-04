@@ -35,9 +35,9 @@ class Packet(object):
         pod_speed  - Float: how fast this Packet moves in a pod
         is_special - Boolean: is this Packet is a 'buzz word'
     """
-    def __init__(self, speed, color, text,
+    def __init__(self, speed, cur_speed, color, text,
                  current_position, target_position,
-                 prev_target_position, text_being_displayed,is_special=False):
+                 prev_target_position, text_being_displayed, is_special=False):
         """
         Args (see Attributes for description):
             speed 
@@ -51,6 +51,7 @@ class Packet(object):
         """
         self.length = len(text)
         self.speed = speed
+        self.cur_speed = cur_speed
         self.red, self.green, self.blue = color
         self.text = text
         self.current_position = current_position

@@ -44,7 +44,7 @@ from port_manager import get_ports
 from data_manager import get_latest_data, get_whispers, get_currated_words
 
 # How often to restart MurmurWall (seconds)
-RESTART_LENGTH = 3200
+RESTART_LENGTH = 3600
 
 # How often to add in a priority word (seconds)
 PRIORITY_LENGTH = 200
@@ -97,12 +97,12 @@ RELAY_PIN_2 = 23
 RELAY_PIN_3 = 24
 RELAY_PIN_4 = 25
 
-CURATED_WORDS = ["FUTURE CITIES LAB", "YBCA", "MURMUR WALL", "JASON JOHNSON", "NATALY GATTEGNO", "RIPON DELEON", "COLLIN SCHUPMAN", "JEFF MAESHIRO", "JI AHN", "ELAINE SUH", "GREG HURCOMB", "EVAN MORING", "ZACH FISH", "BEN WARD", "NAINOA CRAVALHO", "MACHINIC", "PETER PRATO", "SFAC", "LIGHTSWARM"]
+#CURATED_WORDS = ["FUTURE CITIES LAB", "YBCA", "MURMUR WALL", "JASON JOHNSON", "NATALY GATTEGNO", "RIPON DELEON", "COLLIN SCHUPMAN", "JEFF MAESHIRO", "JI AHN", "ELAINE SUH", "GREG HURCOMB", "EVAN MORING", "ZACH FISH", "BEN WARD", "NAINOA CRAVALHO", "MACHINIC", "PETER PRATO", "SFAC", "LIGHTSWARM"]
 
 CURATED_LENGTH = 60
-CURATED_COLOR = (chr(255), chr(255), chr(255))
+CURATED_COLOR = (chr(255), chr(200), chr(0))
 
-EMPTYING_LENGTH = 480
+EMPTYING_LENGTH = 60
 
 def send_packet_to_matrix(packet, led_matrix):
     """
@@ -134,7 +134,7 @@ def remove_packets(packets_to_remove, packets):
     for packet in packets_to_remove:
         packets.remove(packet)  
 
-def add_new_packets(num_of_packets_to_append, packets, related_terms_queue):
+def add_new_packets(num_of_packets_to_append, packets, related_terms_queue, starting):
     """
     Adds a given number of new packets into MurmurWall
 
@@ -147,8 +147,12 @@ def add_new_packets(num_of_packets_to_append, packets, related_terms_queue):
         text = related_terms_queue.get()
         related_terms_queue.put(text)
         red_blue = chr(randint(50,255))
-        color = (red_blue, chr(0), red_blue)
-        new_packet = Packet(uniform(MIN_SPEED, MAX_SPEED), color, text,
+        color = (chr(0), red_blue, chr(255))
+        speed = uniform(MIN_SPEED, MAX_SPEED)
+        start_speed = speed
+        if starting:
+            start_speed = uniform(10, 20)
+        new_packet = Packet(speed, start_speed, color, text,
                             START_PIX, MATRIX_POSITIONS[0],
                             START_PIX, False)
         packets.append(new_packet)
@@ -178,7 +182,7 @@ def update_matrices(led_matrices):
             else:
                 print "shit the bed"
                 
-def update_packets(packets, packets_to_remove, led_strand_left, led_strand_right, led_matrices):
+def update_packets(packets, packets_to_remove, led_strand_left, led_strand_right, led_matrices, emptying):
     """
     Updates the state of each packet in the MurmurWall system.
     
@@ -204,6 +208,8 @@ def update_packets(packets, packets_to_remove, led_strand_left, led_strand_right
     """
     num_of_packets_to_append = 0
     for packet in packets:
+        if emptying:
+            packet.speed += 1
         if packet.is_out_of_bounds(OUT_OF_BOUNDS):
             packets_to_remove.append(packet)
             if not packet.is_special:
@@ -235,7 +241,8 @@ def update_packets(packets, packets_to_remove, led_strand_left, led_strand_right
                         if not packet.is_special:
                             num_of_packets_to_append += 1
                     else:
-                        send_packet_to_matrix(packet, led_matrices[packet.target_position])
+                        if not emptying:
+                            send_packet_to_matrix(packet, led_matrices[packet.target_position])
             else:
                 if packet.current_position >= packet.target_position + 100.0:
                     led_matrices[packet.target_position].packets.remove(packet)
@@ -244,8 +251,6 @@ def update_packets(packets, packets_to_remove, led_strand_left, led_strand_right
                     packet.prev_target_position = packet.target_position 
                     packet.target_position = led_matrices[packet.target_position].next_position 
                 else:
-                    # color_pod_for_packet(led_strand.color_state, packet.current_position,
-                    #                      packet.red, packet.green, packet.blue)
                     packet.update_postion_pod()
     return num_of_packets_to_append
 
@@ -267,7 +272,7 @@ def animate_mumurwall(packets, led_strand_left, led_strand_right, related_terms_
 
     packets_to_remove = []
 
-    num_of_packets_to_append = update_packets(packets, packets_to_remove, led_strand_left, led_strand_right, led_matrices)
+    num_of_packets_to_append = update_packets(packets, packets_to_remove, led_strand_left, led_strand_right, led_matrices, emptying)
 
     #update pods........
     for matrix_pos in MATRIX_POSITIONS:
@@ -290,7 +295,7 @@ def animate_mumurwall(packets, led_strand_left, led_strand_right, related_terms_
     remove_packets(packets_to_remove, packets)
 
     if not emptying:
-        add_new_packets(num_of_packets_to_append, packets, related_terms_queue)
+        add_new_packets(num_of_packets_to_append, packets, related_terms_queue, False)
 
 # TODO: get rid of global variables, rethink DSs
 def update_queue():
@@ -364,6 +369,7 @@ def check_whispers(whispers_queue):
     if len(new_whispers) > 0:
         for whisper in new_whispers:
             if not whisper == '' and not whisper == "":
+                print whisper
                 whispers_queue.put(whisper)
             
     
@@ -439,7 +445,7 @@ def main():
         packets = []
 
         print 'Adding packets'
-        add_new_packets(1, packets, related_terms_queue)
+        add_new_packets(1, packets, related_terms_queue, True)
 
         print 'Getting ports'
         led_port_1, led_port_2, matrix_port_1, matrix_port_2, matrix_port_3, matrix_port_4, matrix_port_5, matrix_port_6 = get_ports()            
@@ -482,16 +488,28 @@ def main():
         buzz_time = time()
 
         emptying_time = 0
+
+        CURATED_WORDS = get_currated_words()
         
         while True:
-
-            if not whispers_queue.empty():
-                color = (chr(0), chr(255), chr(255))
-                whispers_packet = Packet(4.0, color, whispers_queue.get(), START_PIX, MATRIX_POSITIONS[0], START_PIX, False, True)
+	    print ""
+	    print "Packets" 
+            print len(packets)
+            print "Whispers"
+	    print whispers_queue.qsize()
+	    print "CuratedWords"
+            print len(CURATED_WORDS)
+            print ""
+	    print "Related Terms"
+	    print related_terms_queue.qsize()
+            if not whispers_queue.empty() and not emptying:
+                #color = (chr(255), chr(255), chr(255))
+                whispers_packet = Packet(4.0, 4.0,(chr(255),chr(255),chr(255)), whispers_queue.get(), START_PIX, MATRIX_POSITIONS[0], START_PIX, False, True)
                 packets.append(whispers_packet)
             if starting and time() - starting_time >= STARTING_TIME:
                 starting_time = time()
-                add_new_packets(1, packets, related_terms_queue)
+                if not emptying:
+                    add_new_packets(1, packets, related_terms_queue, True)
                 if len(packets) == NUM_PACKETS:
                     starting = False
             if len(packets) == 0:
@@ -502,7 +520,7 @@ def main():
                 restart_murmurwall(led_matrices, led_strand_left, led_strand_right, rt)
             if time() -  prev_curated_time >= CURATED_LENGTH and not emptying:
                 prev_curated_time = time()
-                curated_packet = Packet(4.0, CURATED_COLOR, CURATED_WORDS[curated_pos],
+                curated_packet = Packet(4.0, 4.0, CURATED_COLOR, CURATED_WORDS[curated_pos],
                                         START_PIX, MATRIX_POSITIONS[0],
                                         START_PIX, False, True)
                 packets.append(curated_packet)
@@ -511,6 +529,8 @@ def main():
             if not emptying and time() -  restart_time >= RESTART_LENGTH:
                 emptying = True
                 emptying_time = time()
+                for packet in packets:
+                    packet.target_position = END_PIX
 
             animate_mumurwall(packets, led_strand_left, led_strand_right, related_terms_queue, led_matrices, emptying)
             sleep(0.10)
